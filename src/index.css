@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:wght@400;600;700&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&family=Long+Cang&family=Liu+Jian+Mao+Cao&family=Klee+One:wght@400;600&display=swap');
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Slidexiaxing";
+  src: url("/fonts/Slidexiaxing-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-brush-xia {
+  font-family: "Slidexiaxing", cursive, sans-serif;
+}
+.font-brush-zhi {
+  font-family: "Zhi Mang Xing", cursive;
+}
+.font-brush-ma {
+  font-family: "Ma Shan Zheng", cursive;
+}
+.font-brush-long {
+  font-family: "Long Cang", cursive;
+}
+.font-brush-cao {
+  font-family: "Liu Jian Mao Cao", cursive;
+}
+.font-kaiti {
+  font-family: "Klee One", "Ma Shan Zheng", cursive;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Noto Serif SC", "Noto Serif", Georgia, serif;
+
+  /* Blue scale - surfaces & text */
+  --color-ts-navy-900: #131B36;
+  --color-ts-navy-800: #143559;
+  --color-ts-navy-700: #1d4a7a;
+  --color-ts-navy-600: #43597C;
+  --color-ts-navy-500: #5B6F90;
+  --color-ts-navy-400: #8a9ab5;
+
+  /* Rose scale - accents & emphasis */
+  --color-ts-rose-900: #742D36;
+  --color-ts-rose-800: #B1555A;
+  --color-ts-rose-700: #DB8384;
+  --color-ts-rose-100: #fde8e8;
+
+  /* Semantic roles - light mode defaults */
+  --color-ts-canvas: #f8f6f4;
+  --color-ts-surface: #ffffff;
+  --color-ts-surface-elevated: #f2efec;
+  --color-ts-ink: #131B36;
+  --color-ts-body: #143559;
+  --color-ts-muted: #43597C;
+  --color-ts-muted-soft: #5B6F90;
+  --color-ts-hairline: #e0ddd8;
+  --color-ts-hairline-soft: #ebe8e4;
+
+  /* Primary accent */
+  --color-ts-primary: #B1555A;
+  --color-ts-primary-hover: #742D36;
+  --color-ts-primary-light: #DB8384;
+  --color-ts-primary-bg: #fde8e8;
+
+  /* Legacy mappings for gradual migration */
+  --color-ts-sunset: #B1555A;
+  --color-ts-sunset-bg: #fde8e8;
+  --color-ts-klein: #143559;
+  --color-ts-klein-bg: #e8edf4;
+  --color-ts-success: #2d7a4f;
+  --color-ts-success-bg: #e6f5ed;
+  --color-ts-warning: #c48800;
+  --color-ts-warning-bg: #fef7e6;
+  --color-ts-error: #c64545;
+  --color-ts-error-bg: #fde8e8;
+  --color-ts-wechat: #07C160;
+  --color-ts-xhs: #B1555A;
+
+  /* Neutral scale */
+  --color-ts-neutral-20: #f8f6f4;
+  --color-ts-neutral-50: #f2efec;
+  --color-ts-neutral-100: #e0ddd8;
+  --color-ts-neutral-200: #c5c0b8;
+  --color-ts-neutral-300: #8a9ab5;
+  --color-ts-neutral-400: #5B6F90;
+  --color-ts-neutral-500: #43597C;
+  --color-ts-neutral-600: #143559;
+  --color-ts-neutral-800: #131B36;
+  --color-ts-neutral-900: #131B36;
+
+  /* Border radius */
+  --radius-ts-xs: 4px;
+  --radius-ts-sm: 6px;
+  --radius-ts-md: 8px;
+  --radius-ts-lg: 12px;
+  --radius-ts-xl: 16px;
+  --radius-ts-2xl: 24px;
+  --radius-ts-pill: 9999px;
+}
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+  body {
+    @apply antialiased text-ts-ink bg-ts-canvas min-h-screen;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-ts-surface border border-ts-hairline rounded-[12px] shadow-[0_1px_3px_rgba(19,27,54,0.06)] transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply bg-ts-surface border border-ts-hairline rounded-[12px] shadow-[0_1px_3px_rgba(19,27,54,0.06)] transition-all duration-300 hover:shadow-[0_4px_12px_rgba(19,27,54,0.1)] hover:-translate-y-1;
+  }
+
+  .glass-card {
+    @apply bg-ts-surface border border-ts-hairline rounded-[12px] shadow-[0_1px_3px_rgba(19,27,54,0.06)] transition-all duration-300;
+  }
+
+  .glass-panel {
+    @apply bg-ts-surface border-b border-ts-hairline;
+  }
+
+  .atmosphere-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background-color: #f8f6f4;
+  }
+
+  .immersive-section {
+    @apply w-full max-w-7xl mx-auto px-6 py-12;
+  }
+}
+
+/* Scroll reveal initial state - hidden until GSAP reveals */
+[data-scroll-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+[data-scroll-reveal] > * {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* Dark mode overrides */
+.dark body,
+.dark .atmosphere-bg {
+  background-color: #131B36;
+}
+
+.dark .glass-card,
+.dark .card {
+  background-color: #143559;
+  border-color: #2a3f5c;
+  box-shadow: none;
+}
+
+.dark .glass-panel {
+  background-color: #143559;
+  border-color: #2a3f5c;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
