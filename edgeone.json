@@ -1,0 +1,24 @@
+{
+  "name": "temporalsync",
+  "buildCommand": "npm run build",
+  "outputDirectory": "./dist",
+  "headers": [
+    {
+      "source": "/assets/*",
+      "headers": [
+        { "key": "Cache-Control", "value": "s-maxage=10000, max-age=31536000" }
+      ]
+    },
+    {
+      "source": "/api/*",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" }
+      ]
+    }
+  ],
+  "caches": [
+    { "source": "/assets/*", "cacheTtl": 31536000 },
+    { "source": "/api/ai-news", "cacheTtl": 300 }
+  ]
+}
