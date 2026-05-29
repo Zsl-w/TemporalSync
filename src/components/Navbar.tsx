@@ -4,8 +4,9 @@ import { LayoutDashboard, Zap, Settings, LogIn, LogOut, Globe, BookOpen, Laptop 
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
-import { signInWithGoogle, auth } from '../lib/firebase';
+import { auth } from '../lib/firebase';
 import { motion } from 'motion/react';
+import { LoginModal } from './LoginModal';
 
 interface NavItemProps {
   to: string;
@@ -44,10 +45,11 @@ const NavItem = ({ to, icon, label }: NavItemProps) => (
 );
 
 export const Navbar = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { language, setLanguage } = useSettings();
   const navRef = useRef<HTMLElement>(null);
   const [isDark, setIsDark] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const checkDark = () => {
@@ -61,7 +63,7 @@ export const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    auth.signOut();
+    signOut();
   };
 
   return (
@@ -132,8 +134,8 @@ export const Navbar = () => {
             </div>
           ) : (
             <button
-              onClick={signInWithGoogle}
-              className="px-5 h-9 bg-ts-primary text-white rounded-[6px] text-[13px] font-medium hover:bg-ts-primary-hover transition-all flex items-center gap-2 ml-2"
+              onClick={() => setIsLoginModalOpen(true)}
+              className="px-5 h-9 bg-ts-primary text-white rounded-[6px] text-[13px] font-medium hover:bg-ts-primary-hover transition-all flex items-center gap-2 ml-2 cursor-pointer"
             >
               <LogIn size={15} />
               {language === 'zh' ? '登录' : 'Sign In'}
@@ -141,6 +143,7 @@ export const Navbar = () => {
           )}
         </div>
       </div>
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </header>
   );
 };

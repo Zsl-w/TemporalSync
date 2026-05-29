@@ -70,23 +70,50 @@ export const Blog = () => {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const fetched: BlogPost[] = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: data.title || '',
-          summary: data.summary || '',
-          tags: Array.isArray(data.tags) ? data.tags : [],
-          content: data.content || '',
-          userId: data.userId || '',
-          userName: data.userName || 'Anonymous',
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt
-        } as BlogPost;
+      let fetched: BlogPost[] = [];
+      
+      // 1. Try to fetch from Firebase
+      try {
+        const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        fetched = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title || '',
+            summary: data.summary || '',
+            tags: Array.isArray(data.tags) ? data.tags : [],
+            content: data.content || '',
+            userId: data.userId || '',
+            userName: data.userName || 'Anonymous',
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt
+          } as BlogPost;
+        });
+      } catch (firestoreError) {
+        console.warn('Firestore fetch failed, relying on local fallback:', firestoreError);
+      }
+
+      // 2. Fetch from Local Storage
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      let localBlogs: BlogPost[] = [];
+      if (localBlogsRaw) {
+        try {
+          localBlogs = JSON.parse(localBlogsRaw);
+        } catch (_) {}
+      }
+
+      // 3. Combine both and filter duplicates
+      const combined = [...localBlogs, ...fetched.filter(fbPost => !localBlogs.some(lp => lp.id === fbPost.id))];
+      
+      // Sort combined by createdAt desc
+      combined.sort((a, b) => {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
+        return timeB - timeA;
       });
-      setPosts(fetched);
+
+      setPosts(combined);
     } catch (error) {
       console.error('Error fetching blogs:', error);
     } finally {
@@ -105,26 +132,51 @@ export const Blog = () => {
     if (!title.trim() || !content.trim()) return;
 
     setSaving(true);
-    try {
-      const parsedTags = tags
-        .split(',')
-        .map(t => t.trim())
-        .filter(Boolean);
+    const parsedTags = tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean);
 
-      const postData = {
-        title: title.trim(),
-        summary: summary.trim() || (content.slice(0, 120) + '...'),
-        tags: parsedTags,
-        content: content,
-        userId: user.uid,
-        userName: user.displayName || user.email || 'Author',
+    const postData = {
+      title: title.trim(),
+      summary: summary.trim() || (content.slice(0, 120) + '...'),
+      tags: parsedTags,
+      content: content,
+      userId: user.uid,
+      userName: user.displayName || user.email || 'Author',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    if (user.isMock) {
+      // Offline mock storage
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      const localBlogs = localBlogsRaw ? JSON.parse(localBlogsRaw) : [];
+      const newPost = {
+        ...postData,
+        id: `local_${Date.now()}`
+      };
+      localBlogs.unshift(newPost);
+      localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+      
+      setTitle('');
+      setSummary('');
+      setTags('');
+      setContent('');
+      setView('list');
+      await fetchPosts();
+      setSaving(false);
+      return;
+    }
+
+    try {
+      const firestorePostData = {
+        ...postData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now()
       };
-
-      await addDoc(collection(db, 'blogs'), postData);
+      await addDoc(collection(db, 'blogs'), firestorePostData);
       
-      // Reset inputs & refresh
       setTitle('');
       setSummary('');
       setTags('');
@@ -132,7 +184,23 @@ export const Blog = () => {
       setView('list');
       await fetchPosts();
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'blogs');
+      console.error('Firestore save failed, saving to localStorage:', error);
+      // Fallback
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      const localBlogs = localBlogsRaw ? JSON.parse(localBlogsRaw) : [];
+      const newPost = {
+        ...postData,
+        id: `local_${Date.now()}`
+      };
+      localBlogs.unshift(newPost);
+      localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+      
+      setTitle('');
+      setSummary('');
+      setTags('');
+      setContent('');
+      setView('list');
+      await fetchPosts();
     } finally {
       setSaving(false);
     }
@@ -155,12 +223,37 @@ export const Blog = () => {
     if (!title.trim() || !content.trim()) return;
 
     setSaving(true);
-    try {
-      const parsedTags = tags
-        .split(',')
-        .map(t => t.trim())
-        .filter(Boolean);
+    const parsedTags = tags
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean);
 
+    const isLocal = selectedPost.id.startsWith('local_') || user.isMock;
+
+    if (isLocal) {
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      if (localBlogsRaw) {
+        try {
+          let localBlogs = JSON.parse(localBlogsRaw);
+          localBlogs = localBlogs.map((p: any) => p.id === selectedPost.id ? {
+            ...p,
+            title: title.trim(),
+            summary: summary.trim() || (content.slice(0, 120) + '...'),
+            tags: parsedTags,
+            content: content,
+            updatedAt: new Date().toISOString()
+          } : p);
+          localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+        } catch (_) {}
+      }
+      setView('list');
+      setSelectedPost(null);
+      await fetchPosts();
+      setSaving(false);
+      return;
+    }
+
+    try {
       const postRef = doc(db, 'blogs', selectedPost.id);
       await updateDoc(postRef, {
         title: title.trim(),
@@ -174,7 +267,28 @@ export const Blog = () => {
       setSelectedPost(null);
       await fetchPosts();
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `blogs/${selectedPost.id}`);
+      console.error('Firestore update failed, falling back to local edit:', error);
+      // Fallback: update in local storage if not found in Firestore or if auth failed
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      if (localBlogsRaw) {
+        try {
+          let localBlogs = JSON.parse(localBlogsRaw);
+          if (localBlogs.some((p: any) => p.id === selectedPost.id)) {
+            localBlogs = localBlogs.map((p: any) => p.id === selectedPost.id ? {
+              ...p,
+              title: title.trim(),
+              summary: summary.trim() || (content.slice(0, 120) + '...'),
+              tags: parsedTags,
+              content: content,
+              updatedAt: new Date().toISOString()
+            } : p);
+            localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+          }
+        } catch (_) {}
+      }
+      setView('list');
+      setSelectedPost(null);
+      await fetchPosts();
     } finally {
       setSaving(false);
     }
@@ -183,6 +297,25 @@ export const Blog = () => {
   // Handle Delete
   const handleDeletePost = async (postId: string) => {
     if (!window.confirm(language === 'zh' ? '确定要删除这篇博客吗？' : 'Are you sure you want to delete this post?')) return;
+    
+    const isLocal = postId.startsWith('local_');
+    if (isLocal) {
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      if (localBlogsRaw) {
+        try {
+          let localBlogs = JSON.parse(localBlogsRaw);
+          localBlogs = localBlogs.filter((p: any) => p.id !== postId);
+          localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+        } catch (_) {}
+      }
+      if (selectedPost?.id === postId) {
+        setSelectedPost(null);
+        setView('list');
+      }
+      await fetchPosts();
+      return;
+    }
+
     try {
       await deleteDoc(doc(db, 'blogs', postId));
       if (selectedPost?.id === postId) {
@@ -191,7 +324,20 @@ export const Blog = () => {
       }
       await fetchPosts();
     } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `blogs/${postId}`);
+      console.error('Firestore delete failed, checking local fallback:', error);
+      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+      if (localBlogsRaw) {
+        try {
+          let localBlogs = JSON.parse(localBlogsRaw);
+          localBlogs = localBlogs.filter((p: any) => p.id !== postId);
+          localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+        } catch (_) {}
+      }
+      if (selectedPost?.id === postId) {
+        setSelectedPost(null);
+        setView('list');
+      }
+      await fetchPosts();
     }
   };
 
