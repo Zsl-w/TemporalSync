@@ -135,6 +135,42 @@ export const StudyRoom = () => {
       link: 'https://md2red.temporalsync.online'
     },
     {
+      id: 'shiyun-wechat-md',
+      title: 'shiyun-wechat-md',
+      subtitle: language === 'zh' ? '时韵公众号排版转换器' : 'Shiyun WeChat Post Converter',
+      desc: language === 'zh'
+        ? '专门为「时韵的AI自习室」定制的公众号排版工具。支持将 Markdown 瞬间排版为优雅、清新的公众号推文格式，并提供快捷复制功能。'
+        : 'A Markdown-to-WeChat post formatter custom-tailored for the Shiyun brand. Parses headers, quotes, lists, and tables into responsive WeChat styles.',
+      features: language === 'zh'
+        ? [
+            '🎨 极简清新设计，特调「时韵自习室」公众号主题配色',
+            '📈 内置文章结构化解析（大标题、序号标题、引用块）',
+            '📋 支持一键复制富文本至微信公众号后台，格式无缝对接',
+            '⚡ 支持表格与行内代码块的优雅美化排版'
+          ]
+        : [
+            '🎨 Custom color scheme aligned with WeChat official account branding',
+            '📈 Pre-defined WeChat styling structures for headings, tables, and quotes',
+            '📋 One-click clipboard copy as Rich Text for zero-hassle formatting',
+            '⚡ Formats inline code and tables automatically'
+          ],
+      isInteractive: false,
+      imageContent: (
+        <div className="w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+          <div className="absolute inset-0 bg-[radial-gradient(#7f9b75_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
+          <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
+            <div className="w-16 h-16 rounded-[20px] bg-[#7f9b75]/10 border border-[#7f9b75]/20 flex items-center justify-center text-[#7f9b75] shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
+              <AppWindow size={32} />
+            </div>
+            <span className="text-xs font-bold text-[#7f9b75] uppercase tracking-[0.2em] font-mono">WeChat Converter</span>
+            <h4 className="text-base font-bold text-ts-ink dark:text-white leading-tight">shiyun-wechat-md</h4>
+            <p className="text-[11px] text-ts-muted max-w-[280px] leading-relaxed">时韵自习室公众号排版利器，一键转换优雅文章排版</p>
+          </div>
+        </div>
+      ),
+      link: '/shiyun-wechat-md'
+    },
+    {
       id: 'timesync-agent',
       title: 'TimeSync Agent',
       subtitle: language === 'zh' ? 'AI 神经元信息集成流' : 'AI Synaptic Information Stream',

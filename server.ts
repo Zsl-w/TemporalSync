@@ -106,7 +106,9 @@ async function startServer() {
         return res.status(404).send("Fallback placeholder avatar detected");
       }
 
-      res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
+      const rawContentType = response.headers['content-type'];
+      const contentType = typeof rawContentType === 'string' ? rawContentType : 'image/jpeg';
+      res.setHeader('Content-Type', contentType);
       res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
       res.send(response.data);
     } catch (error) {
@@ -444,6 +446,12 @@ function getFallbackEnrichment(title: string, summary: string) {
       console.error(error);
       res.status(500).json({ error: "Failed to fetch news" });
     }
+  });
+
+  // Serve the shiyun-wechat-md project statically under /shiyun-wechat-md
+  app.use("/shiyun-wechat-md", express.static(path.join(process.cwd(), "../shiyun-wechat-md")));
+  app.get("/shiyun-wechat-md", (req, res) => {
+    res.redirect("/shiyun-wechat-md/shiyun-wechat-converter.html");
   });
 
   // Vite middleware for development

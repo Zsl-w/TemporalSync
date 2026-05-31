@@ -26,7 +26,8 @@ import {
   User as UserIcon, 
   Tag, 
   Loader2, 
-  Sparkles 
+  Sparkles,
+  Upload
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
@@ -44,6 +45,88 @@ interface BlogPost {
   createdAt: any;
   updatedAt: any;
 }
+
+interface ParsedMarkdown {
+  title: string;
+  summary: string;
+  tags: string[];
+  content: string;
+}
+
+const parseMarkdownFile = (fileName: string, rawText: string): ParsedMarkdown => {
+  let title = '';
+  let summary = '';
+  let tags: string[] = [];
+  let content = rawText;
+
+  // 1. Try to parse front matter (YAML format, bounded by ---)
+  const frontMatterMatch = rawText.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
+  
+  if (frontMatterMatch) {
+    const yamlContent = frontMatterMatch[1];
+    content = frontMatterMatch[2];
+
+    const lines = yamlContent.split('\n');
+    lines.forEach(line => {
+      const colonIndex = line.indexOf(':');
+      if (colonIndex !== -1) {
+        const key = line.slice(0, colonIndex).trim().toLowerCase();
+        let value = line.slice(colonIndex + 1).trim();
+        
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+
+        if (key === 'title') {
+          title = value;
+        } else if (key === 'summary' || key === 'description') {
+          summary = value;
+        } else if (key === 'tags' || key === 'keywords') {
+          if (value.startsWith('[') && value.endsWith(']')) {
+            try {
+              const cleanedValue = value.replace(/'/g, '"');
+              const parsed = JSON.parse(cleanedValue);
+              if (Array.isArray(parsed)) {
+                tags = parsed.map(t => String(t).trim());
+              }
+            } catch (_) {
+              tags = value.slice(1, -1).split(',').map(t => t.trim());
+            }
+          } else {
+            tags = value.split(',').map(t => t.trim());
+          }
+        }
+      }
+    });
+  }
+
+  // 2. Fallbacks for missing fields
+  if (!title) {
+    const h1Match = content.match(/^(?:#\s+)(.+)$/m);
+    if (h1Match) {
+      title = h1Match[1].trim();
+      content = content.replace(/^(?:#\s+)(.+)$/m, '').trim();
+    } else {
+      title = fileName.replace(/\.[^/.]+$/, "");
+    }
+  }
+
+  if (!summary) {
+    const plainText = content
+      .replace(/[#*`_\[\]()\-+]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    summary = plainText.slice(0, 120);
+    if (plainText.length > 120) {
+      summary += '...';
+    }
+  }
+
+  tags = tags.filter(Boolean);
+
+  return { title, summary, tags, content };
+};
+
 
 export const Blog = () => {
   const { user } = useAuth();
@@ -65,6 +148,41 @@ export const Blog = () => {
   const [tags, setTags] = useState('');
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // File import refs & handlers
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const importSourceRef = useRef<'list' | 'editor'>('list');
+
+  const handleImportClick = (source: 'list' | 'editor') => {
+    importSourceRef.current = source;
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset file input
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (typeof text !== 'string') return;
+
+      const parsed = parseMarkdownFile(file.name, text);
+      
+      setTitle(parsed.title);
+      setSummary(parsed.summary);
+      setTags(parsed.tags.join(', '));
+      setContent(parsed.content);
+
+      if (importSourceRef.current === 'list') {
+        setView('create');
+      }
+    };
+    reader.readAsText(file);
+  };
 
   // Fetch blogs from Firestore
   const fetchPosts = async () => {
@@ -383,7 +501,9 @@ export const Blog = () => {
       preview: '实时预览',
       editTab: '编辑内容',
       author: '作者',
-      pubTime: '发布时间'
+      pubTime: '发布时间',
+      importMd: '导入 MD',
+      importMdFile: '导入 MD 文件'
     },
     en: {
       tag: 'Anchors of Thought',
@@ -405,7 +525,9 @@ export const Blog = () => {
       preview: 'Live Preview',
       editTab: 'Edit Content',
       author: 'Author',
-      pubTime: 'Published'
+      pubTime: 'Published',
+      importMd: 'Import MD',
+      importMdFile: 'Import MD File'
     }
   }[language];
 
@@ -435,13 +557,30 @@ export const Blog = () => {
             </div>
 
             {user && (
-              <button
-                onClick={() => setView('create')}
-                className="flex items-center gap-2 px-5 py-3 rounded-[8px] bg-ts-primary text-white text-xs font-bold hover:bg-ts-primary-hover transition-all shadow-sm shrink-0 cursor-pointer"
-              >
-                <Plus size={16} />
-                {t.newPost}
-              </button>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleImportClick('list')}
+                  className="flex items-center gap-2 px-5 py-3 rounded-[8px] border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated text-ts-muted text-xs font-bold hover:text-ts-ink hover:bg-ts-surface-elevated/80 transition-all shadow-sm cursor-pointer"
+                >
+                  <Upload size={16} />
+                  {t.importMd}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTitle('');
+                    setSummary('');
+                    setTags('');
+                    setContent('');
+                    setView('create');
+                  }}
+                  className="flex items-center gap-2 px-5 py-3 rounded-[8px] bg-ts-primary text-white text-xs font-bold hover:bg-ts-primary-hover transition-all shadow-sm cursor-pointer"
+                >
+                  <Plus size={16} />
+                  {t.newPost}
+                </button>
+              </div>
             )}
           </div>
         </section>
@@ -513,7 +652,7 @@ export const Blog = () => {
                             ))}
                           </div>
 
-                          {user && user.uid === post.userId && (
+                          {user && (user.uid === post.userId || (user.isMock && post.id.startsWith('local_'))) && (
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleOpenEdit(post)}
@@ -641,7 +780,7 @@ export const Blog = () => {
               {t.back}
             </button>
 
-            {user && user.uid === selectedPost.userId && (
+            {user && (user.uid === selectedPost.userId || (user.isMock && selectedPost.id.startsWith('local_'))) && (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleOpenEdit(selectedPost)}
@@ -735,7 +874,17 @@ export const Blog = () => {
               <div className="md:col-span-1 space-y-4">
                 {/* Title */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-ts-muted uppercase tracking-wider">{t.inputTitle}</label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-ts-muted uppercase tracking-wider">{t.inputTitle}</label>
+                    <button
+                      type="button"
+                      onClick={() => handleImportClick('editor')}
+                      className="text-[10px] text-ts-primary hover:text-ts-primary-hover font-bold flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+                    >
+                      <Upload size={10} />
+                      {t.importMdFile}
+                    </button>
+                  </div>
                   <input
                     type="text"
                     required
@@ -833,6 +982,13 @@ export const Blog = () => {
           </form>
         </div>
       )}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".md"
+        className="hidden"
+      />
     </div>
   );
 };
