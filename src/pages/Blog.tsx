@@ -127,6 +127,19 @@ const parseMarkdownFile = (fileName: string, rawText: string): ParsedMarkdown =>
   return { title, summary, tags, content };
 };
 
+const getPlainText = (markdown: string): string => {
+  if (!markdown) return '';
+  return markdown
+    .replace(/!\[.*?\]\(.*?\)/g, '') // remove images
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // remove links
+    .replace(/#{1,6}\s+/g, '') // remove headings
+    .replace(/[*_`~]/g, '') // remove styling symbols
+    .replace(/>+/g, '') // remove blockquotes
+    .replace(/-\s+/g, '') // remove list symbols
+    .replace(/\s+/g, ' ') // collapse whitespaces
+    .trim();
+};
+
 export const isAdmin = (user: any) => {
   if (!user) return false;
   if (user.isMock) {
@@ -601,164 +614,94 @@ export const Blog = () => {
               <Loader2 size={32} className="animate-spin text-ts-primary" />
             </div>
           ) : posts.length > 0 ? (
-            <div className="relative w-full max-w-5xl mx-auto py-8">
-              {/* Mobile-only straight vertical timeline line on the left */}
-              <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-ts-hairline dark:bg-ts-navy-800 md:hidden block" />
+            <div className="relative w-full max-w-4xl mx-auto py-8">
+              {/* Straight vertical timeline line on the left */}
+              <div className="absolute left-6 md:left-8 top-0 bottom-0 w-[2px] bg-ts-hairline dark:bg-ts-navy-800" />
 
-              {posts.map((post, i) => {
-                const isEven = i % 2 === 0;
+              {posts.map((post) => {
+                const bodyPreview = getPlainText(post.content);
                 return (
                   <div 
                     key={post.id}
-                    className={cn(
-                      "relative flex flex-col md:flex-row items-stretch w-full mb-12 last:mb-0 group/row",
-                      isEven ? "md:flex-row" : "md:flex-row-reverse"
-                    )}
+                    className="relative pl-14 md:pl-20 mb-12 last:mb-0 group/row"
                   >
-                    {/* 1. Blog Card Side */}
-                    <div className="w-full md:w-[calc(50%-60px)] flex flex-col justify-center items-stretch md:pl-0 pl-12">
-                      <div className="card p-8 flex flex-col gap-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden bg-ts-surface dark:bg-ts-surface border border-ts-hairline dark:border-ts-navy-800">
-                        {/* Hover subtle glow highlight background */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-ts-primary/0 via-ts-primary/0 to-ts-primary/0 group-hover/row:to-ts-primary/[0.03] dark:group-hover/row:to-ts-primary/[0.05] transition-all duration-500 pointer-events-none" />
+                    {/* Timeline Node Circle */}
+                    <div className="absolute left-6 md:left-8 top-[32px] -translate-x-1/2 w-4 h-4 rounded-full border-4 border-ts-canvas dark:border-ts-neutral-900 bg-ts-primary group-hover/row:scale-125 transition-transform duration-300 z-10 shadow-md" />
 
-                        <div className="space-y-3 flex-1 relative z-10">
-                          <div className="flex items-center justify-between text-[10px] text-ts-muted dark:text-ts-neutral-400 font-bold uppercase tracking-wider font-mono">
-                            <div className="flex items-center gap-1">
-                              <Calendar size={12} className="text-ts-primary" />
-                              <span>{formatDate(post.createdAt)}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <UserIcon size={12} className="text-ts-primary" />
-                              <span>{post.userName}</span>
-                            </div>
+                    {/* Blog Card */}
+                    <div className="card p-8 flex flex-col gap-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden bg-ts-surface dark:bg-ts-surface border border-ts-hairline dark:border-ts-navy-800">
+                      {/* Hover subtle glow highlight background */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-ts-primary/0 via-ts-primary/0 to-ts-primary/0 group-hover/row:to-ts-primary/[0.03] dark:group-hover/row:to-ts-primary/[0.05] transition-all duration-500 pointer-events-none" />
+
+                      <div className="space-y-4 flex-1 relative z-10">
+                        {/* Meta Info */}
+                        <div className="flex items-center gap-4 text-[10px] text-ts-muted dark:text-ts-neutral-400 font-bold uppercase tracking-wider font-mono">
+                          <div className="flex items-center gap-1">
+                            <Calendar size={12} className="text-ts-primary" />
+                            <span>{formatDate(post.createdAt)}</span>
                           </div>
+                          <span className="w-1 h-1 rounded-full bg-ts-hairline dark:bg-ts-navy-700" />
+                          <div className="flex items-center gap-1">
+                            <UserIcon size={12} className="text-ts-primary" />
+                            <span>{post.userName}</span>
+                          </div>
+                        </div>
 
-                          <button
-                            onClick={() => { setSelectedPost(post); setView('detail'); }}
-                            className="text-left block group/title text-xl font-display font-black text-ts-ink dark:text-white leading-snug hover:text-ts-primary transition-colors cursor-pointer"
-                          >
-                            {post.title}
-                          </button>
-                          
-                          <p className="text-ts-body dark:text-ts-neutral-300 text-sm leading-relaxed line-clamp-3">
+                        {/* Title */}
+                        <button
+                          onClick={() => { setSelectedPost(post); setView('detail'); }}
+                          className="text-left block group/title text-2xl font-display font-black text-ts-ink dark:text-white leading-snug hover:text-ts-primary transition-colors cursor-pointer"
+                        >
+                          {post.title}
+                        </button>
+                        
+                        {/* Summary */}
+                        {post.summary && (
+                          <p className="text-ts-navy-700 dark:text-ts-neutral-300 text-sm font-semibold italic border-l-2 border-ts-primary/45 pl-3.5 py-0.5">
                             {post.summary}
                           </p>
-                        </div>
+                        )}
 
-                        {/* Tags & Action Buttons */}
-                        <div className="flex items-center justify-between pt-4 border-t border-ts-hairline dark:border-ts-navy-700 relative z-10">
-                          <div className="flex flex-wrap gap-1.5">
-                            {post.tags.map((tag) => (
-                              <span 
-                                key={tag}
-                                className="px-2.5 py-0.5 rounded-[4px] text-[10px] font-medium bg-ts-surface-elevated text-ts-muted border border-ts-hairline flex items-center gap-1"
-                              >
-                                <Tag size={8} />
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-
-                          {isAdmin(user) && (
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => handleOpenEdit(post)}
-                                className="p-2 text-ts-muted-soft hover:text-ts-navy-800 dark:hover:text-white hover:bg-ts-surface-elevated rounded-[6px] transition-all cursor-pointer"
-                                title={t.edit}
-                              >
-                                <Edit3 size={14} />
-                              </button>
-                              <button
-                                onClick={() => handleDeletePost(post.id)}
-                                className="p-2 text-ts-muted-soft hover:text-ts-error hover:bg-ts-error-bg rounded-[6px] transition-all cursor-pointer"
-                                title={t.delete}
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        {/* Body Preview */}
+                        {bodyPreview && (
+                          <p className="text-ts-muted dark:text-ts-neutral-400 text-xs leading-relaxed line-clamp-4 font-normal">
+                            {bodyPreview.slice(0, 260)}{bodyPreview.length > 260 ? '...' : ''}
+                          </p>
+                        )}
                       </div>
-                    </div>
 
-                    {/* 2. Center Timeline Track */}
-                    <div className="relative w-full md:w-[120px] shrink-0 flex md:flex-col items-center justify-center py-4 md:py-0">
-                      {/* Mobile-only timeline dot indicator */}
-                      <div className="absolute left-[19px] w-3 h-3 rounded-full border-2 border-ts-canvas dark:border-ts-neutral-900 bg-ts-primary shadow-md md:hidden block z-10" />
-
-                      {/* Desktop winding track Segment */}
-                      <div className="absolute inset-0 md:flex hidden items-center justify-center">
-                        <svg className="w-full h-full" viewBox="0 0 120 100" preserveAspectRatio="none">
-                          <defs>
-                            <linearGradient id={`grad-${post.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" stopColor="#143559" stopOpacity="0.3" className="group-hover/row:stop-color-ts-navy group-hover/row:stop-opacity-80 transition-all duration-500" />
-                              <stop offset="50%" stopColor="#B1555A" stopOpacity="0.8" />
-                              <stop offset="100%" stopColor="#143559" stopOpacity="0.3" className="group-hover/row:stop-color-ts-navy group-hover/row:stop-opacity-80 transition-all duration-500" />
-                            </linearGradient>
-                            <filter id={`glow-${post.id}`} x="-20%" y="-20%" width="140%" height="140%">
-                              <feGaussianBlur stdDeviation="3" result="blur" />
-                              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                            </filter>
-                          </defs>
-
-                          {/* Sinuous Bezier S-Curve */}
-                          <path 
-                            d={isEven ? "M 60,0 C 15,25 15,75 60,100" : "M 60,0 C 105,25 105,75 60,100"} 
-                            fill="none" 
-                            stroke={`url(#grad-${post.id})`}
-                            strokeWidth="3" 
-                            className="stroke-ts-muted/20 group-hover/row:stroke-ts-primary transition-all duration-500"
-                            style={{
-                              filter: 'drop-shadow(0 0 1px rgba(177, 85, 90, 0.1))'
-                            }}
-                          />
-
-                          {/* Pulsing glow under the node circle */}
-                          <circle 
-                            cx={isEven ? "26.25" : "93.75"} 
-                            cy="50" 
-                            r="12" 
-                            className="fill-ts-primary/20 stroke-none opacity-0 group-hover/row:opacity-100 group-hover/row:scale-125 [transform-origin:center] transition-all duration-500 animate-ping"
-                            style={{
-                              transformOrigin: isEven ? '26.25px 50px' : '93.75px 50px'
-                            }}
-                          />
-                          
-                          {/* Node outer outline */}
-                          <circle 
-                            cx={isEven ? "26.25" : "93.75"} 
-                            cy="50" 
-                            r="7" 
-                            className="fill-ts-canvas dark:fill-ts-neutral-900 stroke-ts-primary stroke-2 shadow-lg transition-all duration-300"
-                          />
-
-                          {/* Node inner core */}
-                          <circle 
-                            cx={isEven ? "26.25" : "93.75"} 
-                            cy="50" 
-                            r="3" 
-                            className="fill-ts-primary group-hover/row:fill-ts-primary-hover group-hover/row:r-4 transition-all duration-300"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-
-                    {/* 3. Opposite Column (Metadata card: Date & tags on desktop) */}
-                    <div className="hidden md:flex w-full md:w-[calc(50%-60px)] flex-col justify-center items-start text-left md:px-8 px-12">
-                      <div className="opacity-40 group-hover/row:opacity-100 transition-opacity duration-300 space-y-2.5 pl-6 border-l-2 border-ts-hairline dark:border-ts-navy-800 group-hover/row:border-ts-primary py-2">
-                        <span className="text-[12px] font-black text-ts-navy-800 dark:text-ts-neutral-300 block uppercase tracking-[0.2em]">
-                          {formatDate(post.createdAt)}
-                        </span>
-                        <span className="text-[10px] font-medium text-ts-muted-soft dark:text-ts-neutral-400 block font-mono">
-                          由 {post.userName} 发布
-                        </span>
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {post.tags.slice(0, 2).map((tag) => (
-                            <span key={tag} className="text-[9px] font-semibold text-ts-muted dark:text-ts-neutral-400 bg-ts-surface-elevated px-2 py-0.5 rounded border border-ts-hairline dark:border-ts-navy-800">
-                              #{tag}
+                      {/* Tags & Action Buttons */}
+                      <div className="flex items-center justify-between pt-4 border-t border-ts-hairline dark:border-ts-navy-700 relative z-10">
+                        <div className="flex flex-wrap gap-1.5">
+                          {post.tags.map((tag) => (
+                            <span 
+                              key={tag}
+                              className="px-2.5 py-0.5 rounded-[4px] text-[10px] font-medium bg-ts-surface-elevated text-ts-muted border border-ts-hairline flex items-center gap-1"
+                            >
+                              <Tag size={8} />
+                              {tag}
                             </span>
                           ))}
                         </div>
+
+                        {isAdmin(user) && (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleOpenEdit(post)}
+                              className="p-2 text-ts-muted-soft hover:text-ts-navy-800 dark:hover:text-white hover:bg-ts-surface-elevated rounded-[6px] transition-all cursor-pointer"
+                              title={t.edit}
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              className="p-2 text-ts-muted-soft hover:text-ts-error hover:bg-ts-error-bg rounded-[6px] transition-all cursor-pointer"
+                              title={t.delete}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
