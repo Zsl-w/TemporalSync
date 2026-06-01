@@ -14,6 +14,10 @@ service cloud.firestore {
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'wangzouszz@gmail.com';
+    }
     
     function incoming() {
       return request.resource.data;
@@ -162,12 +166,11 @@ service cloud.firestore {
 
     match /blogs/{blogId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && incoming().userId == request.auth.uid 
+      allow create: if isAdmin() && incoming().userId == request.auth.uid 
                      && incoming().createdAt == request.time;
-      allow update: if isSignedIn() && existing().userId == request.auth.uid
-                     && incoming().userId == existing().userId
+      allow update: if isAdmin() && incoming().userId == existing().userId
                      && incoming().createdAt == existing().createdAt;
-      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+      allow delete: if isAdmin();
     }
   }
 }

@@ -127,6 +127,13 @@ const parseMarkdownFile = (fileName: string, rawText: string): ParsedMarkdown =>
   return { title, summary, tags, content };
 };
 
+export const isAdmin = (user: any) => {
+  if (!user) return false;
+  if (user.isMock) {
+    return user.role === 'Developer';
+  }
+  return user.email === 'wangzouszz@gmail.com';
+};
 
 export const Blog = () => {
   const { user } = useAuth();
@@ -556,7 +563,7 @@ export const Blog = () => {
               </p>
             </div>
 
-            {user && (
+            {isAdmin(user) && (
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   type="button"
@@ -652,7 +659,7 @@ export const Blog = () => {
                             ))}
                           </div>
 
-                          {user && (user.uid === post.userId || (user.isMock && post.id.startsWith('local_'))) && (
+                          {isAdmin(user) && (
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleOpenEdit(post)}
@@ -780,7 +787,7 @@ export const Blog = () => {
               {t.back}
             </button>
 
-            {user && (user.uid === selectedPost.userId || (user.isMock && selectedPost.id.startsWith('local_'))) && (
+            {isAdmin(user) && (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleOpenEdit(selectedPost)}

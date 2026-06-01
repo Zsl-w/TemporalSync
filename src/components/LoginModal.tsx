@@ -46,7 +46,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       onClose();
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || '匿名登录失败，可能是 Firebase 未开启匿名登录提供商，请使用开发者测试模式。');
+      if (err.code === 'auth/admin-restricted-operation' || err.message?.includes('admin-restricted-operation')) {
+        setErrorMsg('匿名登录失败：您的 Firebase 项目尚未启用“匿名登录”。请在 Firebase 控制台的 Authentication -> 登录方法（Sign-in method）中添加并启用“匿名”（Anonymous）登录提供商，或切换到“测试模式”进行本地预览。');
+      } else {
+        setErrorMsg(err.message || '匿名登录失败，可能是 Firebase 未开启匿名登录提供商，请使用开发者测试模式。');
+      }
     } finally {
       setLoading(false);
     }
