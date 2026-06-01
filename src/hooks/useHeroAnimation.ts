@@ -40,6 +40,11 @@ export function useHeroAnimation(containerRef: RefObject<HTMLElement>) {
       }, '-=0.3');
     }
 
+    const titleEn = containerRef.current.querySelector('[data-hero-title-en]');
+    if (titleEn) {
+      tl.from(titleEn, { opacity: 0, y: 15, duration: 0.6 }, '-=0.5');
+    }
+
     const subtitle = containerRef.current.querySelector('[data-hero-subtitle]');
     if (subtitle) {
       tl.from(subtitle, { opacity: 0, y: 20, duration: 0.6 }, '-=0.4');

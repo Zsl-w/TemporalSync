@@ -50,18 +50,40 @@ export const About = () => {
       {/* Hero */}
       <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 relative z-10">
         <div className="w-full mx-auto text-center space-y-10">
-          <div className="select-none py-4 flex items-center justify-center">
-            <h1 data-hero-title className="text-[110px] md:text-[170px] lg:text-[225px] font-brush-xia text-ts-navy-900 dark:text-white leading-[1.1] whitespace-nowrap">
-              {t.name}
-            </h1>
+          <div className="select-none py-4 flex flex-col items-center justify-center">
+            {language === 'zh' ? (
+              <h1 className="flex flex-col items-center text-center leading-[1.1]">
+                <span 
+                  data-hero-title 
+                  className="text-[90px] md:text-[135px] lg:text-[170px] font-display font-black text-ts-navy-900 dark:text-white tracking-tight"
+                >
+                  时间同步
+                </span>
+                <span 
+                  data-hero-title-en 
+                  className="text-[20px] md:text-[26px] lg:text-[32px] font-sans font-black text-ts-primary uppercase tracking-[0.3em] mt-3 md:mt-4"
+                >
+                  Temporal Sync
+                </span>
+              </h1>
+            ) : (
+              <h1 className="flex flex-col items-center text-center leading-[1.1]">
+                <span 
+                  data-hero-title 
+                  className="text-[90px] md:text-[135px] lg:text-[170px] font-sans font-black text-ts-navy-900 dark:text-white tracking-tight uppercase"
+                >
+                  TimeSync
+                </span>
+              </h1>
+            )}
           </div>
 
-          <p data-hero-subtitle className="text-[22px] md:text-[28px] font-brush-long text-ts-primary/90 dark:text-ts-primary-light/90 tracking-[0.15em] leading-relaxed max-w-2xl mx-auto">
+          <p data-hero-subtitle className="text-[16px] md:text-[20px] font-sans font-medium text-ts-navy-800/80 dark:text-ts-neutral-300/80 tracking-[0.12em] leading-relaxed max-w-2xl mx-auto">
             {t.subtitle}
           </p>
 
           <div className="pt-2">
-            <p data-hero-bio className="text-[16px] md:text-[18px] text-ts-muted dark:text-ts-neutral-300 font-brush-ma tracking-[0.08em] border-y border-ts-hairline/80 py-3.5 px-8 inline-block max-w-2xl mx-auto backdrop-blur-[2px] bg-white/5 dark:bg-white/2 rounded-[6px] shadow-inner">
+            <p data-hero-bio className="text-[13px] md:text-[14px] text-ts-muted dark:text-ts-neutral-400 font-sans font-medium tracking-[0.05em] border-y border-ts-hairline/80 py-3.5 px-8 inline-block max-w-2xl mx-auto backdrop-blur-[2px] bg-white/5 dark:bg-white/2 rounded-[6px] shadow-inner">
               {t.bio}
             </p>
           </div>
