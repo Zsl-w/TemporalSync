@@ -32,7 +32,6 @@ export default function App() {
       <SettingsProvider>
         <AuthProvider>
           <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
-            <NewsPrefetcher />
             {/* CSS Keyframes for automatic organic float */}
             <style>{`
               @keyframes floatOrb1 {

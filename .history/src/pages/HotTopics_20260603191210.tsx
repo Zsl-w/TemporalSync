@@ -62,22 +62,15 @@ export const HotTopics = () => {
 
   useEffect(() => {
     let hintTimer: ReturnType<typeof setTimeout>;
-    
-    // Check cache first — may already be populated by prefetch
-    const cached = getCachedNews();
-    if (cached) {
-      setNews(cached);
-      setLoading(false);
-      return;
-    }
-
-    const loadNews = async () => {
+    const fetchNews = async () => {
       hintTimer = setTimeout(() => setLoadingLong(true), 5000);
       try {
-        const data = await fetchNews();
+        const response = await fetch('/api/ai-news');
+        const data = await response.json();
         if (Array.isArray(data)) {
           setNews(data);
         } else {
+          console.error('API response is not an array:', data);
           setNews([]);
         }
       } catch (error) {
@@ -89,7 +82,7 @@ export const HotTopics = () => {
       }
     };
 
-    loadNews();
+    fetchNews();
     return () => clearTimeout(hintTimer);
   }, []);
 
