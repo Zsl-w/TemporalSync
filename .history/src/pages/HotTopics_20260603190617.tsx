@@ -259,15 +259,6 @@ export const HotTopics = () => {
                 </div>
               </div>
             ))}
-            {loadingLong && (
-              <div className="mt-8 text-center">
-                <p className="text-sm text-ts-muted animate-pulse">
-                  {language === 'zh' 
-                    ? '正在全网萃取最新 AI 资讯，请耐心等待...' 
-                    : 'Extracting the latest AI intelligence across the web...'}
-                </p>
-              </div>
-            )}
           </div>
         ) : groupedNews.length > 0 ? (
           <div className="space-y-12">

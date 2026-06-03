@@ -109,7 +109,7 @@ async function scrapeArticle(url: string) {
     return { image: "", description: "" };
   }
   try {
-    const response = await fetchWithTimeout(url, 2000);
+    const response = await fetchWithTimeout(url, 4000);
     const arrayBuf = await response.arrayBuffer();
     const charset = detectCharsetFromHeaders(response.headers);
     let html = decodeBuffer(arrayBuf, charset);

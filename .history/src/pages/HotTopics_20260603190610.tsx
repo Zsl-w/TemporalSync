@@ -60,9 +60,7 @@ export const HotTopics = () => {
   };
 
   useEffect(() => {
-    let hintTimer: ReturnType<typeof setTimeout>;
     const fetchNews = async () => {
-      hintTimer = setTimeout(() => setLoadingLong(true), 5000);
       try {
         const response = await fetch('/api/ai-news');
         const data = await response.json();
@@ -75,14 +73,11 @@ export const HotTopics = () => {
       } catch (error) {
         console.error('Failed to fetch news:', error);
       } finally {
-        clearTimeout(hintTimer);
         setLoading(false);
-        setLoadingLong(false);
       }
     };
 
     fetchNews();
-    return () => clearTimeout(hintTimer);
   }, []);
 
   useScrollRefresh(loading);
@@ -259,15 +254,6 @@ export const HotTopics = () => {
                 </div>
               </div>
             ))}
-            {loadingLong && (
-              <div className="mt-8 text-center">
-                <p className="text-sm text-ts-muted animate-pulse">
-                  {language === 'zh' 
-                    ? '正在全网萃取最新 AI 资讯，请耐心等待...' 
-                    : 'Extracting the latest AI intelligence across the web...'}
-                </p>
-              </div>
-            )}
           </div>
         ) : groupedNews.length > 0 ? (
           <div className="space-y-12">
