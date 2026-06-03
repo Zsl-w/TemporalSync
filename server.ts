@@ -171,7 +171,7 @@ async function scrapeArticle(url: string) {
   }
   try {
     const response = await axios.get(url, {
-      timeout: 4000,
+      timeout: 2000,
       responseType: 'arraybuffer',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -353,6 +353,9 @@ function getFallbackEnrichment(title: string, summary: string) {
 
   // API Route: AI Hot Topics
   app.get("/api/ai-news", async (req, res) => {
+    const startTime = Date.now();
+    const ENRICH_COUNT = 5;
+    const ENRICH_DEADLINE_MS = 12000;
     try {
       let xmlData: string;
       try {
@@ -392,13 +395,17 @@ function getFallbackEnrichment(title: string, summary: string) {
         let summary = item.contentSnippet || item.description || "";
         let enriched: any = null;
 
-        if (index < 15) {
-          const scraped = await scrapeArticle(link);
-          image = scraped.image;
-          if (!summary || summary.trim().length === 0 || summary === "...") {
-            summary = scraped.description || title || "";
+        if (index < ENRICH_COUNT && (Date.now() - startTime) < ENRICH_DEADLINE_MS) {
+          try {
+            const scraped = await scrapeArticle(link);
+            image = scraped.image;
+            if (!summary || summary.trim().length === 0 || summary === "...") {
+              summary = scraped.description || title || "";
+            }
+            enriched = await getGeminiEnrichment(title, summary);
+          } catch {
+            // scrape or Gemini failed — fall through to fallback
           }
-          enriched = await getGeminiEnrichment(title, summary);
         }
 
         if (!enriched) {
@@ -435,6 +442,7 @@ function getFallbackEnrichment(title: string, summary: string) {
       );
 
       // Sort by time descending
+      console.log(`handleAINews completed in ${Date.now() - startTime}ms, ${results.length} items`);
       results.sort((a, b) => {
         const timeA = a.time ? new Date(a.time).getTime() : 0;
         const timeB = b.time ? new Date(b.time).getTime() : 0;
