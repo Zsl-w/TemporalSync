@@ -219,7 +219,7 @@ export const StudyRoom = () => {
     },
     en: {
       tag: 'Dev Sandbox',
-      title: 'Lab',
+      title: 'WORK',
       subtitle: 'Explore my independent apps and prototypes',
       exploreBtn: 'Explore',
       upcomingTitle: 'More experiments are brewing...',
@@ -239,9 +239,9 @@ export const StudyRoom = () => {
             </span>
           </div>
           <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-6">
-            <span className="text-ts-primary block">自习室</span>
-            <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(20,53,89,0.15)] block mt-2">
-              Lab & Apps.
+            <span className="text-ts-primary block">{t.title}</span>
+            <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] block mt-2">
+              {language === 'zh' ? '工具与应用.' : 'Lab & Apps.'}
             </span>
           </h1>
           <p className="text-ts-neutral-400 dark:text-ts-neutral-300 text-[15px] font-medium max-w-md leading-relaxed">

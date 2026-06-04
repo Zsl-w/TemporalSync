@@ -84,7 +84,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-2.5">
             <div className="flex items-end gap-[2px] h-5">
               <div className="w-[2.5px] h-full bg-ts-primary rounded-full" />
-              <div className="w-[2.5px] h-[60%] bg-ts-navy-800 rounded-full" />
+              <div className="w-[2.5px] h-[60%] bg-[#143559] rounded-full" />
             </div>
             <h2 className="font-display font-bold text-base text-ts-ink dark:text-white">时间同步 - 选择登录方式</h2>
           </div>

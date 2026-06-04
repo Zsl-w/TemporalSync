@@ -354,7 +354,7 @@ function getFallbackEnrichment(title: string, summary: string) {
   // API Route: AI Hot Topics
   app.get("/api/ai-news", async (req, res) => {
     const startTime = Date.now();
-    const ENRICH_COUNT = 5;
+    const ENRICH_COUNT = 0;
     const ENRICH_DEADLINE_MS = 12000;
     try {
       let xmlData: string;
@@ -429,7 +429,7 @@ function getFallbackEnrichment(title: string, summary: string) {
           summary,
           image: image || undefined,
           tags: enriched.tags,
-          recommendedReason: enriched.recommendedReason,
+          recommendedReason: undefined,
           avatar: avatarUrl ? `/api/avatar?url=${encodeURIComponent(avatarUrl)}` : undefined
         };
 

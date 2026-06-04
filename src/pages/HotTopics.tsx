@@ -177,7 +177,7 @@ export const HotTopics = () => {
             <span className="text-ts-primary block">
               {language === 'zh' ? 'AI热点' : 'AI Hot Topics'}
             </span>
-            <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(20,53,89,0.15)] block mt-2">
+            <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] block mt-2">
               {language === 'zh' ? '精选.' : 'Curated.'}
             </span>
           </h1>
@@ -398,13 +398,6 @@ export const HotTopics = () => {
                                   </div>
                                 )}
 
-                                {/* Recommended Reason */}
-                                {item.recommendedReason && (
-                                  <div className="p-4 bg-ts-sunset-bg dark:bg-[#742D36]/20 border-l-4 border-ts-primary rounded-r-[6px] text-xs leading-relaxed text-ts-body dark:text-ts-primary-light">
-                                    <span className="font-bold text-ts-primary mr-1">推荐理由:</span>
-                                    {item.recommendedReason.replace(/^推荐理由:\s*/, "")}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>

@@ -19,7 +19,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem('ts-theme') as Theme) || 'light'
+    () => (localStorage.getItem('ts-theme') as Theme) || 'dark'
   );
   const [accentColor, setAccentColor] = useState(
     () => localStorage.getItem('ts-accent') || '#B1555A'
@@ -28,7 +28,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     () => parseInt(localStorage.getItem('ts-font-size') || '100')
   );
   const [language, setLanguage] = useState<Language>(
-    () => (localStorage.getItem('ts-lang') as Language) || 'zh'
+    () => (localStorage.getItem('ts-lang') as Language) || 'en'
   );
 
   // Apply Theme
@@ -36,11 +36,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('ts-theme', theme);
     const root = window.document.documentElement;
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const meta = window.document.getElementById('theme-color-meta');
 
     if (isDark) {
       root.classList.add('dark');
+      root.classList.remove('light');
+      root.style.backgroundColor = '#050505';
+      if (meta) meta.setAttribute('content', '#050505');
     } else {
+      root.classList.add('light');
       root.classList.remove('dark');
+      root.style.backgroundColor = '#ffffff';
+      if (meta) meta.setAttribute('content', '#ffffff');
     }
   }, [theme]);
 
@@ -64,10 +71,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [language]);
 
   const resetSettings = () => {
-    setTheme('light');
+    setTheme('dark');
     setAccentColor('#B1555A');
     setFontSize(100);
-    setLanguage('zh');
+    setLanguage('en');
   };
 
   return (

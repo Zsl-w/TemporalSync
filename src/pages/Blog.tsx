@@ -27,7 +27,9 @@ import {
   Tag, 
   Loader2, 
   Sparkles,
-  Upload
+  Upload,
+  Clock,
+  ArrowRight
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
@@ -138,6 +140,14 @@ const getPlainText = (markdown: string): string => {
     .replace(/-\s+/g, '') // remove list symbols
     .replace(/\s+/g, ' ') // collapse whitespaces
     .trim();
+};
+
+const getReadTime = (content: string, isZh: boolean) => {
+  if (!content) return isZh ? '1 分钟阅读' : '1 min read';
+  const words = content.trim().split(/\s+/).length;
+  const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+  const minutes = Math.max(1, Math.ceil(words / 200 + chineseChars / 400));
+  return isZh ? `${minutes} 分钟阅读` : `${minutes} min read`;
 };
 
 export const isAdmin = (user: any) => {
@@ -527,7 +537,7 @@ export const Blog = () => {
     },
     en: {
       tag: 'Anchors of Thought',
-      title: 'Blog',
+      title: 'WRITING',
       subtitle: 'Sharing technical guides, development notes, and creative thoughts.',
       newPost: 'New Post',
       empty: 'No blog posts found.',
@@ -566,8 +576,8 @@ export const Blog = () => {
                 </span>
               </div>
               <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-6">
-                <span className="text-ts-primary block">博客</span>
-                <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(20,53,89,0.15)] block mt-2">
+                <span className="text-ts-primary block">{t.title}</span>
+                <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] block mt-2">
                   Sync Thoughts.
                 </span>
               </h1>
@@ -614,69 +624,75 @@ export const Blog = () => {
               <Loader2 size={32} className="animate-spin text-ts-primary" />
             </div>
           ) : posts.length > 0 ? (
-            <div className="relative w-full max-w-4xl mx-auto py-8">
+            <div className="relative w-full max-w-2xl mx-auto py-6">
               {/* Straight vertical timeline line on the left */}
-              <div className="absolute left-6 md:left-8 top-0 bottom-0 w-[2px] bg-ts-hairline dark:bg-ts-navy-800" />
+              <div className="absolute left-5 md:left-6 top-0 bottom-0 w-[2px] bg-ts-hairline dark:bg-ts-navy-800/40" />
 
               {posts.map((post) => {
                 const bodyPreview = getPlainText(post.content);
                 return (
                   <div 
                     key={post.id}
-                    className="relative pl-14 md:pl-20 mb-12 last:mb-0 group/row"
+                    className="relative pl-10 md:pl-14 mb-6 last:mb-0 group/row"
                   >
                     {/* Timeline Node Circle */}
-                    <div className="absolute left-6 md:left-8 top-[32px] -translate-x-1/2 w-4 h-4 rounded-full border-4 border-ts-canvas dark:border-ts-neutral-900 bg-ts-primary group-hover/row:scale-125 transition-transform duration-300 z-10 shadow-md" />
+                    <div className="absolute left-5 md:left-6 top-[22px] -translate-x-1/2 w-3 h-3 rounded-full border-2 border-ts-canvas dark:border-ts-neutral-900 bg-ts-muted-soft dark:bg-ts-navy-700 group-hover/row:bg-white group-hover/row:scale-110 transition-all duration-300 z-10 shadow-sm">
+                      <span className="absolute -inset-1 rounded-full bg-white/30 animate-ping opacity-0 group-hover/row:opacity-100 transition-opacity" />
+                    </div>
 
                     {/* Blog Card */}
-                    <div className="card p-8 flex flex-col gap-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden bg-ts-surface dark:bg-ts-surface border border-ts-hairline dark:border-ts-navy-800">
-                      {/* Hover subtle glow highlight background */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-ts-primary/0 via-ts-primary/0 to-ts-primary/0 group-hover/row:to-ts-primary/[0.03] dark:group-hover/row:to-ts-primary/[0.05] transition-all duration-500 pointer-events-none" />
+                    <div className="card p-4 md:p-5 flex flex-col gap-3.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.4)] hover:border-white hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden bg-ts-surface/40 backdrop-blur-md border border-ts-hairline dark:border-ts-navy-800/60">
+                      {/* Top Accent Slide-in Line */}
+                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-white transform scale-x-0 group-hover/row:scale-x-100 transition-transform duration-500 origin-left" />
 
-                      <div className="space-y-4 flex-1 relative z-10">
+                      {/* Hover subtle glow highlight background */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/[0.01] dark:group-hover/row:to-white/[0.02] transition-all duration-500 pointer-events-none" />
+
+                      <div className="space-y-2.5 flex-1 relative z-10">
                         {/* Meta Info */}
-                        <div className="flex items-center gap-4 text-[10px] text-ts-muted dark:text-ts-neutral-400 font-bold uppercase tracking-wider font-mono">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={12} className="text-ts-primary" />
+                        <div className="flex flex-wrap items-center gap-2.5 text-[8px] md:text-[9px] text-ts-muted dark:text-ts-neutral-400 font-bold uppercase tracking-wider font-mono">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar size={10} className="text-ts-muted-soft group-hover/row:text-white transition-colors" />
                             <span>{formatDate(post.createdAt)}</span>
                           </div>
-                          <span className="w-1 h-1 rounded-full bg-ts-hairline dark:bg-ts-navy-700" />
-                          <div className="flex items-center gap-1">
-                            <UserIcon size={12} className="text-ts-primary" />
+                          <span className="w-0.5 h-0.5 rounded-full bg-ts-hairline dark:bg-ts-navy-700" />
+                          <div className="flex items-center gap-1.5">
+                            <UserIcon size={10} className="text-ts-muted-soft group-hover/row:text-white transition-colors" />
                             <span>{post.userName}</span>
+                          </div>
+                          <span className="w-0.5 h-0.5 rounded-full bg-ts-hairline dark:bg-ts-navy-700" />
+                          <div className="flex items-center gap-1.5">
+                            <Clock size={10} className="text-ts-muted-soft group-hover/row:text-white transition-colors" />
+                            <span>{getReadTime(post.content, language === 'zh')}</span>
                           </div>
                         </div>
 
                         {/* Title */}
                         <button
                           onClick={() => { setSelectedPost(post); setView('detail'); }}
-                          className="text-left block group/title text-2xl font-display font-black text-ts-ink dark:text-white leading-snug hover:text-ts-primary transition-colors cursor-pointer"
+                          className="text-left block group/title text-base md:text-lg font-bold text-ts-ink dark:text-white leading-snug transition-colors cursor-pointer"
                         >
-                          {post.title}
+                          <span className="relative inline-block hover:text-white">
+                            {post.title}
+                            <span className="absolute left-0 bottom-0.5 w-full h-[2px] bg-white transform scale-x-0 group-hover/title:scale-x-100 transition-transform duration-300 origin-left" />
+                          </span>
                         </button>
-                        
-                        {/* Summary */}
-                        {post.summary && (
-                          <p className="text-ts-navy-700 dark:text-ts-neutral-300 text-sm font-semibold italic border-l-2 border-ts-primary/45 pl-3.5 py-0.5">
-                            {post.summary}
-                          </p>
-                        )}
 
                         {/* Body Preview */}
                         {bodyPreview && (
-                          <p className="text-ts-muted dark:text-ts-neutral-400 text-xs leading-relaxed line-clamp-4 font-normal">
-                            {bodyPreview.slice(0, 260)}{bodyPreview.length > 260 ? '...' : ''}
+                          <p className="text-ts-muted dark:text-ts-neutral-400 text-[11px] leading-relaxed line-clamp-2 font-normal opacity-80">
+                            {bodyPreview.slice(0, 140)}{bodyPreview.length > 140 ? '...' : ''}
                           </p>
                         )}
                       </div>
 
                       {/* Tags & Action Buttons */}
-                      <div className="flex items-center justify-between pt-4 border-t border-ts-hairline dark:border-ts-navy-700 relative z-10">
-                        <div className="flex flex-wrap gap-1.5">
+                      <div className="flex items-center justify-between pt-2.5 border-t border-ts-hairline dark:border-ts-navy-800/50 relative z-10">
+                        <div className="flex flex-wrap gap-1">
                           {post.tags.map((tag) => (
                             <span 
                               key={tag}
-                              className="px-2.5 py-0.5 rounded-[4px] text-[10px] font-medium bg-ts-surface-elevated text-ts-muted border border-ts-hairline flex items-center gap-1"
+                              className="px-2 py-0.5 rounded-[4px] text-[9px] font-semibold bg-ts-surface-elevated text-ts-muted border border-ts-hairline flex items-center gap-1 hover:text-white hover:border-white/30 group-hover/row:border-white/10 transition-colors"
                             >
                               <Tag size={8} />
                               {tag}
@@ -684,24 +700,34 @@ export const Blog = () => {
                           ))}
                         </div>
 
-                        {isAdmin(user) && (
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleOpenEdit(post)}
-                              className="p-2 text-ts-muted-soft hover:text-ts-navy-800 dark:hover:text-white hover:bg-ts-surface-elevated rounded-[6px] transition-all cursor-pointer"
-                              title={t.edit}
-                            >
-                              <Edit3 size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleDeletePost(post.id)}
-                              className="p-2 text-ts-muted-soft hover:text-ts-error hover:bg-ts-error-bg rounded-[6px] transition-all cursor-pointer"
-                              title={t.delete}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-3">
+                          {isAdmin(user) && (
+                            <div className="flex items-center gap-1 border-r border-ts-hairline pr-3 mr-0.5">
+                              <button
+                                onClick={() => handleOpenEdit(post)}
+                                className="p-1.5 text-ts-muted-soft group-hover/row:text-ts-muted hover:text-white hover:bg-ts-surface-elevated rounded-[4px] transition-all cursor-pointer"
+                                title={t.edit}
+                              >
+                                <Edit3 size={13} />
+                              </button>
+                              <button
+                                onClick={() => handleDeletePost(post.id)}
+                                className="p-1.5 text-ts-muted-soft group-hover/row:text-ts-muted hover:text-ts-error hover:bg-ts-error-bg rounded-[4px] transition-all cursor-pointer"
+                                title={t.delete}
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          )}
+
+                          <button
+                            onClick={() => { setSelectedPost(post); setView('detail'); }}
+                            className="inline-flex items-center gap-1 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-ts-muted group-hover/row:text-white hover:text-white transition-colors group/read cursor-pointer"
+                          >
+                            <span>{language === 'zh' ? '阅读全文' : 'Read Article'}</span>
+                            <ArrowRight size={11} className="transform group-hover/read:translate-x-1 group-hover/row:translate-x-0.5 transition-transform duration-300" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -106,14 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-ts-neutral-20 cover p-4">
-        <Loader2 size={32} className="text-ts-klein animate-spin mb-4" />
-        <p className="text-ts-neutral-500 text-sm font-medium">初始化您的工作区...</p>
-      </div>
-    );
-  }
+
 
   return (
     <AuthContext.Provider value={{ 
