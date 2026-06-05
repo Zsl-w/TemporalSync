@@ -101,12 +101,12 @@ export const About = () => {
             <span>&copy; {new Date().getFullYear()} TemporalSync</span>
             <span className="hidden opacity-30 sm:inline">|</span>
             <a
-              href="https://beian.miit.gov.cn/#/Integrated/index"
+              href="https://beian.miit.gov.cn/"
               target="_blank"
               rel="noopener noreferrer"
               className="transition-colors hover:text-white"
             >
-              ICP record
+              渝ICP备2026010591号-1
             </a>
           </div>
           <div className="flex items-center gap-4">
