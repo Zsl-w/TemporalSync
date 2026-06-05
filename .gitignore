@@ -7,3 +7,6 @@ coverage/
 .env*
 !.env.example
 .edgeone
+.history/
+extracted_0.png
+
