@@ -5,7 +5,6 @@ import { AuthProvider } from './context/AuthContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { Loader2 } from 'lucide-react';
 import { prefetchNews } from './services/newsService';
-import Threads from './components/Threads';
 import VideoBackground from './components/VideoBackground';
 import { AnimatePresence, motion } from 'motion/react';
 import { cn } from './lib/utils';
@@ -33,25 +32,13 @@ const NewsPrefetcher = () => {
 const AnimatedAppContent = () => {
   const location = useLocation();
   const [showContact, setShowContact] = React.useState(false);
-  const { backgroundType } = useSettings();
 
   return (
-    <div className={cn("min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas", `bg-type-${backgroundType}`)}>
+    <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
       <NewsPrefetcher />
       {/* Background Layer */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {backgroundType === 'threads' && (
-          <Threads
-            amplitude={1.0}
-            distance={0.3}
-            enableMouseInteraction={true}
-            color={[1, 1, 1]}
-            className="absolute inset-0 opacity-80 dark:opacity-70"
-          />
-        )}
-        {backgroundType === 'video' && (
-          <VideoBackground className="absolute inset-0" />
-        )}
+        <VideoBackground className="absolute inset-0" />
       </div>
 
       <div className="atmosphere-bg" />

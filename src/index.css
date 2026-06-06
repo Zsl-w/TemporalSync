@@ -203,25 +203,15 @@
 
 .dark .glass-card,
 .dark .card {
-  background-color: #121212;
-  border-color: #222225;
-  box-shadow: none;
-}
-
-/* Glassmorphic card styling when video background is active */
-.bg-type-video.dark .card,
-.bg-type-video.dark .glass-card,
-.bg-type-video .dark .card,
-.bg-type-video .dark .glass-card {
   background-color: rgba(11, 11, 14, 0.45) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  box-shadow: none;
 }
 
 /* Glassmorphic preview containers in StudyRoom */
-.bg-type-video.dark .bg-ts-surface.dark\:bg-ts-navy-900,
-.bg-type-video .dark .bg-ts-surface.dark\:bg-ts-navy-900 {
+.dark .bg-ts-surface.dark\:bg-ts-navy-900 {
   background-color: rgba(11, 11, 14, 0.45) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(16px);

@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
 type Language = 'zh' | 'en';
-export type BackgroundType = 'threads' | 'video' | 'solid';
 
 interface SettingsContextType {
   theme: Theme;
@@ -13,8 +12,6 @@ interface SettingsContextType {
   setFontSize: (size: number) => void;
   language: Language;
   setLanguage: (lang: Language) => void;
-  backgroundType: BackgroundType;
-  setBackgroundType: (bg: BackgroundType) => void;
   resetSettings: () => void;
 }
 
@@ -32,9 +29,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
   const [language, setLanguage] = useState<Language>(
     () => (localStorage.getItem('ts-lang') as Language) || 'en'
-  );
-  const [backgroundType, setBackgroundType] = useState<BackgroundType>(
-    () => (localStorage.getItem('ts-bg-type') as BackgroundType) || 'threads'
   );
 
   // Apply Theme
@@ -76,17 +70,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
   }, [language]);
 
-  // Apply Background Type
-  useEffect(() => {
-    localStorage.setItem('ts-bg-type', backgroundType);
-  }, [backgroundType]);
-
   const resetSettings = () => {
     setTheme('dark');
     setAccentColor('#B1555A');
     setFontSize(100);
     setLanguage('en');
-    setBackgroundType('threads');
   };
 
   return (
@@ -95,7 +83,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       accentColor, setAccentColor,
       fontSize, setFontSize,
       language, setLanguage,
-      backgroundType, setBackgroundType,
       resetSettings
     }}>
       {children}
