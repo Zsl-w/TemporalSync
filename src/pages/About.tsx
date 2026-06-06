@@ -7,7 +7,7 @@ import { SplitText } from '../components/SplitText';
 
 export const About = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { language } = useSettings();
+  const { language, backgroundType } = useSettings();
 
   const heroTitle =
     language === 'zh'
@@ -23,9 +23,13 @@ export const About = () => {
     <div ref={containerRef} className="relative flex flex-col overflow-hidden">
       <section className="relative z-10 min-h-screen overflow-hidden px-6 pb-10 pt-24 md:px-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_23%_34%,rgba(255,255,255,0.14),transparent_27%),radial-gradient(circle_at_76%_46%,rgba(255,106,61,0.10),transparent_31%),linear-gradient(110deg,rgba(255,255,255,0.06),transparent_38%,rgba(255,255,255,0.04))]" />
+          {backgroundType !== 'video' && (
+            <>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_23%_34%,rgba(255,255,255,0.14),transparent_27%),radial-gradient(circle_at_76%_46%,rgba(255,106,61,0.10),transparent_31%),linear-gradient(110deg,rgba(255,255,255,0.06),transparent_38%,rgba(255,255,255,0.04))]" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_18%,rgba(0,0,0,0.30)_68%,rgba(0,0,0,0.82)_100%)]" />
+            </>
+          )}
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:96px_96px] opacity-35" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_18%,rgba(0,0,0,0.30)_68%,rgba(0,0,0,0.82)_100%)]" />
           <div className="absolute left-[-8%] top-[17%] h-[58vh] w-[48vw] rotate-[-11deg] rounded-full border border-white/10 blur-[1px]" />
           <div className="absolute left-[18%] top-[11%] h-[82vh] w-[1px] rotate-[72deg] bg-white/12" />
         </div>

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Moon, Sun, Monitor, Type, Palette, CheckCircle2, RotateCcw, User as UserIcon, LogOut, ShieldCheck, Mail, Globe } from 'lucide-react';
+import { Moon, Sun, Monitor, Type, Palette, CheckCircle2, RotateCcw, User as UserIcon, LogOut, ShieldCheck, Mail, Globe, Video, Activity, Layers } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { UI_CLASSES } from '../constants/ui';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 
 export const SettingsPage = () => {
-  const { theme, setTheme, accentColor, setAccentColor, fontSize, setFontSize, language, setLanguage, resetSettings } = useSettings();
+  const { theme, setTheme, accentColor, setAccentColor, fontSize, setFontSize, language, setLanguage, backgroundType, setBackgroundType, resetSettings } = useSettings();
   const { user, signOut } = useAuth();
   const [saved, setSaved] = useState(false);
 
@@ -103,6 +103,43 @@ export const SettingsPage = () => {
                 theme === mode.id ? "text-ts-primary" : "text-ts-neutral-400"
               )}>
                 {mode.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Background Mode */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-2 px-1">
+          <Palette size={14} className="text-ts-primary" />
+          <h2 className="text-[11px] font-black text-ts-neutral-400 uppercase tracking-widest">背景模式</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            { id: 'threads', label: '交互线条', icon: <Activity size={20} /> },
+            { id: 'video', label: '视频背景', icon: <Video size={20} /> },
+            { id: 'solid', label: '纯色背景', icon: <Layers size={20} /> },
+          ].map((bg) => (
+            <button 
+              key={bg.id}
+              onClick={() => setBackgroundType(bg.id as any)}
+              className={cn(
+                "bg-ts-surface border-2 rounded-[12px] flex flex-col items-center justify-center gap-4 h-32 p-4 transition-all group",
+                backgroundType === bg.id ? "border-ts-primary shadow-xl shadow-ts-primary/10" : "border-ts-hairline hover:border-ts-muted-soft"
+              )}
+            >
+              <div className={cn(
+                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
+                backgroundType === bg.id ? "bg-ts-primary text-white rotate-6" : "bg-ts-surface-elevated text-ts-neutral-400 group-hover:scale-110"
+              )}>
+                {bg.icon}
+              </div>
+              <span className={cn(
+                "text-[12px] font-black uppercase tracking-widest",
+                backgroundType === bg.id ? "text-ts-primary" : "text-ts-neutral-400"
+              )}>
+                {bg.label}
               </span>
             </button>
           ))}

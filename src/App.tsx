@@ -2,11 +2,13 @@ import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
-import { SettingsProvider } from './context/SettingsContext';
+import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { Loader2 } from 'lucide-react';
 import { prefetchNews } from './services/newsService';
 import Threads from './components/Threads';
+import VideoBackground from './components/VideoBackground';
 import { AnimatePresence, motion } from 'motion/react';
+import { cn } from './lib/utils';
 
 const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
 const HotTopics = lazy(() => import('./pages/HotTopics').then(m => ({ default: m.HotTopics })));
@@ -31,19 +33,25 @@ const NewsPrefetcher = () => {
 const AnimatedAppContent = () => {
   const location = useLocation();
   const [showContact, setShowContact] = React.useState(false);
+  const { backgroundType } = useSettings();
 
   return (
-    <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
+    <div className={cn("min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas", `bg-type-${backgroundType}`)}>
       <NewsPrefetcher />
-      {/* Background Threads WebGL Canvas */}
+      {/* Background Layer */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <Threads
-          amplitude={1.0}
-          distance={0.3}
-          enableMouseInteraction={true}
-          color={[1, 1, 1]}
-          className="absolute inset-0 opacity-80 dark:opacity-70"
-        />
+        {backgroundType === 'threads' && (
+          <Threads
+            amplitude={1.0}
+            distance={0.3}
+            enableMouseInteraction={true}
+            color={[1, 1, 1]}
+            className="absolute inset-0 opacity-80 dark:opacity-70"
+          />
+        )}
+        {backgroundType === 'video' && (
+          <VideoBackground className="absolute inset-0" />
+        )}
       </div>
 
       <div className="atmosphere-bg" />

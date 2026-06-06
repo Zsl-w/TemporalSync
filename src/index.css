@@ -47,10 +47,10 @@
   --color-ts-rose-100: #fde8e8;
 
   /* Semantic roles - premium black and white defaults */
-  --color-ts-canvas: #050505;
+  --color-ts-canvas: #0B0B0E;
   --color-ts-surface: #121212;
   --color-ts-surface-elevated: #1a1a1a;
-  --color-ts-ink: #fbfbfd;
+  --color-ts-ink: #F3F4F6;
   --color-ts-body: #eef0f5;
   --color-ts-muted: #c4c8d1;
   --color-ts-muted-soft: #9aa1ad;
@@ -102,7 +102,7 @@
 @layer base {
   html {
     scrollbar-gutter: stable;
-    background-color: #050505;
+    background-color: #0B0B0E;
   }
   html.light {
     background-color: #ffffff;
@@ -112,7 +112,7 @@
     overflow-x: hidden;
   }
   #root {
-    background-color: #050505;
+    background-color: #0B0B0E;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -198,7 +198,7 @@
 /* Dark mode overrides */
 .dark body,
 .dark .atmosphere-bg {
-  background-color: #050505;
+  background-color: #0B0B0E;
 }
 
 .dark .glass-card,
@@ -206,6 +206,26 @@
   background-color: #121212;
   border-color: #222225;
   box-shadow: none;
+}
+
+/* Glassmorphic card styling when video background is active */
+.bg-type-video.dark .card,
+.bg-type-video.dark .glass-card,
+.bg-type-video .dark .card,
+.bg-type-video .dark .glass-card {
+  background-color: rgba(11, 11, 14, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Glassmorphic preview containers in StudyRoom */
+.bg-type-video.dark .bg-ts-surface.dark\:bg-ts-navy-900,
+.bg-type-video .dark .bg-ts-surface.dark\:bg-ts-navy-900 {
+  background-color: rgba(11, 11, 14, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .dark .glass-panel {

@@ -10,3 +10,6 @@ coverage/
 .history/
 extracted_0.png
 
+# Large assets
+public/assets/background.mp4
+
