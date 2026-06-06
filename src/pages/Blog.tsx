@@ -29,7 +29,8 @@ import {
   Sparkles,
   Upload,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Search
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
@@ -171,6 +172,18 @@ export const Blog = () => {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'list' | 'detail' | 'create' | 'edit'>('list');
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    const queryLower = searchQuery.toLowerCase().trim();
+    return posts.filter(post => 
+      post.title.toLowerCase().includes(queryLower) ||
+      post.summary.toLowerCase().includes(queryLower) ||
+      getPlainText(post.content).toLowerCase().includes(queryLower) ||
+      post.tags.some(tag => tag.toLowerCase().includes(queryLower))
+    );
+  }, [posts, searchQuery]);
   
   // Editor inputs
   const [title, setTitle] = useState('');
@@ -618,17 +631,36 @@ export const Blog = () => {
 
       {/* VIEW: Blog List */}
       {view === 'list' && (
-        <div className="relative pt-4">
+        <div className="relative pt-4 space-y-6">
+          {posts.length > 0 && (
+            <div className="flex justify-end w-full max-w-[1200px] mx-auto px-4 relative z-20">
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-muted-soft" size={16} />
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-ts-surface-elevated/40 backdrop-blur-md text-ts-ink border border-ts-hairline pl-10 pr-4 h-11 rounded-[8px] text-xs font-semibold focus:bg-ts-surface/60 focus:border-ts-primary outline-none transition-all placeholder:text-ts-muted-soft w-full shadow-inner"
+                  placeholder={language === 'zh' ? '搜索文章标题、内容或标签...' : 'Search posts, content or tags...'}
+                />
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="flex items-center justify-center p-24">
               <Loader2 size={32} className="animate-spin text-ts-primary" />
             </div>
-          ) : posts.length > 0 ? (
-            <div className="relative w-full max-w-5xl mx-auto py-10">
+          ) : posts.length === 0 ? (
+            <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40">
+              <BookOpen size={48} className="text-ts-muted mb-4" />
+              <p className="text-sm font-bold text-ts-ink dark:text-white uppercase tracking-wider">{t.empty}</p>
+            </div>
+          ) : filteredPosts.length > 0 ? (
+            <div className="relative w-full max-w-[1200px] mx-auto py-10">
               {/* Centered vertical timeline on desktop, left-aligned on mobile */}
               <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2 bg-ts-hairline dark:bg-ts-navy-800/40" />
 
-              {posts.map((post, index) => {
+              {filteredPosts.map((post, index) => {
                 const isEven = index % 2 === 0;
                 const bodyPreview = getPlainText(post.content);
                 return (
@@ -696,8 +728,8 @@ export const Blog = () => {
 
                           {/* Body Preview */}
                           {bodyPreview && (
-                            <p className="text-ts-muted dark:text-ts-neutral-400 text-[11px] leading-relaxed line-clamp-2 font-normal opacity-80">
-                              {bodyPreview.slice(0, 140)}{bodyPreview.length > 140 ? '...' : ''}
+                            <p className="text-ts-muted dark:text-ts-neutral-400 text-[11px] leading-relaxed line-clamp-4 font-normal opacity-80">
+                              {bodyPreview.slice(0, 240)}{bodyPreview.length > 240 ? '...' : ''}
                             </p>
                           )}
                         </div>
@@ -752,9 +784,17 @@ export const Blog = () => {
               })}
             </div>
           ) : (
-            <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40">
-              <BookOpen size={48} className="text-ts-muted mb-4" />
-              <p className="text-sm font-bold text-ts-ink dark:text-white uppercase tracking-wider">{t.empty}</p>
+            <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40 max-w-[1200px] mx-auto">
+              <Search size={48} className="text-ts-muted mb-4" />
+              <p className="text-sm font-bold text-ts-ink dark:text-white uppercase tracking-wider">
+                {language === 'zh' ? '没有找到相关的博客文章。' : 'No matching blog posts found.'}
+              </p>
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="mt-6 px-6 py-2.5 bg-ts-primary text-white rounded-[6px] text-xs font-semibold hover:bg-ts-primary-hover transition-all shadow-sm cursor-pointer"
+              >
+                {language === 'zh' ? '清空搜索词' : 'Clear Search Query'}
+              </button>
             </div>
           )}
         </div>
