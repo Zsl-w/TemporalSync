@@ -32,11 +32,11 @@ interface NewsItem {
 }
 
 const BRAND_COLORS = {
-  primary: '#B1555A',
-  navy: '#143559',
-  success: '#2d7a4f',
-  warning: '#c48800',
-  muted: '#5B6F90'
+  primary: '#FF6B35',
+  navy: '#8c5a3a',
+  success: '#5a9e6f',
+  warning: '#d4a44a',
+  muted: '#7a7068'
 };
 
 export const Dashboard = () => {

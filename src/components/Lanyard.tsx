@@ -13,6 +13,9 @@ import * as THREE from 'three';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
+const MeshLineGeometryTag = 'meshLineGeometry' as any;
+const MeshLineMaterialTag = 'meshLineMaterial' as any;
+
 interface LanyardProps {
   position?: [number, number, number];
   gravity?: [number, number, number];
@@ -348,8 +351,8 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         </RigidBody>
       </group>
       <mesh ref={band}>
-        <meshLineGeometry />
-        <meshLineMaterial
+        <MeshLineGeometryTag />
+        <MeshLineMaterialTag
           color="white"
           depthTest={false}
           resolution={isMobile ? [1000, 2000] : [1000, 1000]}

@@ -590,11 +590,11 @@ export const Blog = () => {
               </div>
               <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-6">
                 <span className="text-ts-primary block">{t.title}</span>
-                <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] block mt-2">
+                <span className="text-[#f0e8e0] drop-shadow-[0_0_15px_rgba(255,200,160,0.08)] block mt-2">
                   Sync Thoughts.
                 </span>
               </h1>
-              <p className="text-ts-neutral-400 dark:text-ts-neutral-300 text-[15px] font-medium max-w-md leading-relaxed">
+              <p className="text-ts-muted text-[15px] font-medium max-w-md leading-relaxed">
                 {t.subtitle}
               </p>
             </div>
@@ -653,7 +653,7 @@ export const Blog = () => {
           ) : posts.length === 0 ? (
             <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40">
               <BookOpen size={48} className="text-ts-muted mb-4" />
-              <p className="text-sm font-bold text-ts-ink dark:text-white uppercase tracking-wider">{t.empty}</p>
+              <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{t.empty}</p>
             </div>
           ) : filteredPosts.length > 0 ? (
             <div className="relative w-full max-w-[1200px] mx-auto py-10">
@@ -698,7 +698,7 @@ export const Blog = () => {
 
                         <div className="space-y-2.5 flex-1 relative z-10">
                           {/* Meta Info */}
-                          <div className="flex flex-wrap items-center gap-2.5 text-[8px] md:text-[9px] text-ts-muted dark:text-ts-neutral-400 font-bold uppercase tracking-wider font-mono">
+                          <div className="flex flex-wrap items-center gap-2.5 text-[8px] md:text-[9px] text-ts-muted font-bold uppercase tracking-wider font-mono">
                             <div className="flex items-center gap-1.5">
                               <Calendar size={10} className="text-ts-muted-soft group-hover/row:text-white transition-colors" />
                               <span>{formatDate(post.createdAt)}</span>
@@ -718,7 +718,7 @@ export const Blog = () => {
                           {/* Title */}
                           <button
                             onClick={() => { setSelectedPost(post); setView('detail'); }}
-                            className="text-left block group/title text-base md:text-lg font-bold text-ts-ink dark:text-white leading-snug transition-colors cursor-pointer"
+                            className="text-left block group/title text-base md:text-lg font-bold text-ts-ink leading-snug transition-colors cursor-pointer"
                           >
                             <span className="relative inline-block hover:text-white">
                               {post.title}
@@ -728,7 +728,7 @@ export const Blog = () => {
 
                           {/* Body Preview */}
                           {bodyPreview && (
-                            <p className="text-ts-muted dark:text-ts-neutral-400 text-[11px] leading-relaxed line-clamp-4 font-normal opacity-80">
+                            <p className="text-ts-muted text-[11px] leading-relaxed line-clamp-4 font-normal opacity-80">
                               {bodyPreview.slice(0, 240)}{bodyPreview.length > 240 ? '...' : ''}
                             </p>
                           )}
@@ -786,7 +786,7 @@ export const Blog = () => {
           ) : (
             <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40 max-w-[1200px] mx-auto">
               <Search size={48} className="text-ts-muted mb-4" />
-              <p className="text-sm font-bold text-ts-ink dark:text-white uppercase tracking-wider">
+              <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">
                 {language === 'zh' ? '没有找到相关的博客文章。' : 'No matching blog posts found.'}
               </p>
               <button 
@@ -835,7 +835,7 @@ export const Blog = () => {
 
           {/* Article Header */}
           <div className="space-y-4">
-            <h1 className="text-3xl md:text-5xl font-display font-black text-ts-ink dark:text-white leading-tight tracking-tight">
+            <h1 className="text-3xl md:text-5xl font-display font-black text-ts-ink leading-tight tracking-tight">
               {selectedPost.title}
             </h1>
 
@@ -854,15 +854,15 @@ export const Blog = () => {
 
           {/* Article Content Renders HTML compilation from Markdown */}
           <div 
-            className="blog-content prose dark:prose-invert max-w-none text-sm leading-relaxed text-ts-body dark:text-ts-neutral-300 space-y-4
-              [&>h1]:text-2xl [&>h1]:font-black [&>h1]:text-ts-ink [&>h1]:dark:text-white [&>h1]:mt-8 [&>h1]:mb-4
-              [&>h2]:text-xl [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:dark:text-white [&>h2]:mt-6 [&>h2]:mb-3
-              [&>h3]:text-lg [&>h3]:font-bold [&>h3]:text-ts-ink [&>h3]:dark:text-white [&>h3]:mt-4 [&>h3]:mb-2
+            className="blog-content prose dark:prose-invert max-w-none text-sm leading-relaxed text-ts-body space-y-4
+              [&>h1]:text-2xl [&>h1]:font-black [&>h1]:text-ts-ink [&>h1]:mt-8 [&>h1]:mb-4
+              [&>h2]:text-xl [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:mt-6 [&>h2]:mb-3
+              [&>h3]:text-lg [&>h3]:font-bold [&>h3]:text-ts-ink [&>h3]:mt-4 [&>h3]:mb-2
               [&>p]:mb-4 [&>p]:leading-relaxed
               [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ul]:space-y-1.5
               [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>ol]:space-y-1.5
-              [&>li]:text-ts-body [&>li]:dark:text-ts-neutral-300
-              [&>blockquote]:border-l-4 [&>blockquote]:border-ts-primary [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-ts-muted [&>blockquote]:dark:text-ts-neutral-400 [&>blockquote]:my-4
+              [&>li]:text-ts-body
+              [&>blockquote]:border-l-4 [&>blockquote]:border-ts-primary [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-ts-muted [&>blockquote]:my-4
               [&>pre]:bg-ts-surface-elevated [&>pre]:dark:bg-ts-navy-800 [&>pre]:p-4 [&>pre]:rounded-[8px] [&>pre]:overflow-x-auto [&>pre]:border [&>pre]:border-ts-hairline [&>pre]:dark:border-ts-navy-700 [&>pre]:my-4 [&>pre]:font-mono [&>pre]:text-xs
               [&>code]:font-mono [&>code]:bg-ts-surface-elevated [&>code]:dark:bg-ts-navy-800 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-ts-primary [&>code]:text-xs [&>code]:font-bold"
             dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
@@ -976,7 +976,7 @@ export const Blog = () => {
               {/* Editor Workspace (Markdown Content textarea & Preview pane) */}
               <div className="md:col-span-2 flex flex-col md:flex-row gap-4 h-[550px]">
                 {/* Editor Textarea */}
-                <div className="flex-1 flex flex-col border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[12px] overflow-hidden">
+                <div className="card flex-1 flex flex-col border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[12px] overflow-hidden">
                   <div className="bg-ts-surface-elevated dark:bg-ts-navy-800/50 px-4 py-2 border-b border-ts-hairline dark:border-ts-navy-700 text-[10px] font-bold text-ts-muted uppercase tracking-wider font-mono">
                     {t.editTab}
                   </div>
@@ -984,22 +984,22 @@ export const Blog = () => {
                     required
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    className="flex-1 w-full p-4 text-xs font-mono bg-transparent text-ts-ink dark:text-ts-neutral-200 resize-none outline-none leading-relaxed border-none focus:ring-0"
+                    className="flex-1 w-full p-4 text-xs font-mono bg-transparent text-ts-ink resize-none outline-none leading-relaxed border-none focus:ring-0"
                     placeholder="# Hello World&#10;&#10;Write your post using Markdown formatting..."
                   />
                 </div>
 
                 {/* Markdown Preview */}
-                <div className="flex-1 flex flex-col border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[12px] overflow-hidden">
+                <div className="card flex-1 flex flex-col border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[12px] overflow-hidden">
                   <div className="bg-ts-surface-elevated dark:bg-ts-navy-800/50 px-4 py-2 border-b border-ts-hairline dark:border-ts-navy-700 text-[10px] font-bold text-ts-muted uppercase tracking-wider font-mono flex items-center gap-1.5">
                     <Eye size={12} />
                     {t.preview}
                   </div>
                   <div className="flex-1 p-6 overflow-y-auto bg-ts-canvas/40 dark:bg-ts-navy-950/25">
                     <div 
-                      className="blog-content prose dark:prose-invert max-w-none text-xs text-left leading-relaxed text-ts-body dark:text-ts-neutral-300 space-y-4
-                        [&>h1]:text-lg [&>h1]:font-black [&>h1]:text-ts-ink [&>h1]:dark:text-white [&>h1]:mt-4 [&>h1]:mb-2 [&>h1]:pb-1 [&>h1]:border-b [&>h1]:border-ts-hairline
-                        [&>h2]:text-base [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:dark:text-white [&>h2]:mt-3 [&>h2]:mb-2
+                      className="blog-content prose dark:prose-invert max-w-none text-xs text-left leading-relaxed text-ts-body space-y-4
+                        [&>h1]:text-lg [&>h1]:font-black [&>h1]:text-ts-ink [&>h1]:mt-4 [&>h1]:mb-2 [&>h1]:pb-1 [&>h1]:border-b [&>h1]:border-ts-hairline
+                        [&>h2]:text-base [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:mt-3 [&>h2]:mb-2
                         [&>p]:mb-3
                         [&>ul]:list-disc [&>ul]:pl-4 [&>ul]:mb-3 [&>ul]:space-y-1
                         [&>ol]:list-decimal [&>ol]:pl-4 [&>ol]:mb-3 [&>ol]:space-y-1

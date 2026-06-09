@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { Loader2 } from 'lucide-react';
 import { prefetchNews } from './services/newsService';
-import VideoBackground from './components/VideoBackground';
+import PixelBlast from './components/PixelBlast';
 import { AnimatePresence, motion } from 'motion/react';
 import { cn } from './lib/utils';
 
@@ -32,13 +32,32 @@ const NewsPrefetcher = () => {
 const AnimatedAppContent = () => {
   const location = useLocation();
   const [showContact, setShowContact] = React.useState(false);
+  const { accentColor } = useSettings();
 
   return (
     <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
       <NewsPrefetcher />
       {/* Background Layer */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <VideoBackground className="absolute inset-0" />
+        <PixelBlast
+          variant="circle"
+          pixelSize={6}
+          color={accentColor}
+          patternScale={3}
+          patternDensity={1.2}
+          pixelSizeJitter={0.5}
+          enableRipples
+          rippleSpeed={0.4}
+          rippleThickness={0.12}
+          rippleIntensityScale={1.5}
+          liquid
+          liquidStrength={0.12}
+          liquidRadius={1.2}
+          liquidWobbleSpeed={5}
+          speed={0.6}
+          edgeFade={0.25}
+          transparent
+        />
       </div>
 
       <div className="atmosphere-bg" />

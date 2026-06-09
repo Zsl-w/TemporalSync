@@ -19,10 +19,10 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem('ts-theme') as Theme) || 'dark'
+    () => (localStorage.getItem('ts-theme') as Theme) || 'light'
   );
   const [accentColor, setAccentColor] = useState(
-    () => localStorage.getItem('ts-accent') || '#B1555A'
+    () => localStorage.getItem('ts-accent') || '#FF6B35'
   );
   const [fontSize, setFontSize] = useState(
     () => parseInt(localStorage.getItem('ts-font-size') || '100')
@@ -31,24 +31,16 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     () => (localStorage.getItem('ts-lang') as Language) || 'en'
   );
 
-  // Apply Theme
+  // Apply Theme (Permanently forced to dark mode for Raycast background)
   useEffect(() => {
-    localStorage.setItem('ts-theme', theme);
+    localStorage.setItem('ts-theme', 'dark');
     const root = window.document.documentElement;
-    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const meta = window.document.getElementById('theme-color-meta');
 
-    if (isDark) {
-      root.classList.add('dark');
-      root.classList.remove('light');
-      root.style.backgroundColor = '#0B0B0E';
-      if (meta) meta.setAttribute('content', '#0B0B0E');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
-      root.style.backgroundColor = '#ffffff';
-      if (meta) meta.setAttribute('content', '#ffffff');
-    }
+    root.classList.add('dark');
+    root.classList.remove('light');
+    root.style.backgroundColor = '#000000';
+    if (meta) meta.setAttribute('content', '#000000');
   }, [theme]);
 
   // Apply Accent Color
@@ -72,7 +64,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const resetSettings = () => {
     setTheme('dark');
-    setAccentColor('#B1555A');
+    setAccentColor('#FF6B35');
     setFontSize(100);
     setLanguage('en');
   };

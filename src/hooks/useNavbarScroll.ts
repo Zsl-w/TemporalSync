@@ -19,11 +19,11 @@ export function useNavbarScroll(navRef: RefObject<HTMLElement>) {
             ? 'rgba(19, 27, 54, 0.9)'
             : 'rgba(248, 246, 244, 0.9)';
           nav.style.backdropFilter = 'blur(12px)';
-          nav.style.WebkitBackdropFilter = 'blur(12px)';
+          (nav.style as any).WebkitBackdropFilter = 'blur(12px)';
         } else {
           nav.style.backgroundColor = '';
           nav.style.backdropFilter = '';
-          nav.style.WebkitBackdropFilter = '';
+          (nav.style as any).WebkitBackdropFilter = '';
         }
       },
     });

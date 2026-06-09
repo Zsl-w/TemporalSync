@@ -177,11 +177,11 @@ export const HotTopics = () => {
             <span className="text-ts-primary block">
               {language === 'zh' ? 'AI热点' : 'AI Hot Topics'}
             </span>
-            <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] block mt-2">
+            <span className="text-[#f0e8e0] drop-shadow-[0_0_15px_rgba(255,200,160,0.08)] block mt-2">
               {language === 'zh' ? '精选.' : 'Curated.'}
             </span>
           </h1>
-          <p className="text-ts-neutral-400 dark:text-ts-neutral-300 text-[15px] font-medium max-w-md leading-relaxed">
+          <p className="text-ts-muted text-[15px] font-medium max-w-md leading-relaxed">
             {t.subtitle}
           </p>
         </div>
@@ -254,7 +254,7 @@ export const HotTopics = () => {
               <div key={i} className="flex gap-6 md:gap-12">
                 <div className="hidden md:block w-16 h-4 bg-ts-surface-elevated rounded mt-6" />
                 <div className="w-3.5 h-3.5 rounded-full bg-ts-surface-elevated border-4 border-ts-canvas mt-6" />
-                <div className="flex-1 bg-ts-surface border border-ts-hairline rounded-[12px] p-8 space-y-4">
+                <div className="card flex-1 bg-ts-surface border border-ts-hairline rounded-[12px] p-8 space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-ts-surface-elevated" />
@@ -286,7 +286,7 @@ export const HotTopics = () => {
                   onClick={() => toggleGroup(group.dateLabel)}
                   className="flex items-center gap-2 select-none pl-6 md:pl-20 hover:text-ts-primary transition-colors duration-200 outline-none group cursor-pointer"
                 >
-                  <span className="text-sm font-bold text-ts-ink dark:text-white tracking-wider group-hover:text-ts-primary transition-colors">
+                  <span className="text-sm font-bold text-ts-ink tracking-wider group-hover:text-ts-primary transition-colors">
                     {group.dateLabel}
                   </span>
                   <svg 
@@ -323,7 +323,7 @@ export const HotTopics = () => {
                         return (
                           <div key={item.link} className="relative flex flex-col md:flex-row gap-4 md:gap-12">
                             {/* Time Column (Left of Timeline) */}
-                            <div className="hidden md:flex md:w-16 items-start justify-end pt-5 text-sm font-bold text-ts-ink dark:text-white font-mono tracking-tight">
+                            <div className="hidden md:flex md:w-16 items-start justify-end pt-5 text-sm font-bold text-ts-ink font-mono tracking-tight">
                               {timeStr}
                             </div>
 
@@ -344,7 +344,7 @@ export const HotTopics = () => {
                                   <div className="flex items-center gap-2">
                                     <AuthorAvatar avatarUrl={item.avatar} source={item.source} />
                                     <div className="flex flex-col">
-                                      <span className="text-xs font-bold text-ts-ink dark:text-white">
+                                      <span className="text-xs font-bold text-ts-ink">
                                         {item.source}
                                       </span>
                                     </div>
@@ -359,12 +359,12 @@ export const HotTopics = () => {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 group/link"
                                   >
-                                    <h3 className="text-base md:text-lg font-bold text-ts-ink dark:text-white leading-snug group-hover/link:text-ts-primary transition-colors">
+                                    <h3 className="text-base md:text-lg font-bold text-ts-ink leading-snug group-hover/link:text-ts-primary transition-colors">
                                       {item.title}
                                     </h3>
                                     <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-primary transition-opacity shrink-0" />
                                   </a>
-                                  <p className="text-ts-body dark:text-ts-neutral-300 text-sm leading-relaxed">
+                                  <p className="text-ts-body text-sm leading-relaxed">
                                     {item.summary}
                                   </p>
                                 </div>
@@ -413,7 +413,7 @@ export const HotTopics = () => {
           /* Empty State */
           <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40">
             <Zap size={48} className="text-ts-muted mb-4" />
-            <p className="text-sm font-bold text-ts-ink dark:text-white uppercase tracking-wider">{t.emptyTitle}</p>
+            <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{t.emptyTitle}</p>
             <p className="text-xs text-ts-muted-soft mt-1">{t.emptyDesc}</p>
             <button 
               onClick={() => { setSearchQuery(''); setSelectedCategory('全部'); }}

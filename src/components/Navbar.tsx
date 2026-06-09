@@ -70,8 +70,8 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
         ref={navRef} 
         className="sticky top-4 mt-4 z-50 w-[calc(100%-2rem)] max-w-7xl mx-auto h-14 border rounded-[12px] shadow-sm transition-all duration-300"
         style={{
-          backgroundColor: isDark ? 'rgba(10, 10, 12, 0.7)' : 'rgba(18, 18, 20, 0.6)',
-          borderColor: isDark ? 'rgba(39, 39, 42, 0.45)' : 'rgba(39, 39, 42, 0.35)',
+          backgroundColor: isDark ? 'rgba(16, 14, 12, 0.75)' : 'rgba(255, 255, 255, 0.5)',
+          borderColor: isDark ? 'rgba(255, 160, 80, 0.10)' : 'rgba(140, 90, 58, 0.12)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)'
         }}
@@ -81,7 +81,7 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
             <NavLink to="/" className="flex items-center gap-3 group">
               <div className="flex items-end gap-[3px] h-7">
                 <div className="w-[3px] h-full bg-ts-primary rounded-full transition-all duration-500 group-hover:h-[60%]" />
-                <div className="w-[3px] h-[60%] bg-[#143559] rounded-full transition-all duration-500 group-hover:h-full" />
+                <div className="w-[3px] h-[60%] bg-[#8c5a3a] rounded-full transition-all duration-500 group-hover:h-full" />
               </div>
               <span className="font-display font-bold text-base text-ts-ink tracking-tight">
                 {language === 'zh' ? '时韵小七 · STUDIO' : 'TSync 7 · STUDIO'}

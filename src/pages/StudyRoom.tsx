@@ -35,7 +35,7 @@ const Md2RedMockup = () => {
   }, [markdown]);
 
   return (
-    <div className="w-full flex flex-col xl:flex-row gap-6 border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[16px] overflow-hidden shadow-lg h-[500px]">
+    <div className="card w-full flex flex-col xl:flex-row gap-6 border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[16px] overflow-hidden shadow-lg h-[500px]">
       {/* Editor Panel (Left/Top) */}
       <div className="flex-1 flex flex-col border-b xl:border-b-0 xl:border-r border-ts-hairline dark:border-ts-navy-700 h-1/2 xl:h-full min-h-0">
         <div className="bg-ts-surface-elevated dark:bg-ts-navy-800/50 px-4 py-2 flex items-center justify-between border-b border-ts-hairline dark:border-ts-navy-700">
@@ -48,7 +48,7 @@ const Md2RedMockup = () => {
         <textarea
           value={markdown}
           onChange={(e) => setMarkdown(e.target.value)}
-          className="flex-1 w-full p-6 text-xs font-mono bg-transparent text-ts-ink dark:text-ts-neutral-200 resize-none outline-none leading-relaxed border-none focus:ring-0"
+          className="flex-1 w-full p-6 text-xs font-mono bg-transparent text-ts-ink resize-none outline-none leading-relaxed border-none focus:ring-0"
           placeholder="在此输入 Markdown..."
         />
       </div>
@@ -156,14 +156,14 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+        <div className="card w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
           <div className="absolute inset-0 bg-[radial-gradient(#7f9b75_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
           <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
             <div className="w-16 h-16 rounded-[20px] bg-[#7f9b75]/10 border border-[#7f9b75]/20 flex items-center justify-center text-[#7f9b75] shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
               <AppWindow size={32} />
             </div>
             <span className="text-xs font-bold text-[#7f9b75] uppercase tracking-[0.2em] font-mono">WeChat Converter</span>
-            <h4 className="text-base font-bold text-ts-ink dark:text-white leading-tight">shiyun-wechat-md</h4>
+            <h4 className="text-base font-bold text-ts-ink leading-tight">shiyun-wechat-md</h4>
             <p className="text-[11px] text-ts-muted max-w-[280px] leading-relaxed">时韵自习室公众号排版利器，一键转换优雅文章排版</p>
           </div>
         </div>
@@ -192,7 +192,7 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+        <div className="card w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
           {/* Animated Matrix/Code effect to represent background daemon */}
           <div className="absolute inset-0 bg-[radial-gradient(#B1555A_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
           <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
@@ -200,7 +200,7 @@ export const StudyRoom = () => {
               <Code size={32} />
             </div>
             <span className="text-xs font-bold text-ts-primary uppercase tracking-[0.2em] font-mono">Daemon Active</span>
-            <h4 className="text-base font-bold text-ts-ink dark:text-white leading-tight">TimeSync background_agent.ts</h4>
+            <h4 className="text-base font-bold text-ts-ink leading-tight">TimeSync background_agent.ts</h4>
             <p className="text-[11px] text-ts-muted max-w-[280px] leading-relaxed">定时资讯聚合与大模型智能处理守护进程，全时段监听数据链</p>
           </div>
         </div>
@@ -240,11 +240,11 @@ export const StudyRoom = () => {
           </div>
           <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-6">
             <span className="text-ts-primary block">{t.title}</span>
-            <span className="text-ts-navy-800 dark:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] block mt-2">
+            <span className="text-[#f0e8e0] drop-shadow-[0_0_15px_rgba(255,200,160,0.08)] block mt-2">
               {language === 'zh' ? '工具与应用.' : 'Lab & Apps.'}
             </span>
           </h1>
-          <p className="text-ts-neutral-400 dark:text-ts-neutral-300 text-[15px] font-medium max-w-md leading-relaxed">
+          <p className="text-ts-muted text-[15px] font-medium max-w-md leading-relaxed">
             {t.subtitle}
           </p>
         </div>
@@ -281,10 +281,10 @@ export const StudyRoom = () => {
                     </span>
                     <Sparkles className="text-ts-primary" size={14} />
                   </div>
-                  <h3 className="text-2xl font-display font-black text-ts-ink dark:text-white leading-tight">
+                  <h3 className="text-2xl font-display font-black text-ts-ink leading-tight">
                     {app.subtitle}
                   </h3>
-                  <p className="text-sm text-ts-muted dark:text-ts-neutral-300 leading-relaxed pt-2">
+                  <p className="text-sm text-ts-muted leading-relaxed pt-2">
                     {app.desc}
                   </p>
                 </div>
@@ -292,7 +292,7 @@ export const StudyRoom = () => {
                 {/* Bullet features */}
                 <ul className="space-y-2.5">
                   {app.features.map((feature, i) => (
-                    <li key={i} className="text-xs font-medium text-ts-body dark:text-ts-neutral-400 flex items-center gap-2">
+                    <li key={i} className="text-xs font-medium text-ts-body flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-ts-primary/80 shrink-0" />
                       {feature}
                     </li>
@@ -327,7 +327,7 @@ export const StudyRoom = () => {
         className="card p-10 flex flex-col items-center text-center max-w-3xl mx-auto border-dashed bg-ts-surface-elevated/40"
       >
         <AppWindow size={36} className="text-ts-primary/45 mb-4 animate-pulse" />
-        <h4 className="text-base font-bold text-ts-ink dark:text-white uppercase tracking-wider">{t.upcomingTitle}</h4>
+        <h4 className="text-base font-bold text-ts-ink uppercase tracking-wider">{t.upcomingTitle}</h4>
         <p className="text-xs text-ts-muted mt-2 max-w-md">{t.upcomingDesc}</p>
       </motion.div>
     </div>

@@ -34,15 +34,15 @@ export const About = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="mb-8 flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.48em] text-white/52"
+              className="mb-8 flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.48em] text-[#9e9488]"
             >
-              <span className="h-px w-12 bg-white/50" />
+              <span className="h-px w-12 bg-[#9e9488]/50" />
               <span>TemporalSync studio</span>
             </motion.div>
 
             <SplitText
               text={heroTitle}
-              className="max-w-[960px] text-left font-sans text-[48px] font-black leading-[1.04] tracking-normal text-white drop-shadow-[0_18px_55px_rgba(0,0,0,0.72)] md:text-[82px] lg:text-[94px]"
+              className="max-w-[960px] text-left font-sans text-[48px] font-black leading-[1.04] tracking-normal text-[#f0e8e0] drop-shadow-[0_18px_55px_rgba(0,0,0,0.72)] md:text-[82px] lg:text-[94px]"
               delay={32}
               duration={0.9}
               ease="power3.out"
@@ -58,7 +58,7 @@ export const About = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.0, delay: 0.25, ease: 'easeOut' }}
-              className="mt-7 max-w-[620px] text-[15px] font-semibold leading-relaxed text-white/72 md:text-lg"
+              className="mt-7 max-w-[620px] text-[15px] font-semibold leading-relaxed text-[#c8bfb4]/90 md:text-lg"
             >
               {heroCopy}
             </motion.p>
@@ -72,7 +72,7 @@ export const About = () => {
               {['AI WATCH', 'WRITING', 'TOOLS', 'STUDIO ID'].map(item => (
                 <span
                   key={item}
-                  className="border border-white/18 bg-white/[0.035] px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-white/74"
+                  className="border border-[#9e9488]/18 bg-[#9e9488]/[0.06] px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-[#c8bfb4]/74"
                 >
                   {item}
                 </span>
@@ -84,7 +84,7 @@ export const About = () => {
             initial={{ opacity: 0, x: 18 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, delay: 0.5, ease: 'easeOut' }}
-            className="absolute right-[5%] top-[3%] hidden max-w-[260px] text-right text-xl font-bold leading-snug text-white/66 lg:block"
+            className="absolute right-[5%] top-[3%] hidden max-w-[260px] text-right text-xl font-bold leading-snug text-[#c8bfb4]/66 lg:block"
           >
             <p>AI signal watcher.</p>
             <p>Writer of systems.</p>
@@ -93,25 +93,25 @@ export const About = () => {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-white/10 px-6 py-8">
+      <footer className="relative z-10 border-t border-[#e8e0d8]/10 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex flex-col items-center gap-2 text-[12px] text-white/52 sm:flex-row sm:gap-4">
+          <div className="flex flex-col items-center gap-2 text-[12px] text-[#9e9488] sm:flex-row sm:gap-4">
             <span>&copy; {new Date().getFullYear()} TemporalSync</span>
             <span className="hidden opacity-30 sm:inline">|</span>
             <a
               href="https://beian.miit.gov.cn/"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-white"
+              className="transition-colors hover:text-[#e8e0d8]"
             >
               渝ICP备2026010591号-1
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-white/52 transition-colors hover:text-white">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-[#9e9488] transition-colors hover:text-[#e8e0d8]">
               <Github size={16} />
             </a>
-            <a href="mailto:hello@example.com" className="text-white/52 transition-colors hover:text-white">
+            <a href="mailto:hello@example.com" className="text-[#9e9488] transition-colors hover:text-[#e8e0d8]">
               <Mail size={16} />
             </a>
           </div>

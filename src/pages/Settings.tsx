@@ -72,44 +72,6 @@ export const SettingsPage = () => {
         </div>
       </section>
 
-      {/* Appearance Mode */}
-      <section className="space-y-6">
-        <div className="flex items-center gap-2 px-1">
-          <Monitor size={14} className="text-ts-primary" />
-          <h2 className="text-[11px] font-black text-ts-neutral-400 uppercase tracking-widest">外观模式</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { id: 'light', label: '浅色模式', icon: <Sun size={20} /> },
-            { id: 'dark', label: '深色模式', icon: <Moon size={20} /> },
-            { id: 'system', label: '跟随系统', icon: <Monitor size={20} /> },
-          ].map((mode) => (
-            <button 
-              key={mode.id}
-              onClick={() => setTheme(mode.id as any)}
-              className={cn(
-                "bg-ts-surface border-2 rounded-[12px] flex flex-col items-center justify-center gap-4 h-32 p-4 transition-all group",
-                theme === mode.id ? "border-ts-primary shadow-xl shadow-ts-primary/10" : "border-ts-hairline hover:border-ts-muted-soft"
-              )}
-            >
-              <div className={cn(
-                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all",
-                theme === mode.id ? "bg-ts-primary text-white rotate-6" : "bg-ts-surface-elevated text-ts-neutral-400 group-hover:scale-110"
-              )}>
-                {mode.icon}
-              </div>
-              <span className={cn(
-                "text-[12px] font-black uppercase tracking-widest",
-                theme === mode.id ? "text-ts-primary" : "text-ts-neutral-400"
-              )}>
-                {mode.label}
-              </span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-
       {/* Language */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 px-1">
@@ -159,7 +121,7 @@ export const SettingsPage = () => {
             </div>
           </div>
           <div className="flex gap-4">
-            {['#B1555A', '#143559', '#DB8384', '#742D36', '#43597C'].map(color => (
+            {['#FF6B35', '#ff9aa5', '#f7d070', '#85e3b2', '#c084fc'].map(color => (
               <button 
                 key={color} 
                 onClick={() => setAccentColor(color)}
