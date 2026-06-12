@@ -106,6 +106,20 @@ export const About = () => {
             >
               渝ICP备2026010591号-1
             </a>
+            <span className="hidden opacity-30 sm:inline">|</span>
+            <a
+              href="https://beian.mps.gov.cn/#/query/webSearch?code=50010602505214"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 transition-colors hover:text-[#e8e0d8]"
+            >
+              <img
+                src="/assets/备案图标.png"
+                alt="公安备案图标"
+                className="h-4 w-4 object-contain"
+              />
+              <span>渝公网安备50010602505214号</span>
+            </a>
           </div>
           <div className="flex items-center gap-4">
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-[#9e9488] transition-colors hover:text-[#e8e0d8]">
