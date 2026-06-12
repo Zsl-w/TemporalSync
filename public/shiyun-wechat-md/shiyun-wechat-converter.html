@@ -234,7 +234,7 @@ function h4(text) {
 function image(alt, src) {
   const safeAlt = escapeHtml(alt || '图片');
   const safeSrc = escapeHtml(src);
-  return `<section style="margin:22px 0;text-align:center;"><img src="${safeSrc}" alt="${safeAlt}" style="display:block;width:100%;max-width:100%;height:auto;border-radius:8px;border:1px solid ${colors.border};"><p style="margin:8px 0 0;color:${colors.muted};font-size:13px;line-height:1.7;">${safeAlt}</p></section>`;
+  return `<section style="margin:22px 0;text-align:center;"><img src="${safeSrc}" alt="${safeAlt}" style="display:block;width:100%;max-width:100%;height:auto;border-radius:8px;border:1px solid ${colors.border};"></section>`;
 }
 
 function quote(lines) {
