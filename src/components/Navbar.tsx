@@ -84,7 +84,7 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
                 <div className="w-[3px] h-[60%] bg-[#8c5a3a] rounded-full transition-all duration-500 group-hover:h-full" />
               </div>
               <span className="font-display font-bold text-base text-ts-ink tracking-tight">
-                {language === 'zh' ? '时韵小七 · STUDIO' : 'TSync 7 · STUDIO'}
+                {language === 'zh' ? '时韵 · STUDIO' : 'TSync · STUDIO'}
               </span>
             </NavLink>
           </div>
