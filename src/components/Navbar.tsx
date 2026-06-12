@@ -70,8 +70,8 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
         ref={navRef} 
         className="sticky top-4 mt-4 z-50 w-[calc(100%-2rem)] max-w-7xl mx-auto h-14 border rounded-[12px] shadow-sm transition-all duration-300"
         style={{
-          backgroundColor: isDark ? 'rgba(16, 14, 12, 0.75)' : 'rgba(255, 255, 255, 0.5)',
-          borderColor: isDark ? 'rgba(255, 160, 80, 0.10)' : 'rgba(140, 90, 58, 0.12)',
+          backgroundColor: 'var(--color-ts-surface)',
+          borderColor: 'var(--color-ts-hairline)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)'
         }}

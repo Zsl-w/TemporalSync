@@ -171,8 +171,6 @@ export const SplitText: React.FC<SplitTextProps> = ({
       textAlign,
       overflow,
       display: 'inline-block',
-      whiteSpace: 'normal',
-      wordWrap: 'break-word',
       willChange: 'transform, opacity'
     };
     const classes = `split-parent ${className}`;

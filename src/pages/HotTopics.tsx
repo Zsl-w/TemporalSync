@@ -29,7 +29,7 @@ const AuthorAvatar = ({ avatarUrl, source }: { avatarUrl?: string; source: strin
   }
 
   return (
-    <div className="w-8 h-8 rounded-full border border-ts-hairline overflow-hidden flex-shrink-0 bg-ts-surface-elevated">
+    <div className="w-8 h-8 rounded-full border border-ts-shiyun-green/20 overflow-hidden flex-shrink-0 bg-white">
       <img
         src={avatarUrl}
         alt=""
@@ -177,11 +177,11 @@ export const HotTopics = () => {
             <span className="text-ts-primary block">
               {language === 'zh' ? 'AI热点' : 'AI Hot Topics'}
             </span>
-            <span className="text-[#f0e8e0] drop-shadow-[0_0_15px_rgba(255,200,160,0.08)] block mt-2">
+            <span className="text-ts-ink/80 block mt-2">
               {language === 'zh' ? '精选.' : 'Curated.'}
             </span>
           </h1>
-          <p className="text-ts-muted text-[15px] font-medium max-w-md leading-relaxed">
+          <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
             {t.subtitle}
           </p>
         </div>
@@ -254,16 +254,16 @@ export const HotTopics = () => {
               <div key={i} className="flex gap-6 md:gap-12">
                 <div className="hidden md:block w-16 h-4 bg-ts-surface-elevated rounded mt-6" />
                 <div className="w-3.5 h-3.5 rounded-full bg-ts-surface-elevated border-4 border-ts-canvas mt-6" />
-                <div className="card flex-1 bg-ts-surface border border-ts-hairline rounded-[12px] p-8 space-y-4">
+                <div className="shiyun-card flex-1 p-8 space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-ts-surface-elevated" />
-                      <div className="w-20 h-3 bg-ts-surface-elevated rounded" />
+                      <div className="w-8 h-8 rounded-full bg-ts-shiyun-green-soft/60" />
+                      <div className="w-20 h-3 bg-ts-shiyun-green-soft/60 rounded" />
                     </div>
-                    <div className="w-16 h-4 bg-ts-surface-elevated rounded-full" />
+                    <div className="w-16 h-4 bg-ts-shiyun-green-soft/60 rounded-full" />
                   </div>
-                  <div className="w-2/3 h-5 bg-ts-surface-elevated rounded" />
-                  <div className="w-full h-12 bg-ts-surface-elevated rounded" />
+                  <div className="w-2/3 h-5 bg-ts-shiyun-green-soft/60 rounded" />
+                  <div className="w-full h-12 bg-ts-shiyun-green-soft/60 rounded" />
                 </div>
               </div>
             ))}
@@ -338,13 +338,13 @@ export const HotTopics = () => {
 
                             {/* Card container */}
                             <div className="flex-1 pl-8 md:pl-0">
-                              <div className="card p-6 md:p-8 flex flex-col gap-5 hover:shadow-md transition-all duration-300 relative group overflow-hidden bg-ts-surface dark:bg-ts-surface">
+                              <div className="shiyun-card p-6 md:p-8 flex flex-col gap-5 transition-all duration-300 relative group overflow-hidden">
                                 {/* Header: Author + Score */}
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <AuthorAvatar avatarUrl={item.avatar} source={item.source} />
                                     <div className="flex flex-col">
-                                      <span className="text-xs font-bold text-ts-ink">
+                                      <span className="text-xs font-bold text-ts-shiyun-ink">
                                         {item.source}
                                       </span>
                                     </div>
@@ -359,19 +359,19 @@ export const HotTopics = () => {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 group/link"
                                   >
-                                    <h3 className="text-base md:text-lg font-bold text-ts-ink leading-snug group-hover/link:text-ts-primary transition-colors">
+                                    <h3 className="text-base md:text-lg font-bold text-ts-shiyun-ink leading-snug group-hover/link:text-ts-shiyun-green transition-colors">
                                       {item.title}
                                     </h3>
-                                    <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-primary transition-opacity shrink-0" />
+                                    <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-shiyun-green transition-opacity shrink-0" />
                                   </a>
-                                  <p className="text-ts-body text-sm leading-relaxed">
+                                  <p className="text-ts-shiyun-body text-sm leading-relaxed">
                                     {item.summary}
                                   </p>
                                 </div>
 
                                 {/* Image: Display if exists */}
                                 {item.image && (
-                                  <div className="w-full max-w-xl rounded-[8px] overflow-hidden border border-ts-hairline/80">
+                                  <div className="w-full max-w-xl rounded-[8px] overflow-hidden border border-ts-shiyun-green/10">
                                     <img
                                       src={item.image}
                                       alt={item.title}
@@ -390,7 +390,7 @@ export const HotTopics = () => {
                                     {item.tags.map((tag) => (
                                       <span
                                         key={tag}
-                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-medium bg-ts-surface-elevated text-ts-muted border border-ts-hairline"
+                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-shiyun-green-soft text-ts-shiyun-ink/80 border border-ts-shiyun-green/15"
                                       >
                                         {tag}
                                       </span>

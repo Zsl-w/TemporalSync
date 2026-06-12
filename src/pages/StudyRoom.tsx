@@ -240,11 +240,11 @@ export const StudyRoom = () => {
           </div>
           <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-6">
             <span className="text-ts-primary block">{t.title}</span>
-            <span className="text-[#f0e8e0] drop-shadow-[0_0_15px_rgba(255,200,160,0.08)] block mt-2">
+            <span className="text-ts-ink/80 block mt-2">
               {language === 'zh' ? '工具与应用.' : 'Lab & Apps.'}
             </span>
           </h1>
-          <p className="text-ts-muted text-[15px] font-medium max-w-md leading-relaxed">
+          <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
             {t.subtitle}
           </p>
         </div>

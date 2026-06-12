@@ -22,7 +22,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     () => (localStorage.getItem('ts-theme') as Theme) || 'light'
   );
   const [accentColor, setAccentColor] = useState(
-    () => localStorage.getItem('ts-accent') || '#FF6B35'
+    () => localStorage.getItem('ts-accent') || '#B497CF'
   );
   const [fontSize, setFontSize] = useState(
     () => parseInt(localStorage.getItem('ts-font-size') || '100')
@@ -39,8 +39,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     root.classList.add('dark');
     root.classList.remove('light');
-    root.style.backgroundColor = '#000000';
-    if (meta) meta.setAttribute('content', '#000000');
+    root.style.backgroundColor = '#FAF6EE';
+    if (meta) meta.setAttribute('content', '#FAF6EE');
   }, [theme]);
 
   // Apply Accent Color
@@ -64,7 +64,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const resetSettings = () => {
     setTheme('dark');
-    setAccentColor('#FF6B35');
+    setAccentColor('#B497CF');
     setFontSize(100);
     setLanguage('en');
   };
