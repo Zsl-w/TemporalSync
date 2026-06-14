@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <path
+    d="M5.5 6.5H13.5V25.5H5.5V6.5ZM5.5 15.75H13.5"
+    stroke="#2C2621"
+    stroke-width="2.25"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M17 10.25H27M23.25 5.5V26.5"
+    stroke="#2C2621"
+    stroke-width="2.25"
+    stroke-linecap="square"
+  />
+  <path
+    d="M18.25 17.25L20.75 20"
+    stroke="#8C5A3A"
+    stroke-width="2.25"
+    stroke-linecap="round"
+  />
+  <circle cx="23.25" cy="10.25" r="1.75" fill="#B497CF"/>
+</svg>

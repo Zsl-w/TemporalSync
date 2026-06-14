@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
 import { cn } from "../lib/utils";
 import "./content-studio.css";
@@ -193,6 +194,7 @@ const downloadText = (filename: string, content: string, mime = "text/markdown")
 };
 
 export const ContentStudio = () => {
+  const { isAdmin } = useAuth();
   const { language } = useSettings();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [stage, setStage] = useState(2);
@@ -403,6 +405,29 @@ export const ContentStudio = () => {
     4: "每一句判断，都应该知道自己从哪里来。",
     5: "发布以前，先对事实负责。",
   }[stage];
+
+  if (!isAdmin) {
+    return (
+      <div className="studio-shell">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 p-8">
+          <div className="w-20 h-20 rounded-full bg-ts-primary/10 border border-ts-primary/20 flex items-center justify-center text-ts-primary shadow-lg">
+            <ShieldCheck size={36} />
+          </div>
+          <div className="text-center space-y-2 max-w-md">
+            <h2 className="text-xl font-display font-black text-ts-ink">
+              {language === "zh" ? "仅限管理员访问" : "Admin Access Only"}
+            </h2>
+            <p className="text-sm text-ts-muted leading-relaxed">
+              {language === "zh"
+                ? "Content Studio 是管理员专用的深度内容研究工具。请使用管理员账户登录后访问。"
+                : "Content Studio is a research tool for administrators only. Please log in with an admin account."}
+            </p>
+          </div>
+        </div>
+        <span className="studio-language-note">{language === "zh" ? "中文界面" : "Chinese-first beta"}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="studio-shell">

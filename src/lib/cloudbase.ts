@@ -16,6 +16,11 @@ const ENV_ID =
   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_CLOUDBASE_ENV_ID) ||
   "";
 
+// Google Client ID (from CloudBase console → Identity → Google settings)
+const GOOGLE_CLIENT_ID =
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID) ||
+  "";
+
 if (!ENV_ID) {
   console.warn("[CloudBase] VITE_CLOUDBASE_ENV_ID is not set. Auth and database features will be disabled.");
 }
@@ -29,6 +34,7 @@ const app = cloudbase.init({
 export const auth = app.auth({ persistence: "local" });
 
 // --- Database instance ---
+export const db = app.database();
 
 // ============================================================
 // Auth helpers
@@ -61,16 +67,96 @@ export async function handleOAuthCallback(): Promise<any | null> {
 }
 
 /**
- * Sign in with Google OAuth.
- * signInWithOAuth redirects to Google's login page.
- * After Google auth, user is redirected back with a ?code= parameter.
- * The code is then verified by handleOAuthCallback() on page load.
- * Requires: CloudBase console → Identity → Login Methods → Google enabled.
+ * Load Google Identity Services script dynamically.
  */
-export async function signInWithGoogle(): Promise<void> {
-  await auth.signInWithOAuth({ provider: "google" });
-  // This will redirect the browser away, so code after this won't execute.
-  // The login is completed when the user returns via handleOAuthCallback().
+function loadGIS(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if ((window as any).google?.accounts?.id) {
+      resolve();
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Google Identity Services"));
+    document.head.appendChild(script);
+  });
+}
+
+/**
+ * Sign in with Google using Google Identity Services (google.accounts.id).
+ *
+ * Uses google.accounts.id which returns a credential (ID token JWT)
+ * containing the user's identity (name, email, picture).
+ * This ID token is then passed to CloudBase's signInWithIdToken.
+ *
+ * Requires:
+ *   - VITE_GOOGLE_CLIENT_ID in .env
+ *   - CloudBase console → Identity → Login Methods → Google enabled
+ *   - Google Cloud Console → OAuth 2.0 → Authorized JavaScript origins includes current origin
+ */
+export async function signInWithGoogle(): Promise<any> {
+  if (!GOOGLE_CLIENT_ID) {
+    throw new Error(
+      "Google Client ID not configured. Set VITE_GOOGLE_CLIENT_ID in .env (from CloudBase console → Identity → Google settings)."
+    );
+  }
+
+  // Load GIS library
+  await loadGIS();
+
+  // Use google.accounts.id for sign-in (returns credential/ID token)
+  const credential: string = await new Promise((resolve, reject) => {
+    const win = window as any;
+
+    // Stop any existing prompt
+    try { win.google?.accounts?.id?.cancel(); } catch {}
+
+    win.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: (response: any) => {
+        if (response.credential) {
+          resolve(response.credential);
+        } else {
+          reject(new Error("No credential in Google response"));
+        }
+      },
+      cancel_on_tap_outside: false,
+      auto_select: false,
+      context: "signin",
+      ux_mode: "popup",
+    });
+
+    // Trigger One Tap / sign-in prompt
+    win.google.accounts.id.prompt((notification: any) => {
+      if (notification.isNotDisplayed()) {
+        reject(new Error(
+          "Google sign-in prompt not displayed: " +
+          (notification.getNotDisplayedReason?.() || "unknown reason")
+        ));
+      } else if (notification.isSkippedMoment()) {
+        reject(new Error(
+          "Google sign-in skipped: " +
+          (notification.getSkippedReason?.() || "unknown reason")
+        ));
+      }
+      // If notification.isDismissedMoment() - user closed it, just wait
+    });
+  });
+
+  console.log("[CloudBase] Got Google credential (ID token), signing in to CloudBase...");
+
+  // Sign in to CloudBase with the Google ID token
+  await auth.signInWithIdToken({ token: credential });
+
+  // Get the full user info
+  try {
+    return await auth.getUser();
+  } catch {
+    const loginState = await auth.getLoginState();
+    return loginState;
+  }
 }
 
 /**

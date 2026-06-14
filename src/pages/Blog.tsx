@@ -142,13 +142,7 @@ const getReadTime = (content: string, isZh: boolean) => {
   return isZh ? `${minutes} 分钟阅读` : `${minutes} min read`;
 };
 
-export const isAdmin = (user: any) => {
-  if (!user) return false;
-  if (user.isMock) {
-    return user.role === 'Developer';
-  }
-  return user.email === 'wangzouszz@gmail.com';
-};
+// isAdmin is now imported from AuthContext
 
 const getFirstImageUrl = (content: string): string | null => {
   if (!content) return null;
@@ -466,7 +460,7 @@ function convertMarkdownToWechatHtmlInner(markdown: string): string {
 }
 
 export const Blog = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { language } = useSettings();
   const containerRef = useRef<HTMLDivElement>(null);
   const { id } = useParams<{ id?: string }>();
@@ -915,7 +909,7 @@ export const Blog = () => {
               </p>
             </div>
 
-            {isAdmin(user) && (
+            {isAdmin && (
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   type="button"
@@ -1045,7 +1039,7 @@ export const Blog = () => {
 
                         {/* Action buttons */}
                         <div className="flex items-center justify-between">
-                          {isAdmin(user) ? (
+                          {isAdmin ? (
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => handleOpenEdit(post)}
@@ -1110,7 +1104,7 @@ export const Blog = () => {
               {t.back}
             </button>
 
-            {isAdmin(user) && (
+            {isAdmin && (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleOpenEdit(selectedPost)}

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import {
   auth,
   signInWithGoogle,
@@ -39,9 +39,25 @@ export interface CloudbaseUser {
 
 export type AuthUser = CloudbaseUser | MockUser;
 
+/**
+ * Check if the current user has admin privileges.
+ * - Mock users: role === 'Developer'
+ * - Real CloudBase users: email === 'wangzouszz@gmail.com'
+ */
+export function isAdmin(user: AuthUser | null): boolean {
+  if (!user) return false;
+  // Mock user check
+  if ('isMock' in user && user.isMock) {
+    return (user as MockUser).role === 'Developer';
+  }
+  // Real CloudBase user check
+  return user.email === 'wangzouszz@gmail.com';
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
+  isAdmin: boolean;
   loginWithGoogle: () => Promise<void>;
   loginAnonymously: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
@@ -53,6 +69,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
+  isAdmin: false,
   loginWithGoogle: async () => {},
   loginAnonymously: async () => {},
   loginWithEmail: async () => {},
@@ -87,8 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // --- Login methods ---
   const handleLoginWithGoogle = useCallback(async () => {
     localStorage.removeItem('ts-mock-user');
-    // signInWithOAuth redirects to Google, page will reload on return
-    await signInWithGoogle();
+    const rawUser = await signInWithGoogle();
+    const normalized = normalizeUser(rawUser);
+    if (normalized) setUser(normalized);
   }, []);
 
   const handleLoginAnonymously = useCallback(async () => {
@@ -209,11 +227,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  const adminCheck = useMemo(() => isAdmin(user), [user]);
+
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
+        isAdmin: adminCheck,
         loginWithGoogle: handleLoginWithGoogle,
         loginAnonymously: handleLoginAnonymously,
         loginWithEmail: handleLoginWithEmail,

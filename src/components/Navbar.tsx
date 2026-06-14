@@ -78,10 +78,11 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
         <div className="h-full px-6 flex items-center justify-between relative">
           <div className="flex items-center">
             <NavLink to="/" className="flex items-center gap-3 group">
-              <div className="flex items-end gap-[3px] h-7">
-                <div className="w-[3px] h-full bg-ts-primary rounded-full transition-all duration-500 group-hover:h-[60%]" />
-                <div className="w-[3px] h-[60%] bg-[#8c5a3a] rounded-full transition-all duration-500 group-hover:h-full" />
-              </div>
+              <img
+                src="/logo-mark.svg"
+                alt=""
+                className="h-[30px] w-[30px] transition-all duration-500 group-hover:-translate-y-0.5"
+              />
               <span className="font-display font-bold text-base text-ts-ink tracking-tight">
                 {language === 'zh' ? '时韵 · STUDIO' : 'TSync · STUDIO'}
               </span>

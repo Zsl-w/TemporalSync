@@ -491,6 +491,7 @@ function getFallbackEnrichment(title: string, summary: string) {
       // Ensure env vars are available to client code
       define: {
         'import.meta.env.VITE_CLOUDBASE_ENV_ID': JSON.stringify(process.env.VITE_CLOUDBASE_ENV_ID || ''),
+        'import.meta.env.VITE_GOOGLE_CLIENT_ID': JSON.stringify(process.env.VITE_GOOGLE_CLIENT_ID || ''),
         'import.meta.env.MIMO_API_KEY': JSON.stringify(''),
         'import.meta.env.MIMO_BASE_URL': JSON.stringify(''),
         'import.meta.env.MIMO_MODEL': JSON.stringify(''),
