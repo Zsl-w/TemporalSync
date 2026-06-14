@@ -17,7 +17,7 @@ const tabs: { id: LoginTab; label: string; icon: React.ReactNode }[] = [
 ];
 
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-  const { loginAnonymously, loginWithEmail, loginAsMock } = useAuth();
+  const { loginAnonymously, loginWithEmail, verifyEmailAndLogin, loginAsMock } = useAuth();
   const [activeTab, setActiveTab] = useState<LoginTab>('email');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Verification state
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
 
   // Mock inputs
   const [mockName, setMockName] = useState('');
@@ -37,6 +41,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setEmail('');
     setPassword('');
     setShowPassword(false);
+    setNeedsVerification(false);
+    setVerificationCode('');
   };
 
   // --- Admin email login ---
@@ -53,9 +59,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setLoading(true);
     setErrorMsg(null);
     try {
-      await loginWithEmail(email.trim(), password);
-      resetForm();
-      onClose();
+      const result = await loginWithEmail(email.trim(), password);
+      if (result && 'needsVerification' in result && result.needsVerification) {
+        // Account registered, need email verification
+        setNeedsVerification(true);
+        setErrorMsg(null);
+      } else {
+        resetForm();
+        onClose();
+      }
     } catch (err: any) {
       console.error(err);
       const msg = err.message || '';
@@ -66,6 +78,27 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       } else {
         setErrorMsg(msg || '管理员登录失败，请重试。');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- Email verification ---
+  const handleVerifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!verificationCode.trim()) {
+      setErrorMsg('请输入邮箱验证码。');
+      return;
+    }
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      await verifyEmailAndLogin(email.trim(), verificationCode.trim(), password);
+      resetForm();
+      onClose();
+    } catch (err: any) {
+      console.error(err);
+      setErrorMsg(err.message || '验证失败，请检查验证码是否正确。');
     } finally {
       setLoading(false);
     }
@@ -156,7 +189,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           )}
 
           {/* --- Email Tab --- */}
-          {activeTab === 'email' && (
+          {activeTab === 'email' && !needsVerification && (
             <form onSubmit={handleEmailSubmit} className="space-y-4 py-2">
               <div className="text-center space-y-1 mb-2">
                 <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mx-auto shadow-inner mb-2">
@@ -223,6 +256,64 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   <span>管理员登录</span>
                 )}
               </button>
+            </form>
+          )}
+
+          {/* --- Verification Code Step --- */}
+          {activeTab === 'email' && needsVerification && (
+            <form onSubmit={handleVerifySubmit} className="space-y-4 py-2">
+              <div className="text-center space-y-1 mb-2">
+                <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-500 mx-auto shadow-inner mb-2">
+                  <ShieldAlert size={22} />
+                </div>
+                <h3 className="text-sm font-bold text-ts-ink dark:text-white">
+                  验证邮箱
+                </h3>
+                <p className="text-[11px] text-ts-muted leading-relaxed">
+                  验证码已发送至 <strong>{email}</strong>，请查收邮箱并输入 6 位验证码。
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-ts-muted uppercase tracking-wider">验证码</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-ts-muted">
+                    <ShieldAlert size={14} />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="w-full bg-ts-surface text-ts-ink border border-ts-hairline pl-10 pr-4 h-11 rounded-[6px] text-xs font-medium focus:border-ts-primary outline-none transition-all tracking-[0.3em] text-center"
+                    placeholder="000000"
+                    maxLength={6}
+                    autoComplete="one-time-code"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || verificationCode.length < 6}
+                className="w-full flex items-center justify-center gap-2 h-12 bg-green-600 text-white rounded-[8px] text-xs font-bold hover:bg-green-700 transition-all shadow-md disabled:opacity-50 mt-2 cursor-pointer"
+              >
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <span>验证并登录</span>
+                )}
+              </button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => { setNeedsVerification(false); setErrorMsg(null); }}
+                  className="text-[11px] text-ts-muted hover:text-ts-ink font-semibold cursor-pointer bg-transparent border-none p-0"
+                >
+                  返回重新登录
+                </button>
+              </div>
             </form>
           )}
 

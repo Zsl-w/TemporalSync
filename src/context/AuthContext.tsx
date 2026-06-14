@@ -3,8 +3,8 @@ import {
   auth,
   signInWithGoogle,
   signInAnonymously,
-  signUpWithEmail,
   signInWithEmail,
+  verifyAndSignIn,
   signOut as cloudbaseSignOut,
   onAuthStateChanged,
   getCurrentUser,
@@ -30,7 +30,7 @@ export interface CloudbaseUser {
   isAnonymous: boolean;
   loginType?: string;
   isMock?: boolean;
-  // CloudBase specific fields
+  // CloudBase v2+ User fields (id, user_metadata)
   openid?: string;
   unionid?: string;
   nickName?: string;
@@ -41,9 +41,9 @@ export type AuthUser = CloudbaseUser | MockUser;
 
 /**
  * Check if the current user has admin privileges.
- * - Mock users: role === 'Developer'
- * - Real CloudBase users: email === 'wangzouszz@gmail.com'
  */
+const ADMIN_EMAILS = ['wangzouszz@gmail.com', 'wjunli1007@qq.com'];
+
 export function isAdmin(user: AuthUser | null): boolean {
   if (!user) return false;
   // Mock user check
@@ -51,7 +51,7 @@ export function isAdmin(user: AuthUser | null): boolean {
     return (user as MockUser).role === 'Developer';
   }
   // Real CloudBase user check
-  return user.email === 'wangzouszz@gmail.com';
+  return !!user.email && ADMIN_EMAILS.includes(user.email);
 }
 
 interface AuthContextType {
@@ -60,8 +60,8 @@ interface AuthContextType {
   isAdmin: boolean;
   loginWithGoogle: () => Promise<void>;
   loginAnonymously: () => Promise<void>;
-  loginWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmailPassword: (email: string, password: string) => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<{ needsVerification?: boolean } | void>;
+  verifyEmailAndLogin: (email: string, code: string, password: string) => Promise<void>;
   loginAsMock: (name: string, email: string, role: string) => void;
   signOut: () => Promise<void>;
 }
@@ -73,27 +73,42 @@ const AuthContext = createContext<AuthContextType>({
   loginWithGoogle: async () => {},
   loginAnonymously: async () => {},
   loginWithEmail: async () => {},
-  signUpWithEmailPassword: async () => {},
+  verifyEmailAndLogin: async () => {},
   loginAsMock: () => {},
   signOut: async () => {},
 });
 
 /**
  * Normalize a CloudBase user object to our AuthUser shape.
+ *
+ * Handles both v2 (uid, loginType) and v3 (id, is_anonymous, user_metadata) formats.
  */
 function normalizeUser(raw: any): CloudbaseUser | null {
   if (!raw) return null;
+
+  // v3 User type uses `id` and `is_anonymous`
+  const uid = raw.uid || raw.id || raw._id || raw.openid || '';
+  const isAnonymous = raw.is_anonymous === true
+    || raw.loginType === 'ANONYMOUS'
+    || raw.isAnonymous === true
+    || false;
+
+  // v3 user_metadata contains nickName, avatarUrl
+  const meta = raw.user_metadata || {};
+  const nickName = raw.nickName || meta.nickName || meta.name || raw.username || '';
+  const avatarUrl = raw.avatarUrl || meta.avatarUrl || meta.picture || raw.photoURL || null;
+
   return {
-    uid: raw.uid || raw._id || raw.openid || '',
-    displayName: raw.displayName || raw.nickName || raw.username || raw.email || 'Anonymous',
+    uid,
+    displayName: nickName || raw.displayName || raw.email || 'Anonymous',
     email: raw.email || null,
-    photoURL: raw.photoURL || raw.avatarUrl || null,
-    isAnonymous: raw.loginType === 'ANONYMOUS' || raw.isAnonymous || false,
-    loginType: raw.loginType || null,
+    photoURL: avatarUrl,
+    isAnonymous,
+    loginType: raw.loginType || (isAnonymous ? 'ANONYMOUS' : 'EMAIL'),
     openid: raw.openid,
     unionid: raw.unionid,
-    nickName: raw.nickName,
-    avatarUrl: raw.avatarUrl,
+    nickName: nickName || undefined,
+    avatarUrl: avatarUrl || undefined,
   };
 }
 
@@ -118,14 +133,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleLoginWithEmail = useCallback(async (email: string, password: string) => {
     localStorage.removeItem('ts-mock-user');
-    const rawUser = await signInWithEmail(email, password);
-    const normalized = normalizeUser(rawUser);
+    const result = await signInWithEmail(email, password);
+    // If verification is needed, return the state to caller (LoginModal)
+    if (result && typeof result === 'object' && 'needsVerification' in result) {
+      return result;
+    }
+    const normalized = normalizeUser(result);
     if (normalized) setUser(normalized);
   }, []);
 
-  const handleSignUpWithEmail = useCallback(async (email: string, password: string) => {
+  const handleVerifyEmailAndLogin = useCallback(async (email: string, code: string, password: string) => {
     localStorage.removeItem('ts-mock-user');
-    const rawUser = await signUpWithEmail(email, password);
+    const rawUser = await verifyAndSignIn(email, code, password);
     const normalized = normalizeUser(rawUser);
     if (normalized) setUser(normalized);
   }, []);
@@ -151,12 +170,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
-      // Force clear local state even if remote signOut fails
       setUser(null);
     }
   }, []);
 
-  // --- Auth state listener ---
+  // --- Auth state listener & initialization ---
   useEffect(() => {
     // 1. Check if mock user exists in local storage
     const savedMock = localStorage.getItem('ts-mock-user');
@@ -171,7 +189,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    // 2. Check for OAuth callback first (URL has ?code= parameter)
     let cancelled = false;
 
     const initAuth = async () => {
@@ -187,7 +204,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // Otherwise, try to restore existing CloudBase session
+        // Otherwise, try to restore existing CloudBase session via getSession()
         const currentUser = await getCurrentUser();
         if (!cancelled) {
           const normalized = normalizeUser(currentUser);
@@ -217,12 +234,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       cancelled = true;
-      // CloudBase onLoginStateChanged may not support unsubscribe;
-      // the cancelled flag above prevents stale callbacks from updating state.
       try {
         unsubscribe();
       } catch {
-        // Safely ignore - cancelled flag handles cleanup
+        // cancelled flag handles cleanup
       }
     };
   }, []);
@@ -238,7 +253,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loginWithGoogle: handleLoginWithGoogle,
         loginAnonymously: handleLoginAnonymously,
         loginWithEmail: handleLoginWithEmail,
-        signUpWithEmailPassword: handleSignUpWithEmail,
+        verifyEmailAndLogin: handleVerifyEmailAndLogin,
         loginAsMock: handleLoginAsMock,
         signOut: handleSignOut,
       }}

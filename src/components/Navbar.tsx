@@ -79,12 +79,12 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
           <div className="flex items-center">
             <NavLink to="/" className="flex items-center gap-3 group">
               <img
-                src="/logo-mark.svg"
+                src="/logo-mark.png"
                 alt=""
                 className="h-[30px] w-[30px] transition-all duration-500 group-hover:-translate-y-0.5"
               />
               <span className="font-display font-bold text-base text-ts-ink tracking-tight">
-                {language === 'zh' ? '时韵 · STUDIO' : 'TSync · STUDIO'}
+                {language === 'zh' ? '时韵' : 'TSync'}
               </span>
             </NavLink>
           </div>

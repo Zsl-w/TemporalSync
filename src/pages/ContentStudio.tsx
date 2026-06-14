@@ -75,98 +75,6 @@ type StudioResult = {
   };
 };
 
-const SAMPLE_RESULT: StudioResult = {
-  demo: true,
-  notice: "示例研究包 · 点击“返回素材”可使用你自己的链接和 PDF",
-  titleOptions: [
-    "生成式 AI 正在重写开发者的工作，但不是你想的那样",
-    "AI 没有替代程序员，它先改变了“写代码”的含义",
-    "从补全代码到重组工作流：开发者正在经历什么",
-  ],
-  coreThesis:
-    "生成式 AI 正在显著改变开发者的工作方式，但现有证据更支持“任务重组”而非“职业替代”：它提升局部效率，也把注意力推向系统设计、验证与风险判断。",
-  evidence: [
-    {
-      id: "E01",
-      claim: "开发者使用生成式 AI 的比例在 2023 年达到 76%，较 2022 年提升 21 个百分点。",
-      sourceId: "S01",
-      sourceName: "Stack Overflow 2024 开发者调查",
-      locator: "p.12 / 图表 6",
-      quote: "76% of respondents are using or planning to use AI tools in their development process.",
-      confidence: "高",
-      stance: "支持",
-    },
-    {
-      id: "E02",
-      claim: "生成式 AI 主要提升了代码补全的效率，但尚未显著提升系统设计等高阶任务的质量。",
-      sourceId: "S02",
-      sourceName: "GitHub Copilot 经济影响研究",
-      locator: "§3.2 / p.15",
-      quote: "Developers completed the controlled coding task faster with AI assistance.",
-      confidence: "高",
-      stance: "支持",
-    },
-    {
-      id: "E03",
-      claim: "部分团队出现过度依赖 AI 的倾向，导致代码可维护性下降。",
-      sourceId: "S03",
-      sourceName: "Generative AI and Developer Productivity",
-      locator: "p.28 / §4.1",
-      quote: "Local speed gains did not consistently translate into system-level productivity.",
-      confidence: "中",
-      stance: "反对",
-    },
-    {
-      id: "E04",
-      claim: "复杂项目中的 AI 建议可能引入安全隐患，需要人工审核与测试。",
-      sourceId: "S03",
-      sourceName: "Generative AI and Developer Productivity",
-      locator: "p.17 / §2.3",
-      quote: "Generated code required additional review for correctness and security.",
-      confidence: "中",
-      stance: "反对",
-    },
-    {
-      id: "E05",
-      claim: "目前证据不足以证明生成式 AI 会导致开发者岗位大规模消失。",
-      sourceId: "S04",
-      sourceName: "世界经济论坛：就业展望",
-      locator: "p.34 / §5.4",
-      quote: "Long-term occupational effects remain uncertain across sectors.",
-      confidence: "中",
-      stance: "待确认",
-    },
-  ],
-  argumentMap: {
-    supporting: ["E01 使用比例显著上升", "E02 提升编码效率", "E05 尚未导致大规模失业"],
-    opposing: ["E03 过度依赖影响质量", "E04 安全隐患增加"],
-    gaps: ["长期对开发者职业发展的影响数据不足", "不同企业、团队规模的差异缺乏量化研究"],
-  },
-  outline: [
-    { heading: "AI 已经进入工作流", purpose: "确认变化真实存在", evidenceIds: ["E01"] },
-    { heading: "效率提升发生在哪里", purpose: "拆分局部任务与整体产出", evidenceIds: ["E02", "E03"] },
-    { heading: "被重新分配的责任", purpose: "讨论验证、安全和系统判断", evidenceIds: ["E04"] },
-    { heading: "不要提前宣布职业终结", purpose: "明确证据边界", evidenceIds: ["E05"] },
-  ],
-  draft: `# 生成式 AI 正在重写开发者的工作，但不是你想的那样
-
-过去一年，生成式 AI 从实验性工具变成了开发者日常工作流的一部分。Stack Overflow 的调查显示，越来越多开发者已经使用或计划使用 AI 工具。[E01]
-
-最容易被观察到的是局部速度。代码补全和对话式编程工具可以缩短一些边界清晰的编码任务。[E02] 但把这一结果直接外推为“软件开发整体效率大幅提升”，证据还不充分。真实项目还包含需求澄清、系统设计、代码审查、维护和返工，局部提速可能被新的验证成本抵消。[E03]
-
-这意味着 AI 没有简单地拿走工作，而是在重新分配责任。生成代码变得更快，判断代码是否正确、安全、适合当前系统则变得更重要。[E04] 开发者的价值正在从“输入多少代码”转向“能否定义问题、约束系统并承担结果”。
-
-因此，现在就宣布开发者岗位将大规模消失，并不符合现有证据。[E05] 更准确的判断是：AI 首先改变任务结构，然后才可能影响岗位结构。两者之间还有很长的因果链，需要长期数据，而不是几次工具演示来证明。`,
-  quality: {
-    traceableRate: 96,
-    unsupportedClaims: ["“越来越多”应补充明确的时间范围。", "“过去一年”缺少起止日期。"],
-    possibleFabrications: [],
-    overreach: ["不能由局部任务提速直接推导整体生产率提升。"],
-    aiTone: ["减少“真正值得讨论的是”一类模板化转折。"],
-    medicalDisclaimerRequired: false,
-  },
-};
-
 const stages = [
   { id: 1, label: "素材输入", icon: FileText },
   { id: 2, label: "证据图谱", icon: Map },
@@ -197,45 +105,27 @@ export const ContentStudio = () => {
   const { isAdmin } = useAuth();
   const { language } = useSettings();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [stage, setStage] = useState(2);
-  const [topic, setTopic] = useState("生成式 AI 是否正在改变开发者工作？");
-  const [audience, setAudience] = useState("关注 AI 与技术趋势的知识工作者");
-  const [angle, setAngle] = useState("区分局部效率提升与职业替代，呈现支持证据和反方证据");
+  const [stage, setStage] = useState(1);
+  const [topic, setTopic] = useState("");
+  const [audience, setAudience] = useState("");
+  const [angle, setAngle] = useState("");
   const [urlValue, setUrlValue] = useState("");
-  const [sources, setSources] = useState<SourceItem[]>([
-    {
-      id: "S01",
-      type: "url",
-      name: "Stack Overflow 2024 开发者调查报告",
-      url: "https://survey.stackoverflow.co/2024/",
-    },
-    {
-      id: "S02",
-      type: "url",
-      name: "GitHub Copilot 经济影响研究",
-      url: "https://github.blog/",
-    },
-    {
-      id: "S03",
-      type: "pdf",
-      name: "Generative AI and Developer Productivity.pdf",
-    },
-  ]);
+  const [sources, setSources] = useState<SourceItem[]>([]);
   const [styleSamples, setStyleSamples] = useState<string[]>(["", "", ""]);
   const [privacyConfirmed, setPrivacyConfirmed] = useState(false);
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
-  const [result, setResult] = useState<StudioResult>(SAMPLE_RESULT);
-  const [draft, setDraft] = useState(SAMPLE_RESULT.draft);
+  const [result, setResult] = useState<StudioResult | null>(null);
+  const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<"全部" | EvidenceCard["stance"]>("全部");
-  const [selectedEvidence, setSelectedEvidence] = useState<EvidenceCard>(SAMPLE_RESULT.evidence[0]);
+  const [selectedEvidence, setSelectedEvidence] = useState<EvidenceCard | null>(null);
   const [showSourceDetails, setShowSourceDetails] = useState(true);
   const [saved, setSaved] = useState(false);
 
   const visibleEvidence = useMemo(
-    () => result.evidence.filter((item) => filter === "全部" || item.stance === filter),
-    [filter, result.evidence],
+    () => (result?.evidence ?? []).filter((item) => filter === "全部" || item.stance === filter),
+    [filter, result],
   );
 
   const addUrl = async () => {
@@ -266,9 +156,9 @@ export const ContentStudio = () => {
 
     for (const file of fileArray) {
       if (file.type !== "application/pdf") {
-        rejectedReason.push(`“${file.name}”不是 PDF 格式`);
+        rejectedReason.push(`"${file.name}"不是 PDF 格式`);
       } else if (file.size > 5 * 1024 * 1024) {
-        rejectedReason.push(`“${file.name}”大小超过 5 MB`);
+        rejectedReason.push(`"${file.name}"大小超过 5 MB`);
       } else {
         acceptedFiles.push(file);
       }
@@ -312,7 +202,7 @@ export const ContentStudio = () => {
     }
     const unresolvedPdf = sources.find((source) => source.type === "pdf" && !source.file);
     if (unresolvedPdf) {
-      setError(`示例文件“${unresolvedPdf.name}”尚未真正上传。请删除它并上传你的 PDF，或直接查看当前示例研究包。`);
+      setError(`示例文件"${unresolvedPdf.name}"尚未真正上传。请删除它并上传你的 PDF，或直接查看当前示例研究包。`);
       return;
     }
     setLoading(true);
@@ -378,7 +268,7 @@ export const ContentStudio = () => {
   };
 
   const exportMarkdown = () => {
-    const evidenceAppendix = result.evidence
+    const evidenceAppendix = (result?.evidence ?? [])
       .map(
         (item) =>
           `- **${item.id} · ${item.stance} · ${item.confidence}可信度**：${item.claim}\n  - 来源：${item.sourceName}（${item.locator}）\n  - 原文：${item.quote}`,
@@ -494,10 +384,10 @@ export const ContentStudio = () => {
               </div>
             </div>
 
-            {result.notice && stage !== 1 && (
+            {result?.notice && stage !== 1 && (
               <div className="studio-notice">
                 <AlertTriangle size={15} />
-                <span>{result.notice}</span>
+                <span>{result?.notice}</span>
               </div>
             )}
 
@@ -646,6 +536,7 @@ export const ContentStudio = () => {
                   )}
                 </section>
 
+                {result && (
                 <section className="studio-evidence-layout">
                   <div className="studio-panel studio-evidence-panel">
                     <div className="studio-panel-heading">
@@ -717,10 +608,11 @@ export const ContentStudio = () => {
                     </div>
                   </div>
                 </section>
+                )}
               </>
             )}
 
-            {stage === 3 && (
+            {stage === 3 && result && (
               <section className="studio-structure">
                 <div className="studio-thesis-banner">
                   <span>核心判断</span>
@@ -749,7 +641,7 @@ export const ContentStudio = () => {
               </section>
             )}
 
-            {stage === 4 && (
+            {stage === 4 && result && (
               <section className="studio-editor-layout">
                 <div className="studio-editor">
                   <div className="studio-editor-toolbar">
@@ -796,7 +688,7 @@ export const ContentStudio = () => {
               </section>
             )}
 
-            {stage === 5 && (
+            {stage === 5 && result && (
               <section className="studio-quality-layout">
                 <div className="studio-quality-score">
                   <span>TRACEABILITY</span>
@@ -844,7 +736,7 @@ export const ContentStudio = () => {
           </motion.div>
         </main>
 
-        {stage === 2 && (
+        {stage === 2 && result && (
           <aside className="studio-proof-preview">
             <div className="studio-preview-header">
               <div><PenLine size={16} /><span>写作校样</span></div>
@@ -852,14 +744,24 @@ export const ContentStudio = () => {
             </div>
             <article>
               <span>初稿节选</span>
-              <p>
-                过去一年，生成式 AI 从实验性工具变成了开发者日常工作流的一部分。
-                <button onClick={() => setSelectedEvidence(result.evidence[0])}>[E01]</button>
-              </p>
-              <p>
-                这种变化最直观地发生在编码阶段，但它没有直接证明整体生产率提升。
-                <button onClick={() => setSelectedEvidence(result.evidence[2])}>[E03]</button>
-              </p>
+              {result.draft.split("\n").filter(line => line.trim() && !line.startsWith("#")).slice(0, 3).map((line, i) => {
+                // Extract evidence references like [E01]
+                const parts = line.split(/(\[E\d+\])/g);
+                return (
+                  <p key={i}>
+                    {parts.map((part, j) => {
+                      const match = part.match(/^\[(E\d+)\]$/);
+                      if (match) {
+                        const ev = result.evidence.find(e => e.id === match[1]);
+                        return ev ? (
+                          <button key={j} onClick={() => setSelectedEvidence(ev)}>[{match[1]}]</button>
+                        ) : part;
+                      }
+                      return part;
+                    })}
+                  </p>
+                );
+              })}
             </article>
             {selectedEvidence && (
               <div className="studio-selected-evidence">
