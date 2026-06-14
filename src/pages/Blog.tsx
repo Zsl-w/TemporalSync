@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -216,10 +217,271 @@ const CoverPlaceholder = ({ title }: { title: string }) => {
   );
 };
 
+const wxColors = {
+  ink: '#24302f',
+  title: '#223030',
+  body: '#4f5b58',
+  muted: '#7a817b',
+  green: '#7f9b75',
+  greenText: '#3f583f',
+  greenSoft: '#edf4e7',
+  paper: '#fffdf8',
+  blueText: '#426475',
+  blueSoft: '#e7f0f4',
+  warmSoft: '#fffaf2',
+  border: '#eee6d6',
+};
+
+function escapeHtml(value: string): string {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function smartJoinLines(lines: string[]): string {
+  if (lines.length === 0) return '';
+  let result = lines[0];
+  const cjkRegex = /[\u4e00-\u9fa5\u3040-\u30ff\u3400-\u4dbf\uf900-\ufaff\uff00-\uffef]/;
+  for (let i = 1; i < lines.length; i++) {
+    const prev = result.trimEnd();
+    const curr = lines[i].trimStart();
+    if (prev === '' || curr === '') {
+      result += curr;
+      continue;
+    }
+    const lastChar = prev[prev.length - 1];
+    const firstChar = curr[0];
+    if (cjkRegex.test(lastChar) || cjkRegex.test(firstChar)) {
+      result = prev + curr;
+    } else {
+      result = prev + ' ' + curr;
+    }
+  }
+  return result;
+}
+
+function inlineMarkdown(value: string): string {
+  let text = escapeHtml(value);
+  text = text.replace(/`([^`]+)`/g, `<code style="padding:2px 5px;border-radius:4px;background:#eef3ee;color:${wxColors.greenText};font-size:13px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;">$1</code>`);
+  text = text.replace(/\*\*([^*]+)\*\*/g, `<strong style="padding:1px 4px;border-radius:4px;background:${wxColors.greenSoft};color:${wxColors.greenText};font-weight:800;">$1</strong>`);
+  return text;
+}
+
+function paragraph(text: string): string {
+  return `<p style="margin:0 0 16px;color:${wxColors.body};font-size:15px;line-height:1.95;text-align:left;">${inlineMarkdown(text)}</p>`;
+}
+
+function wxH1(text: string): string {
+  return `<h1 style="margin:0 0 12px;color:${wxColors.title};font-size:26px;line-height:1.35;font-weight:800;letter-spacing:0;">${inlineMarkdown(text)}</h1>`;
+}
+
+function wxH2(text: string): string {
+  const match = text.match(/^(\d{1,2})[\s.、-]+(.+)$/);
+  const no = match ? match[1].padStart(2, '0') : '';
+  const title = match ? match[2] : text;
+  if (no) {
+    return `<section style="margin:30px 0 14px;"><p style="margin:0;color:${wxColors.ink};font-size:19px;line-height:1.6;font-weight:800;"><span style="display:inline-block;width:34px;height:34px;margin-right:8px;border-radius:50%;background:${wxColors.blueSoft};color:${wxColors.blueText};text-align:center;line-height:34px;font-family:Georgia,serif;font-size:16px;font-weight:800;">${no}</span>${inlineMarkdown(title)}</p></section>`;
+  }
+  return `<p style="margin:28px 0 12px;color:${wxColors.blueText};font-size:17px;line-height:1.7;font-weight:800;">${inlineMarkdown(text)}</p>`;
+}
+
+function wxH3(text: string): string {
+  return `<p style="margin:24px 0 10px;color:${wxColors.blueText};font-size:16px;line-height:1.7;font-weight:800;">${inlineMarkdown(text)}</p>`;
+}
+
+function wxH4(text: string): string {
+  return `<p style="margin:20px 0 8px;color:${wxColors.greenText};font-size:15px;line-height:1.7;font-weight:800;"><span style="display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:${wxColors.green};vertical-align:middle;"></span>${inlineMarkdown(text)}</p>`;
+}
+
+function image(alt: string, src: string): string {
+  const safeAlt = escapeHtml(alt || '图片');
+  const safeSrc = escapeHtml(src);
+  return `<section style="margin:22px 0;text-align:center;"><img src="${safeSrc}" alt="${safeAlt}" style="display:block;width:100%;max-width:100%;height:auto;border-radius:8px;border:1px solid ${wxColors.border};"><p style="margin:8px 0 0;color:${wxColors.muted};font-size:13px;line-height:1.7;">${safeAlt}</p></section>`;
+}
+
+function quote(lines: string[]): string {
+  const content = inlineMarkdown(smartJoinLines(lines));
+  return `<section style="margin:0 0 24px;padding:14px 15px;border-left:4px solid ${wxColors.green};background:#f5f8f0;border-radius:0 8px 8px 0;"><p style="margin:0;color:#475547;font-size:15px;line-height:1.85;text-align:left;">${content}</p></section>`;
+}
+
+function codeBlock(code: string, lang: string = ''): string {
+  const label = lang ? `示例代码 · ${escapeHtml(lang)}` : '示例代码';
+  const formattedCode = escapeHtml(code.trimEnd())
+    .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+    .replace(/ /g, '&nbsp;')
+    .replace(/\n/g, '<br>');
+  return `<section style="margin:0 0 22px;border:1px solid #dfe5d7;background:#f6f8f2;border-radius:8px;overflow:hidden;"><section style="padding:8px 12px;background:#e9f0e4;border-bottom:1px solid #dfe5d7;"><p style="margin:0;color:#587052;font-size:13px;font-weight:800;line-height:1.6;">${label}</p></section><section style="padding:14px 15px;"><p style="margin:0;color:#40504a;font-size:13px;line-height:1.8;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;white-space:pre-wrap;text-align:left;">${formattedCode}</p></section></section>`;
+}
+
+function list(items: string[]): string {
+  return `<section style="margin:20px 0;padding:14px 15px;border:1px solid #e9e0d0;background:${wxColors.warmSoft};border-radius:8px;">${items.map(item => `<p style="margin:6px 0;color:#5f6964;font-size:15px;line-height:1.85;text-align:left;">· ${inlineMarkdown(item)}</p>`).join('')}</section>`;
+}
+
+function table(lines: string[]): string {
+  const rows = lines
+    .map(line => line.trim())
+    .filter(line => line.startsWith('|'))
+    .map(line => line.replace(/^\||\|$/g, '').split('|').map(cell => cell.trim()))
+    .filter(cells => !cells.every(cell => /^:?-{3,}:?$/.test(cell)));
+  if (!rows.length) return '';
+  const [head, ...body] = rows;
+  const headHtml = head.map(cell => `<th style="padding:11px 10px;background:${wxColors.blueSoft};color:${wxColors.blueText};font-size:14px;line-height:1.6;text-align:left;font-weight:800;border-bottom:1px solid #d8e5ea;">${inlineMarkdown(cell)}</th>`).join('');
+  const bodyHtml = body.map((row, rowIndex) => {
+    const isLast = rowIndex === body.length - 1;
+    return `<tr>${row.map((cell, cellIndex) => `<td style="padding:11px 10px;color:${cellIndex === 0 ? wxColors.ink : '#5f6964'};font-size:14px;line-height:1.75;${cellIndex === 0 ? 'font-weight:700;' : ''}${isLast ? '' : `border-bottom:1px solid ${wxColors.border};`}">${inlineMarkdown(cell)}</td>`).join('')}</tr>`;
+  }).join('');
+  return `<section style="margin:24px 0;"><table style="width:100%;border-collapse:separate;border-spacing:0;border:1px solid #e4ddd0;border-radius:8px;overflow:hidden;background:${wxColors.paper};"><thead><tr>${headHtml}</tr></thead><tbody>${bodyHtml}</tbody></table></section>`;
+}
+
+function hr(): string {
+  return `<section style="margin:30px 0;text-align:center;"><span style="display:inline-block;width:96px;height:1px;background:#d9d2c4;vertical-align:middle;line-height:0;font-size:0;overflow:hidden;">&nbsp;</span></section>`;
+}
+
+function wrapDocumentInner(content: string): string {
+  return `<div style="padding:0 24px 56px;background:${wxColors.paper};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;color:${wxColors.ink};">${content}</div>`;
+}
+
+function convertMarkdownToWechatHtmlInner(markdown: string): string {
+  const lines = String(markdown || '').replace(/\r\n/g, '\n').split('\n');
+  const output: string[] = [];
+  let paragraphLines: string[] = [];
+  let quoteLines: string[] = [];
+  let listItems: string[] = [];
+
+  function flushParagraph() {
+    if (paragraphLines.length) {
+      output.push(paragraph(smartJoinLines(paragraphLines)));
+      paragraphLines = [];
+    }
+  }
+
+  function flushQuote() {
+    if (quoteLines.length) {
+      output.push(quote(quoteLines));
+      quoteLines = [];
+    }
+  }
+
+  function flushList() {
+    if (listItems.length) {
+      output.push(list(listItems));
+      listItems = [];
+    }
+  }
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const trimmed = lines[i].trim();
+
+    if (!trimmed) {
+      flushParagraph();
+      flushQuote();
+      flushList();
+      continue;
+    }
+
+    if (/^---+\s*$/.test(trimmed)) {
+      flushParagraph();
+      flushQuote();
+      flushList();
+      output.push(hr());
+      continue;
+    }
+
+    const fence = trimmed.match(/^```(\w+)?/);
+    if (fence) {
+      flushParagraph();
+      flushQuote();
+      flushList();
+      const lang = fence[1] || '';
+      const codeLines: string[] = [];
+      i += 1;
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i]);
+        i += 1;
+      }
+      output.push(codeBlock(codeLines.join('\n'), lang));
+      continue;
+    }
+
+    if (trimmed.startsWith('|')) {
+      flushParagraph();
+      flushQuote();
+      flushList();
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) {
+        tableLines.push(lines[i]);
+        i += 1;
+      }
+      i -= 1;
+      output.push(table(tableLines));
+      continue;
+    }
+
+    if (trimmed.startsWith('>')) {
+      flushParagraph();
+      flushList();
+      quoteLines.push(trimmed.replace(/^>\s?/, ''));
+      continue;
+    }
+
+    const listMatch = trimmed.match(/^[-*]\s+(.+)$/);
+    if (listMatch) {
+      flushParagraph();
+      flushQuote();
+      listItems.push(listMatch[1]);
+      continue;
+    }
+
+    flushQuote();
+    flushList();
+
+    if (trimmed.startsWith('# ')) {
+      flushParagraph();
+      output.push(wxH1(trimmed.slice(2).trim()));
+      continue;
+    }
+    if (trimmed.startsWith('## ')) {
+      flushParagraph();
+      output.push(wxH2(trimmed.slice(3).trim()));
+      continue;
+    }
+    if (trimmed.startsWith('### ')) {
+      flushParagraph();
+      output.push(wxH3(trimmed.slice(4).trim()));
+      continue;
+    }
+    if (trimmed.startsWith('#### ')) {
+      flushParagraph();
+      output.push(wxH4(trimmed.slice(5).trim()));
+      continue;
+    }
+
+    const imageMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imageMatch) {
+      flushParagraph();
+      output.push(image(imageMatch[1], imageMatch[2]));
+      continue;
+    }
+
+    paragraphLines.push(trimmed);
+  }
+
+  flushParagraph();
+  flushQuote();
+  flushList();
+
+  return wrapDocumentInner(output.join('\n'));
+}
+
 export const Blog = () => {
   const { user } = useAuth();
   const { language } = useSettings();
   const containerRef = useRef<HTMLDivElement>(null);
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
 
   useFloatingOrbs(containerRef);
   useScrollReveal(containerRef);
@@ -242,6 +504,30 @@ export const Blog = () => {
     );
   }, [posts, searchQuery]);
   
+  const existingTags = useMemo(() => {
+    const allTags = posts.flatMap(post => post.tags || []);
+    return Array.from(new Set(allTags)).filter(Boolean);
+  }, [posts]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (id) {
+      const post = posts.find(p => p.id === id);
+      if (post) {
+        setSelectedPost(post);
+        setView('detail');
+      } else {
+        navigate('/writing', { replace: true });
+      }
+    } else {
+      if (view === 'detail') {
+        setSelectedPost(null);
+        setView('list');
+      }
+    }
+  }, [id, posts, loading]);
+
   // Editor inputs
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
@@ -381,8 +667,8 @@ export const Blog = () => {
       setSummary('');
       setTags('');
       setContent('');
-      setView('list');
       await fetchPosts();
+      navigate('/writing');
       setSaving(false);
       return;
     }
@@ -399,8 +685,8 @@ export const Blog = () => {
       setSummary('');
       setTags('');
       setContent('');
-      setView('list');
       await fetchPosts();
+      navigate('/writing');
     } catch (error) {
       console.error('Firestore save failed, saving to localStorage:', error);
       // Fallback
@@ -417,8 +703,8 @@ export const Blog = () => {
       setSummary('');
       setTags('');
       setContent('');
-      setView('list');
       await fetchPosts();
+      navigate('/writing');
     } finally {
       setSaving(false);
     }
@@ -464,9 +750,8 @@ export const Blog = () => {
           localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
         } catch (_) {}
       }
-      setView('list');
-      setSelectedPost(null);
       await fetchPosts();
+      navigate('/writing');
       setSaving(false);
       return;
     }
@@ -481,9 +766,8 @@ export const Blog = () => {
         updatedAt: Timestamp.now()
       });
 
-      setView('list');
-      setSelectedPost(null);
       await fetchPosts();
+      navigate('/writing');
     } catch (error) {
       console.error('Firestore update failed, falling back to local edit:', error);
       // Fallback: update in local storage if not found in Firestore or if auth failed
@@ -504,9 +788,8 @@ export const Blog = () => {
           }
         } catch (_) {}
       }
-      setView('list');
-      setSelectedPost(null);
       await fetchPosts();
+      navigate('/writing');
     } finally {
       setSaving(false);
     }
@@ -526,21 +809,19 @@ export const Blog = () => {
           localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
         } catch (_) {}
       }
-      if (selectedPost?.id === postId) {
-        setSelectedPost(null);
-        setView('list');
-      }
       await fetchPosts();
+      if (selectedPost?.id === postId) {
+        navigate('/writing');
+      }
       return;
     }
 
     try {
       await deleteDoc(doc(db, 'blogs', postId));
-      if (selectedPost?.id === postId) {
-        setSelectedPost(null);
-        setView('list');
-      }
       await fetchPosts();
+      if (selectedPost?.id === postId) {
+        navigate('/writing');
+      }
     } catch (error) {
       console.error('Firestore delete failed, checking local fallback:', error);
       const localBlogsRaw = localStorage.getItem('ts-local-blogs');
@@ -551,11 +832,10 @@ export const Blog = () => {
           localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
         } catch (_) {}
       }
-      if (selectedPost?.id === postId) {
-        setSelectedPost(null);
-        setView('list');
-      }
       await fetchPosts();
+      if (selectedPost?.id === postId) {
+        navigate('/writing');
+      }
     }
   };
 
@@ -757,7 +1037,7 @@ export const Blog = () => {
 
                         {/* Title button */}
                         <button
-                          onClick={() => { setSelectedPost(post); setView('detail'); }}
+                          onClick={() => navigate(`/writing/${post.id}`)}
                           className="text-left block group/title font-serif text-lg font-bold text-ts-ink leading-snug cursor-pointer transition-colors max-h-[48px] overflow-hidden line-clamp-2"
                           title={post.title}
                         >
@@ -808,7 +1088,7 @@ export const Blog = () => {
                           )}
 
                           <button
-                            onClick={() => { setSelectedPost(post); setView('detail'); }}
+                            onClick={() => navigate(`/writing/${post.id}`)}
                             className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-ts-muted hover:text-ts-primary transition-colors group/read cursor-pointer"
                           >
                             <span>{language === 'zh' ? '阅读全文' : 'Read Article'}</span>
@@ -844,7 +1124,7 @@ export const Blog = () => {
           {/* Back button & controls */}
           <div className="flex justify-between items-center pb-4 border-b border-ts-hairline dark:border-ts-navy-700">
             <button
-              onClick={() => { setView('list'); setSelectedPost(null); }}
+              onClick={() => navigate('/writing')}
               className="inline-flex items-center gap-2 text-xs font-bold text-ts-muted hover:text-ts-ink transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
@@ -871,52 +1151,57 @@ export const Blog = () => {
             )}
           </div>
 
-          {/* Article Header */}
-          <div className="space-y-4">
-            <h1 className="text-3xl md:text-5xl font-display font-black text-ts-ink leading-tight tracking-tight">
-              {selectedPost.title}
-            </h1>
+          {/* Shiyun WeChat MD Style Reading Interface */}
+          <div className="w-full bg-[#f3f1ea] p-4 sm:p-6 md:p-8 rounded-[12px] border border-[#eee6d6] shadow-[0_4px_24px_rgba(44,38,33,0.05)] text-left">
+            <article className="max-w-[720px] mx-auto bg-[#fffdf8] rounded-[8px] border border-[#eee6d6] overflow-hidden">
+              {/* Header section (styled inline WeChat-style) */}
+              <div style={{ padding: "28px 24px 0", background: "#fffdf8", color: "#24302f", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif" }}>
+                {/* Top Tags */}
+                <div style={{ margin: "0 0 18px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {selectedPost.tags.length > 0 ? (
+                    selectedPost.tags.map((tag) => (
+                      <span key={tag} style={{ display: "inline-block", padding: "4px 10px", borderRadius: "999px", background: "#edf4e7", color: "#5b7855", fontSize: "13px", fontWeight: 700, lineHeight: 1.6 }}>
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: "999px", background: "#edf4e7", color: "#5b7855", fontSize: "13px", fontWeight: 700, lineHeight: 1.6 }}>
+                      {language === 'zh' ? '自修笔记' : 'Notes'}
+                    </span>
+                  )}
+                </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs text-ts-muted font-medium pt-2 border-b border-ts-hairline/50 pb-6">
-              <span className="flex items-center gap-1">
-                <UserIcon size={14} className="text-ts-primary" />
-                <strong>{t.author}:</strong> {selectedPost.userName}
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-ts-hairline" />
-              <span className="flex items-center gap-1">
-                <Calendar size={14} className="text-ts-primary" />
-                <strong>{t.pubTime}:</strong> {formatDate(selectedPost.createdAt)}
-              </span>
-            </div>
-          </div>
+                {/* Title */}
+                <h1 style={{ margin: "0 0 12px", color: "#223030", fontSize: "26px", lineHeight: 1.35, fontWeight: 800, letterSpacing: 0 }}>
+                  {selectedPost.title}
+                </h1>
 
-          {/* Article Content Renders HTML compilation from Markdown */}
-          <div 
-            className="blog-content prose dark:prose-invert max-w-none text-sm leading-relaxed text-ts-body space-y-4
-              [&>h1]:text-2xl [&>h1]:font-black [&>h1]:text-ts-ink [&>h1]:mt-8 [&>h1]:mb-4
-              [&>h2]:text-xl [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:mt-6 [&>h2]:mb-3
-              [&>h3]:text-lg [&>h3]:font-bold [&>h3]:text-ts-ink [&>h3]:mt-4 [&>h3]:mb-2
-              [&>p]:mb-4 [&>p]:leading-relaxed
-              [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-4 [&>ul]:space-y-1.5
-              [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-4 [&>ol]:space-y-1.5
-              [&>li]:text-ts-body
-              [&>blockquote]:border-l-4 [&>blockquote]:border-ts-primary [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-ts-muted [&>blockquote]:my-4
-              [&>pre]:bg-ts-surface-elevated [&>pre]:dark:bg-ts-navy-800 [&>pre]:p-4 [&>pre]:rounded-[8px] [&>pre]:overflow-x-auto [&>pre]:border [&>pre]:border-ts-hairline [&>pre]:dark:border-ts-navy-700 [&>pre]:my-4 [&>pre]:font-mono [&>pre]:text-xs
-              [&>code]:font-mono [&>code]:bg-ts-surface-elevated [&>code]:dark:bg-ts-navy-800 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-ts-primary [&>code]:text-xs [&>code]:font-bold"
-            dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
-          />
+                {/* Metadata */}
+                <p style={{ margin: "0 0 26px", color: "#7a817b", fontSize: "13px", lineHeight: 1.8 }}>
+                  作者: {selectedPost.userName} / 发布时间: {formatDate(selectedPost.createdAt)} / {getReadTime(selectedPost.content, language === 'zh')}
+                </p>
+              </div>
 
-          {/* Article tags footer */}
-          <div className="flex flex-wrap gap-1.5 pt-8 border-t border-ts-hairline dark:border-ts-navy-700">
-            {selectedPost.tags.map((tag) => (
-              <span 
-                key={tag}
-                className="px-3 py-1 rounded-[4px] text-xs font-semibold bg-ts-surface-elevated text-ts-muted border border-ts-hairline flex items-center gap-1.5"
-              >
-                <Tag size={10} />
-                {tag}
-              </span>
-            ))}
+              {/* WeChat Article Body */}
+              <div 
+                dangerouslySetInnerHTML={{ __html: convertMarkdownToWechatHtmlInner(selectedPost.content) }}
+              />
+
+              {/* Tags footer */}
+              {selectedPost.tags.length > 0 && (
+                <div style={{ padding: "0 24px 28px", background: "#fffdf8", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {selectedPost.tags.map((tag) => (
+                    <span 
+                      key={tag}
+                      style={{ padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: 600, background: "#edf4e7", color: "#3f583f", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                    >
+                      <Tag size={10} />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </article>
           </div>
         </div>
       )}
@@ -927,7 +1212,7 @@ export const Blog = () => {
           {/* Header Bar */}
           <div className="flex justify-between items-center pb-4 border-b border-ts-hairline dark:border-ts-navy-700">
             <button
-              onClick={() => { setView('list'); setSelectedPost(null); }}
+              onClick={() => navigate('/writing')}
               className="inline-flex items-center gap-2 text-xs font-bold text-ts-muted hover:text-ts-ink transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
@@ -988,6 +1273,40 @@ export const Blog = () => {
                     className="w-full bg-ts-surface text-ts-ink border border-ts-hairline pl-4 pr-4 h-11 rounded-[6px] text-xs font-medium focus:border-ts-primary outline-none transition-all"
                     placeholder="e.g. React, Code, AI"
                   />
+                  {existingTags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1.5">
+                      <span className="text-[10px] text-ts-muted mr-1 self-center">
+                        {language === 'zh' ? '已有标签:' : 'Existing tags:'}
+                      </span>
+                      {existingTags.map(tag => {
+                        const currentTagsArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+                        const isSelected = currentTagsArray.includes(tag);
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => {
+                              if (isSelected) {
+                                const nextTags = currentTagsArray.filter(t => t !== tag).join(', ');
+                                setTags(nextTags);
+                              } else {
+                                const nextTags = [...currentTagsArray, tag].join(', ');
+                                setTags(nextTags);
+                              }
+                            }}
+                            className={cn(
+                              "px-2 py-1 rounded-[4px] text-[10px] font-bold border transition-all cursor-pointer",
+                              isSelected 
+                                ? "bg-ts-primary/10 border-ts-primary text-ts-primary" 
+                                : "bg-ts-surface-elevated/40 border-ts-hairline text-ts-muted hover:text-ts-ink"
+                            )}
+                          >
+                            {tag}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4">

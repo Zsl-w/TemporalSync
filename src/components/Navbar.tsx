@@ -95,6 +95,7 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
               <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
               <NavItem to="/work" label={language === 'zh' ? '自习室' : 'WORK'} />
               <NavItem to="/writing" label={language === 'zh' ? '博客' : 'WRITING'} />
+              <NavItem to="/studio" label="STUDIO" />
               <button
                 onClick={() => setShowContact(!showContact)}
                 className={cn(

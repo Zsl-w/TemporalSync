@@ -3,6 +3,7 @@
 
 import * as cheerio from "cheerio";
 import Parser from "rss-parser";
+import { generateContentStudio } from "../../content-studio-core";
 
 const parser = new Parser();
 
@@ -468,6 +469,24 @@ export async function onRequest(context: {
   if (path === "/api/link-metadata") return handleLinkMetadata(url);
   if (path === "/api/avatar") return handleAvatar(url);
   if (path === "/api/ai-news") return handleAINews();
+  if (path === "/api/content-studio/generate" && context.request.method === "POST") {
+    try {
+      const body = await context.request.json();
+      return generateContentStudio(
+        body as any,
+        {
+          apiKey: context.env.MIMO_API_KEY || process.env.MIMO_API_KEY || "",
+          baseUrl: context.env.MIMO_BASE_URL || process.env.MIMO_BASE_URL,
+          model: context.env.MIMO_MODEL || process.env.MIMO_MODEL,
+        },
+      );
+    } catch {
+      return new Response(JSON.stringify({ error: "请求数据格式无效。" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+      });
+    }
+  }
 
   return new Response(JSON.stringify({ error: `Not found: ${path}` }), {
     status: 404,

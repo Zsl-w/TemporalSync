@@ -14,6 +14,7 @@ const HotTopics = lazy(() => import('./pages/HotTopics').then(m => ({ default: m
 const StudyRoom = lazy(() => import('./pages/StudyRoom').then(m => ({ default: m.StudyRoom })));
 const Blog = lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
 const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default: m.SettingsPage })));
+const ContentStudio = lazy(() => import('./pages/ContentStudio').then(m => ({ default: m.ContentStudio })));
 import Lanyard from './components/Lanyard';
 
 const LoadingFallback = () => (
@@ -96,7 +97,9 @@ const AnimatedAppContent = () => {
                 <Route path="/hot" element={<HotTopics />} />
                 <Route path="/work" element={<StudyRoom />} />
                 <Route path="/writing" element={<Blog />} />
+                <Route path="/writing/:id" element={<Blog />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/studio" element={<ContentStudio />} />
               </Routes>
             </Suspense>
           </motion.div>

@@ -64,6 +64,16 @@
 
 在 `主网站-时间同步/` 根目录下，基于 `.env.example` 复制并重命名为 `.env` (或 `.env.local`)，填写您的 Firebase 和 API 配置信息：
 
+Content Studio 使用 Xiaomi MiMo 按量 API。请使用 `sk-` 开头的密钥，不要使用 Token Plan 的 `tp-` 密钥：
+
+```env
+MIMO_API_KEY="sk-替换为你的密钥"
+MIMO_BASE_URL="https://api.xiaomimimo.com/v1"
+MIMO_MODEL="mimo-v2.5-pro"
+```
+
+密钥只应保存在服务端环境变量中，不要添加 `VITE_` 前缀，也不要提交 `.env` 文件。
+
 ```env
 VITE_FIREBASE_API_KEY="您的Firebase API Key"
 VITE_FIREBASE_AUTH_DOMAIN="您的Firebase域名"
