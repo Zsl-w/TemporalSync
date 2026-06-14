@@ -43,18 +43,14 @@ export const googleAuthProvider = auth.weixinAuthProvider
 // ============================================================
 
 /**
- * Sign in with Google OAuth (popup mode).
- * CloudBase supports Google OAuth natively.
+ * Sign in with Google OAuth.
+ * CloudBase uses signInWithOAuth({ provider: 'google' }) for OAuth login.
+ * This triggers a redirect to Google's login page, then returns to the app.
  * Requires: CloudBase console → Identity → Login Methods → Google enabled.
  */
 export async function signInWithGoogle(): Promise<any> {
-  // CloudBase supports OAuth redirect. For popup-like UX we use redirect
-  // and handle the result via getRedirectResult / getLoginState.
-  // Alternative: use custom login with Google token from Firebase Auth compat.
-  await auth.signInWithRedirect({ provider: "google" });
-  const result = await auth.getRedirectResult();
-  if (result.user) return result.user;
-  // Fallback: check current login state
+  await auth.signInWithOAuth({ provider: "google" });
+  // After OAuth redirect returns, check login state
   const loginState = await auth.getLoginState();
   if (loginState) return loginState.user;
   throw new Error("Google login failed - no user returned.");
