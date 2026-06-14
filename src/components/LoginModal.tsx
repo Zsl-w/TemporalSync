@@ -63,10 +63,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setLoading(true);
     setErrorMsg(null);
     try {
-      // CloudBase supports WeChat OAuth on web.
-      // This will redirect to WeChat for authorization and back.
       const { auth } = await import('../lib/cloudbase');
-      await auth.signInWithRedirect({ provider: 'weixin' });
+      await auth.signInWithOAuth({ provider: 'weixin' });
       // After redirect back, AuthContext's onLoginStateChanged will pick up the user
     } catch (err: any) {
       console.error(err);

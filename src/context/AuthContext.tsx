@@ -8,6 +8,7 @@ import {
   signOut as cloudbaseSignOut,
   onAuthStateChanged,
   getCurrentUser,
+  handleOAuthCallback,
 } from '../lib/cloudbase';
 
 // --- Types ---
@@ -86,9 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // --- Login methods ---
   const handleLoginWithGoogle = useCallback(async () => {
     localStorage.removeItem('ts-mock-user');
-    const rawUser = await signInWithGoogle();
-    const normalized = normalizeUser(rawUser);
-    if (normalized) setUser(normalized);
+    // signInWithOAuth redirects to Google, page will reload on return
+    await signInWithGoogle();
   }, []);
 
   const handleLoginAnonymously = useCallback(async () => {
@@ -153,11 +153,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    // 2. Try to restore existing CloudBase session
+    // 2. Check for OAuth callback first (URL has ?code= parameter)
     let cancelled = false;
 
     const initAuth = async () => {
       try {
+        // If returning from OAuth redirect, verify the callback
+        const oauthUser = await handleOAuthCallback();
+        if (!cancelled && oauthUser) {
+          const normalized = normalizeUser(oauthUser);
+          if (normalized) {
+            setUser(normalized);
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Otherwise, try to restore existing CloudBase session
         const currentUser = await getCurrentUser();
         if (!cancelled) {
           const normalized = normalizeUser(currentUser);

@@ -29,31 +29,48 @@ const app = cloudbase.init({
 export const auth = app.auth({ persistence: "local" });
 
 // --- Database instance ---
-export const db = app.database();
-
-// --- Google OAuth Provider ---
-// Requires enabling Google login in CloudBase console:
-// https://tcb.cloud.tencent.com/dev?#/identity/login-manage
-export const googleAuthProvider = auth.weixinAuthProvider
-  ? undefined
-  : undefined; // CloudBase uses auth.signInWithRedirect() for OAuth
 
 // ============================================================
 // Auth helpers
 // ============================================================
 
 /**
+ * Check if current URL contains an OAuth callback (code parameter).
+ * If so, verify the OAuth callback to complete login.
+ * Should be called on page load.
+ */
+export async function handleOAuthCallback(): Promise<any | null> {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  if (!code) return null;
+
+  try {
+    await auth.verifyOAuth({ code });
+    // Clean up URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete("code");
+    url.searchParams.delete("state");
+    window.history.replaceState({}, "", url.pathname + url.hash);
+    // Get the user from login state
+    const loginState = await auth.getLoginState();
+    return loginState?.user ?? null;
+  } catch (e) {
+    console.error("[CloudBase] verifyOAuth failed:", e);
+    return null;
+  }
+}
+
+/**
  * Sign in with Google OAuth.
- * CloudBase uses signInWithOAuth({ provider: 'google' }) for OAuth login.
- * This triggers a redirect to Google's login page, then returns to the app.
+ * signInWithOAuth redirects to Google's login page.
+ * After Google auth, user is redirected back with a ?code= parameter.
+ * The code is then verified by handleOAuthCallback() on page load.
  * Requires: CloudBase console → Identity → Login Methods → Google enabled.
  */
-export async function signInWithGoogle(): Promise<any> {
+export async function signInWithGoogle(): Promise<void> {
   await auth.signInWithOAuth({ provider: "google" });
-  // After OAuth redirect returns, check login state
-  const loginState = await auth.getLoginState();
-  if (loginState) return loginState.user;
-  throw new Error("Google login failed - no user returned.");
+  // This will redirect the browser away, so code after this won't execute.
+  // The login is completed when the user returns via handleOAuthCallback().
 }
 
 /**
@@ -62,36 +79,59 @@ export async function signInWithGoogle(): Promise<any> {
  */
 export async function signInAnonymously(): Promise<any> {
   await auth.signInAnonymously();
+  // signInAnonymously creates the session but getLoginState returns the user
   const loginState = await auth.getLoginState();
-  if (loginState) return loginState.user;
+  if (loginState) {
+    // Try getUser for more details, fall back to loginState
+    try {
+      const user = await auth.getUser();
+      return user;
+    } catch {
+      return loginState;
+    }
+  }
   throw new Error("Anonymous login failed - no user returned.");
 }
 
 /**
  * Email + Password sign up.
+ * CloudBase uses signInWithPassword for both sign-up and sign-in with email.
  * Requires: CloudBase console → Identity → Login Methods → Email enabled.
  */
 export async function signUpWithEmail(
   email: string,
   password: string
 ): Promise<any> {
-  await auth.signUpWithEmailAndPassword(email, password);
+  await auth.signUp({ email, password });
   const loginState = await auth.getLoginState();
-  if (loginState) return loginState.user;
+  if (loginState) {
+    try {
+      return await auth.getUser();
+    } catch {
+      return loginState;
+    }
+  }
   throw new Error("Email sign up failed - no user returned.");
 }
 
 /**
  * Email + Password sign in.
+ * CloudBase uses signInWithPassword({ email, password }).
  * Requires: CloudBase console → Identity → Login Methods → Email enabled.
  */
 export async function signInWithEmail(
   email: string,
   password: string
 ): Promise<any> {
-  await auth.signInWithEmailAndPassword(email, password);
+  await auth.signInWithPassword({ email, password });
   const loginState = await auth.getLoginState();
-  if (loginState) return loginState.user;
+  if (loginState) {
+    try {
+      return await auth.getUser();
+    } catch {
+      return loginState;
+    }
+  }
   throw new Error("Email login failed - no user returned.");
 }
 
