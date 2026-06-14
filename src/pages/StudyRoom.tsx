@@ -175,17 +175,17 @@ export const StudyRoom = () => {
       title: 'TimeSync Agent',
       subtitle: language === 'zh' ? 'AI 神经元信息集成流' : 'AI Synaptic Information Stream',
       desc: language === 'zh'
-        ? '本站后台运行的自动资讯整合程序。通过爬虫与大语言模型 (Gemini 2.5) 协同，全天候定时抓取海量科研动态、社媒观点与论文发布，自动进行去噪、归纳、翻译与分类。'
+        ? '本站后台运行的自动资讯整合程序。通过爬虫与大语言模型 (MIMO) 协同，全天候定时抓取海量科研动态、社媒观点与论文发布，自动进行去噪、归纳、翻译与分类。'
         : 'The automated intelligence collection server running behind this project. Cooperating with crawlers and LLMs, it scrapes paper releases, social posts, and compiles them in real-time.',
       features: language === 'zh'
         ? [
-            '🧠 基于 Gemini-2.5-Flash 进行智能分类与高质量翻译',
+            '🧠 基于 MIMO 大模型进行智能分类与高质量翻译',
             '🛡️ 内置容错抓取机制，多层缓冲防止 304 或服务中断',
             '⚡ 自动关联作者社交账号头图以提高信息可读性',
             '📈 生成全时段的科技同步增长与热点板块分布曲线'
           ]
         : [
-            '🧠 Intelligent translation & enrichment powered by Gemini 2.5',
+            '🧠 Intelligent translation & enrichment powered by MIMO',
             '🛡️ Robust fallback scrapers caching local content seamlessly',
             '⚡ Localized proxy for user profile picture delivery',
             '📈 Synaptic distribution metadata generated daily'

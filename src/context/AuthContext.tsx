@@ -1,8 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth, signInWithGoogle, loginAnonymouslyFirebase } from '../lib/firebase';
-import { Loader2 } from 'lucide-react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import {
+  auth,
+  signInWithGoogle,
+  signInAnonymously,
+  signUpWithEmail,
+  signInWithEmail,
+  signOut as cloudbaseSignOut,
+  onAuthStateChanged,
+  getCurrentUser,
+} from '../lib/cloudbase';
 
+// --- Types ---
 export interface MockUser {
   uid: string;
   displayName: string | null;
@@ -13,63 +21,98 @@ export interface MockUser {
   role?: string;
 }
 
-export type AuthUser = (User & { isMock?: boolean }) | MockUser;
+export interface CloudbaseUser {
+  uid: string;
+  displayName?: string | null;
+  email?: string | null;
+  photoURL?: string | null;
+  isAnonymous: boolean;
+  loginType?: string;
+  isMock?: boolean;
+  // CloudBase specific fields
+  openid?: string;
+  unionid?: string;
+  nickName?: string;
+  avatarUrl?: string;
+}
+
+export type AuthUser = CloudbaseUser | MockUser;
 
 interface AuthContextType {
   user: AuthUser | null;
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   loginAnonymously: () => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmailPassword: (email: string, password: string) => Promise<void>;
   loginAsMock: (name: string, email: string, role: string) => void;
   signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({ 
-  user: null, 
+const AuthContext = createContext<AuthContextType>({
+  user: null,
   loading: true,
   loginWithGoogle: async () => {},
   loginAnonymously: async () => {},
+  loginWithEmail: async () => {},
+  signUpWithEmailPassword: async () => {},
   loginAsMock: () => {},
-  signOut: async () => {} 
+  signOut: async () => {},
 });
+
+/**
+ * Normalize a CloudBase user object to our AuthUser shape.
+ */
+function normalizeUser(raw: any): CloudbaseUser | null {
+  if (!raw) return null;
+  return {
+    uid: raw.uid || raw._id || raw.openid || '',
+    displayName: raw.displayName || raw.nickName || raw.username || raw.email || 'Anonymous',
+    email: raw.email || null,
+    photoURL: raw.photoURL || raw.avatarUrl || null,
+    isAnonymous: raw.loginType === 'ANONYMOUS' || raw.isAnonymous || false,
+    loginType: raw.loginType || null,
+    openid: raw.openid,
+    unionid: raw.unionid,
+    nickName: raw.nickName,
+    avatarUrl: raw.avatarUrl,
+  };
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const handleSignOut = async () => {
-    try {
-      localStorage.removeItem('ts-mock-user');
-      await auth.signOut();
-      setUser(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
-  const handleLoginWithGoogle = async () => {
+  // --- Login methods ---
+  const handleLoginWithGoogle = useCallback(async () => {
     localStorage.removeItem('ts-mock-user');
-    try {
-      const fbUser = await signInWithGoogle();
-      setUser(fbUser);
-    } catch (error) {
-      console.error('Google login failed:', error);
-      throw error;
-    }
-  };
+    const rawUser = await signInWithGoogle();
+    const normalized = normalizeUser(rawUser);
+    if (normalized) setUser(normalized);
+  }, []);
 
-  const handleLoginAnonymously = async () => {
+  const handleLoginAnonymously = useCallback(async () => {
     localStorage.removeItem('ts-mock-user');
-    try {
-      const fbUser = await loginAnonymouslyFirebase();
-      setUser(fbUser);
-    } catch (error) {
-      console.error('Anonymous login failed:', error);
-      throw error;
-    }
-  };
+    const rawUser = await signInAnonymously();
+    const normalized = normalizeUser(rawUser);
+    if (normalized) setUser(normalized);
+  }, []);
 
-  const handleLoginAsMock = (name: string, email: string, role: string) => {
+  const handleLoginWithEmail = useCallback(async (email: string, password: string) => {
+    localStorage.removeItem('ts-mock-user');
+    const rawUser = await signInWithEmail(email, password);
+    const normalized = normalizeUser(rawUser);
+    if (normalized) setUser(normalized);
+  }, []);
+
+  const handleSignUpWithEmail = useCallback(async (email: string, password: string) => {
+    localStorage.removeItem('ts-mock-user');
+    const rawUser = await signUpWithEmail(email, password);
+    const normalized = normalizeUser(rawUser);
+    if (normalized) setUser(normalized);
+  }, []);
+
+  const handleLoginAsMock = useCallback((name: string, email: string, role: string) => {
     const mockUser: MockUser = {
       uid: `mock_${Date.now()}`,
       displayName: name || 'Mock User',
@@ -77,12 +120,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       photoURL: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name || 'mock')}`,
       isAnonymous: false,
       isMock: true,
-      role: role
+      role: role,
     };
     localStorage.setItem('ts-mock-user', JSON.stringify(mockUser));
     setUser(mockUser);
-  };
+  }, []);
 
+  const handleSignOut = useCallback(async () => {
+    try {
+      localStorage.removeItem('ts-mock-user');
+      await cloudbaseSignOut();
+      setUser(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // Force clear local state even if remote signOut fails
+      setUser(null);
+    }
+  }, []);
+
+  // --- Auth state listener ---
   useEffect(() => {
     // 1. Check if mock user exists in local storage
     const savedMock = localStorage.getItem('ts-mock-user');
@@ -92,31 +148,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(parsed);
         setLoading(false);
         return;
-      } catch (_) {}
+      } catch {
+        // Corrupted data, fall through
+      }
     }
 
-    // 2. Fallback to Firebase listener
-    const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
-      // Only update if no mock user is set
-      if (!localStorage.getItem('ts-mock-user')) {
-        setUser(fbUser);
+    // 2. Try to restore existing CloudBase session
+    let cancelled = false;
+
+    const initAuth = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (!cancelled) {
+          const normalized = normalizeUser(currentUser);
+          if (normalized) {
+            setUser(normalized);
+          }
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
+    };
+
+    initAuth();
+
+    // 3. Listen for auth state changes
+    const unsubscribe = onAuthStateChanged((rawUser) => {
+      if (cancelled) return;
+      // Don't override mock user
+      if (localStorage.getItem('ts-mock-user')) return;
+      const normalized = normalizeUser(rawUser);
+      setUser(normalized);
+      if (loading) setLoading(false);
     });
-    return unsubscribe;
+
+    return () => {
+      cancelled = true;
+      // CloudBase onLoginStateChanged may not support unsubscribe;
+      // the cancelled flag above prevents stale callbacks from updating state.
+      try {
+        unsubscribe();
+      } catch {
+        // Safely ignore - cancelled flag handles cleanup
+      }
+    };
   }, []);
 
-
-
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      loginWithGoogle: handleLoginWithGoogle,
-      loginAnonymously: handleLoginAnonymously,
-      loginAsMock: handleLoginAsMock,
-      signOut: handleSignOut 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        loginWithGoogle: handleLoginWithGoogle,
+        loginAnonymously: handleLoginAnonymously,
+        loginWithEmail: handleLoginWithEmail,
+        signUpWithEmailPassword: handleSignUpWithEmail,
+        loginAsMock: handleLoginAsMock,
+        signOut: handleSignOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

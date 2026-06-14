@@ -166,11 +166,11 @@ service cloud.firestore {
 
     match /blogs/{blogId} {
       allow get, list: if true;
-      allow create: if isAdmin() && incoming().userId == request.auth.uid 
+      allow create: if isSignedIn() && isAdmin() && incoming().userId == request.auth.uid 
                      && incoming().createdAt == request.time;
-      allow update: if isAdmin() && incoming().userId == existing().userId
+      allow update: if isSignedIn() && isAdmin() && incoming().userId == existing().userId
                      && incoming().createdAt == existing().createdAt;
-      allow delete: if isAdmin();
+      allow delete: if isSignedIn() && isAdmin();
     }
   }
 }

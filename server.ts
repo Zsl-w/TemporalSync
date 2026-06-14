@@ -242,11 +242,13 @@ async function scrapeArticle(url: string) {
   }
 }
 
-async function getGeminiEnrichment(title: string, summary: string) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
+async function getAIEnrichment(title: string, summary: string) {
+  const apiKey = process.env.MIMO_API_KEY;
+  if (!apiKey) {
     return null;
   }
+  const baseUrl = process.env.MIMO_BASE_URL || "https://api.mimo.run/v1";
+  const model = process.env.MIMO_MODEL || "mimo-v2";
   
   try {
     const prompt = `分析以下 AI 新闻的标题和摘要，并返回一个 JSON 对象，必须包含以下字段：
@@ -260,26 +262,29 @@ async function getGeminiEnrichment(title: string, summary: string) {
 注意：只返回纯 JSON，不要任何 markdown 标记（如 \`\`\`json）。`;
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `${baseUrl}/chat/completions`,
       {
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          responseMimeType: "application/json"
-        }
+        model,
+        messages: [
+          { role: "system", content: "你是一个专业的 AI 新闻分析助手，只输出 JSON 格式的响应。" },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 500,
+        response_format: { type: "json_object" },
       },
       {
         timeout: 5000,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
       }
     );
 
-    const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (text) {
-      const data = JSON.parse(text.trim());
+    const content = response.data?.choices?.[0]?.message?.content;
+    if (content) {
+      const data = JSON.parse(content.trim());
       if (data && data.category && Array.isArray(data.tags)) {
         return {
           category: data.category,
@@ -289,7 +294,7 @@ async function getGeminiEnrichment(title: string, summary: string) {
       }
     }
   } catch (err: any) {
-    console.error("Gemini API enrichment error:", err.message);
+    console.error("MIMO API enrichment error:", err.message);
   }
   return null;
 }
@@ -418,9 +423,9 @@ function getFallbackEnrichment(title: string, summary: string) {
             if (!summary || summary.trim().length === 0 || summary === "...") {
               summary = scraped.description || title || "";
             }
-            enriched = await getGeminiEnrichment(title, summary);
+            enriched = await getAIEnrichment(title, summary);
           } catch {
-            // scrape or Gemini failed — fall through to fallback
+            // scrape or AI enrichment failed — fall through to fallback
           }
         }
 
@@ -483,6 +488,13 @@ function getFallbackEnrichment(title: string, summary: string) {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
+      // Ensure env vars are available to client code
+      define: {
+        'import.meta.env.VITE_CLOUDBASE_ENV_ID': JSON.stringify(process.env.VITE_CLOUDBASE_ENV_ID || ''),
+        'import.meta.env.MIMO_API_KEY': JSON.stringify(''),
+        'import.meta.env.MIMO_BASE_URL': JSON.stringify(''),
+        'import.meta.env.MIMO_MODEL': JSON.stringify(''),
+      },
     });
     app.use(vite.middlewares);
   } else {

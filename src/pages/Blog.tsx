@@ -2,18 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { 
-  collection, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  query, 
-  orderBy, 
-  Timestamp 
-} from 'firebase/firestore';
+import { db, getCollection, addDocument, updateDocument, deleteDocument, handleCloudbaseError, OperationType } from '../lib/cloudbase';
 import { 
   Plus, 
   BookOpen, 
@@ -570,32 +559,28 @@ export const Blog = () => {
     reader.readAsText(file);
   };
 
-  // Fetch blogs from Firestore
+  // Fetch blogs from CloudBase
   const fetchPosts = async () => {
     setLoading(true);
     try {
       let fetched: BlogPost[] = [];
       
-      // 1. Try to fetch from Firebase
+      // 1. Try to fetch from CloudBase
       try {
-        const q = query(collection(db, 'blogs'), orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
-        fetched = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title || '',
-            summary: data.summary || '',
-            tags: Array.isArray(data.tags) ? data.tags : [],
-            content: data.content || '',
-            userId: data.userId || '',
-            userName: data.userName || 'Anonymous',
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt
-          } as BlogPost;
-        });
-      } catch (firestoreError) {
-        console.warn('Firestore fetch failed, relying on local fallback:', firestoreError);
+        const data = await getCollection('blogs');
+        fetched = (data || []).map((doc: any) => ({
+          id: doc._id || doc.id || '',
+          title: doc.title || '',
+          summary: doc.summary || '',
+          tags: Array.isArray(doc.tags) ? doc.tags : [],
+          content: doc.content || '',
+          userId: doc.userId || '',
+          userName: doc.userName || 'Anonymous',
+          createdAt: doc.createdAt || new Date().toISOString(),
+          updatedAt: doc.updatedAt || new Date().toISOString(),
+        } as BlogPost));
+      } catch (cloudbaseError) {
+        console.warn('CloudBase fetch failed, relying on local fallback:', cloudbaseError);
       }
 
       // 2. Fetch from Local Storage
@@ -612,8 +597,8 @@ export const Blog = () => {
       
       // Sort combined by createdAt desc
       combined.sort((a, b) => {
-        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
-        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
+        const timeA = new Date(a.createdAt).getTime();
+        const timeB = new Date(b.createdAt).getTime();
         return timeB - timeA;
       });
 
@@ -674,12 +659,7 @@ export const Blog = () => {
     }
 
     try {
-      const firestorePostData = {
-        ...postData,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-      };
-      await addDoc(collection(db, 'blogs'), firestorePostData);
+      await addDocument('blogs', postData);
       
       setTitle('');
       setSummary('');
@@ -688,7 +668,7 @@ export const Blog = () => {
       await fetchPosts();
       navigate('/writing');
     } catch (error) {
-      console.error('Firestore save failed, saving to localStorage:', error);
+      console.error('CloudBase save failed, saving to localStorage:', error);
       // Fallback
       const localBlogsRaw = localStorage.getItem('ts-local-blogs');
       const localBlogs = localBlogsRaw ? JSON.parse(localBlogsRaw) : [];
@@ -757,20 +737,19 @@ export const Blog = () => {
     }
 
     try {
-      const postRef = doc(db, 'blogs', selectedPost.id);
-      await updateDoc(postRef, {
+      await updateDocument('blogs', selectedPost.id, {
         title: title.trim(),
         summary: summary.trim() || (content.slice(0, 120) + '...'),
         tags: parsedTags,
         content: content,
-        updatedAt: Timestamp.now()
+        updatedAt: new Date().toISOString(),
       });
 
       await fetchPosts();
       navigate('/writing');
     } catch (error) {
-      console.error('Firestore update failed, falling back to local edit:', error);
-      // Fallback: update in local storage if not found in Firestore or if auth failed
+      console.error('CloudBase update failed, falling back to local edit:', error);
+      // Fallback: update in local storage if not found in CloudBase or if auth failed
       const localBlogsRaw = localStorage.getItem('ts-local-blogs');
       if (localBlogsRaw) {
         try {
@@ -817,13 +796,13 @@ export const Blog = () => {
     }
 
     try {
-      await deleteDoc(doc(db, 'blogs', postId));
+      await deleteDocument('blogs', postId);
       await fetchPosts();
       if (selectedPost?.id === postId) {
         navigate('/writing');
       }
     } catch (error) {
-      console.error('Firestore delete failed, checking local fallback:', error);
+      console.error('CloudBase delete failed, checking local fallback:', error);
       const localBlogsRaw = localStorage.getItem('ts-local-blogs');
       if (localBlogsRaw) {
         try {
@@ -851,7 +830,7 @@ export const Blog = () => {
   // Date formatting helper
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'Just now';
-    const date = timestamp instanceof Timestamp ? timestamp.toDate() : new Date(timestamp);
+    const date = new Date(timestamp);
     return date.toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US', {
       year: 'numeric',
       month: 'short',

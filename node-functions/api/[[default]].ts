@@ -3,7 +3,21 @@
 
 import * as cheerio from "cheerio";
 import Parser from "rss-parser";
-import { generateContentStudio } from "../../content-studio-core";
+
+// Lazy-load content-studio-core to avoid crashing the entire function
+// when pdf-parse native dependencies are unavailable in the EdgeOne runtime.
+let generateContentStudio: typeof import("../../content-studio-core").generateContentStudio | null = null;
+async function getGenerateContentStudio() {
+  if (generateContentStudio) return generateContentStudio;
+  try {
+    const mod = await import("../../content-studio-core");
+    generateContentStudio = mod.generateContentStudio;
+    return generateContentStudio;
+  } catch (err) {
+    console.error("Failed to load content-studio-core:", err);
+    return null;
+  }
+}
 
 const parser = new Parser();
 
@@ -164,15 +178,26 @@ async function scrapeArticle(url: string) {
   }
 }
 
-// ── Gemini enrichment ────────────────────────────────────────────────
+// ── MIMO enrichment (replaces Gemini) ─────────────────────────────────
 
-function getApiKey(): string {
-  return process.env.GEMINI_API_KEY || "";
+function getMimoApiKey(): string {
+  return process.env.MIMO_API_KEY || "";
 }
 
-async function getGeminiEnrichment(title: string, summary: string) {
-  const apiKey = getApiKey();
-  if (!apiKey || apiKey === "MY_GEMINI_API_KEY") return null;
+function getMimoBaseUrl(): string {
+  return process.env.MIMO_BASE_URL || "https://api.mimo.run/v1";
+}
+
+function getMimoModel(): string {
+  return process.env.MIMO_MODEL || "mimo-v2";
+}
+
+async function getAIEnrichment(title: string, summary: string) {
+  const apiKey = getMimoApiKey();
+  if (!apiKey) {
+    console.warn("MIMO_API_KEY not set, using fallback enrichment");
+    return null;
+  }
 
   try {
     const prompt = `分析以下 AI 新闻的标题和摘要，并返回一个 JSON 对象，必须包含以下字段：
@@ -185,23 +210,36 @@ async function getGeminiEnrichment(title: string, summary: string) {
 
 注意：只返回纯 JSON，不要任何 markdown 标记（如 \`\`\`json）。`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: "application/json" },
-        }),
-      }
-    );
+    const baseUrl = getMimoBaseUrl();
+    const model = getMimoModel();
 
-    if (!response.ok) return null;
+    const response = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: "你是一个专业的 AI 新闻分析助手，只输出 JSON 格式的响应。" },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 500,
+        response_format: { type: "json_object" },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`MIMO API error: ${response.status}`);
+      return null;
+    }
+
     const json: any = await response.json();
-    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (text) {
-      const data = JSON.parse(text.trim());
+    const content = json?.choices?.[0]?.message?.content;
+    if (content) {
+      const data = JSON.parse(content.trim());
       if (data && data.category && Array.isArray(data.tags)) {
         return {
           category: data.category,
@@ -211,7 +249,7 @@ async function getGeminiEnrichment(title: string, summary: string) {
       }
     }
   } catch (err: any) {
-    console.error("Gemini API enrichment error:", err.message);
+    console.error("MIMO API enrichment error:", err.message);
   }
   return null;
 }
@@ -392,9 +430,9 @@ async function handleAINews(): Promise<Response> {
           if (!summary || summary.trim().length === 0 || summary === "...") {
             summary = scraped.description || title || "";
           }
-          enriched = await getGeminiEnrichment(title, summary);
+          enriched = await getAIEnrichment(title, summary);
         } catch {
-          // scrape or Gemini failed — fall through to fallback
+          // scrape or AI enrichment failed — fall through to fallback
         }
       }
 
@@ -472,7 +510,14 @@ export async function onRequest(context: {
   if (path === "/api/content-studio/generate" && context.request.method === "POST") {
     try {
       const body = await context.request.json();
-      return generateContentStudio(
+      const fn = await getGenerateContentStudio();
+      if (!fn) {
+        return new Response(JSON.stringify({ error: "内容工作室服务暂不可用，请稍后重试。" }), {
+          status: 503,
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+        });
+      }
+      return fn(
         body as any,
         {
           apiKey: context.env.MIMO_API_KEY || process.env.MIMO_API_KEY || "",

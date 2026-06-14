@@ -25,11 +25,21 @@ export function prefetchNews(): void {
   if (fetchPromise) return; // already fetching
   fetchPromise = fetch('/api/ai-news')
     .then(async (r) => {
-      const data = await r.json();
-      if (Array.isArray(data) && data.length > 0) {
-        cachedNews = data;
+      if (!r.ok) {
+        console.warn(`News API returned ${r.status}, skipping prefetch`);
+        return [];
       }
-      return data;
+      const text = await r.text();
+      try {
+        const data = JSON.parse(text);
+        if (Array.isArray(data) && data.length > 0) {
+          cachedNews = data;
+        }
+        return data;
+      } catch {
+        console.warn('News API returned non-JSON response, skipping prefetch');
+        return [];
+      }
     })
     .catch((err) => {
       console.warn('News prefetch failed:', err.message);

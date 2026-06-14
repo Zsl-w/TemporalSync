@@ -4,7 +4,6 @@ import { Settings, LogIn, LogOut, Globe } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
-import { auth } from '../lib/firebase';
 import { motion } from 'motion/react';
 import { LoginModal } from './LoginModal';
 

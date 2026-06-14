@@ -1,0 +1,14 @@
+{
+  "security_rules": {
+    "blogs": {
+      "read": "auth != null",
+      "write": "auth != null && auth.loginType != 'ANONYMOUS'"
+    }
+  },
+  "description": "CloudBase 数据库安全规则",
+  "notes": [
+    "在 CloudBase 控制台 → 数据库 → 安全规则 中配置",
+    "blogs 集合：登录用户可读，非匿名用户可写",
+    "如需管理员专用写权限，可根据 auth.uid 进一步限制"
+  ]
+}

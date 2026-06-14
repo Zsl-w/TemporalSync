@@ -1,15 +1,35 @@
+# Dependencies
 node_modules/
-build/
+
+# Build output
 dist/
-coverage/
+build/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Codebuddy local settings
+.codebuddy/settings.local.json
+
+# Logs
 *.log
-.env*
-!.env.example
-.edgeone
+npm-debug.log*
+
+# EdgeOne
+.edgeone/
+
+# Local history
 .history/
-extracted_0.png
 
-# Large assets
-public/assets/background.mp4
-
+# Generated files
+extracted_*.png
