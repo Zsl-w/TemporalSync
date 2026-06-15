@@ -4,21 +4,6 @@
 import * as cheerio from "cheerio";
 import Parser from "rss-parser";
 
-// Lazy-load content-studio-core to avoid crashing the entire function
-// when pdf-parse native dependencies are unavailable in the EdgeOne runtime.
-let generateContentStudio: typeof import("../../content-studio-core").generateContentStudio | null = null;
-async function getGenerateContentStudio() {
-  if (generateContentStudio) return generateContentStudio;
-  try {
-    const mod = await import("../../content-studio-core");
-    generateContentStudio = mod.generateContentStudio;
-    return generateContentStudio;
-  } catch (err) {
-    console.error("Failed to load content-studio-core:", err);
-    return null;
-  }
-}
-
 const parser = new Parser();
 
 // ── Types ───────────────────────────────────────────────────────────
@@ -508,6 +493,11 @@ export async function onRequest(context: {
   if (path === "/api/avatar") return handleAvatar(url);
   if (path === "/api/ai-news") return handleAINews();
   if (path === "/api/content-studio/generate" && context.request.method === "POST") {
+    return new Response(JSON.stringify({ error: "Content Studio 已迁移至独立服务。" }), {
+      status: 410,
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    });
+    /*
     try {
       const body = await context.request.json();
       const fn = await getGenerateContentStudio();
@@ -531,6 +521,7 @@ export async function onRequest(context: {
         headers: { "Content-Type": "application/json; charset=utf-8" },
       });
     }
+    */
   }
 
   return new Response(JSON.stringify({ error: `Not found: ${path}` }), {

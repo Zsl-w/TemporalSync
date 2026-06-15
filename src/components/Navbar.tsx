@@ -108,7 +108,22 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
             <NavItem to="/work" label={language === 'zh' ? '自习室' : 'WORK'} />
             <NavItem to="/writing" label={language === 'zh' ? '博客' : 'WRITING'} />
-            <NavItem to="/studio" label="STUDIO" />
+            <a
+              href="https://studio.temporalsync.online/"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center h-full px-4 text-[13px] font-medium text-ts-muted hover:text-ts-ink transition-all"
+            >
+              STUDIO
+            </a>
+            <a
+              href="https://atlas.temporalsync.online/"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center h-full px-4 text-[13px] font-medium text-ts-muted hover:text-ts-ink transition-all"
+            >
+              ATLAS
+            </a>
             <button
               onClick={() => setShowContact(!showContact)}
               className={cn(

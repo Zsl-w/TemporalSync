@@ -9,7 +9,6 @@ import * as cheerio from "cheerio";
 import iconv from "iconv-lite";
 import fs from "fs";
 import crypto from "crypto";
-import { generateContentStudio } from "./content-studio-core";
 
 const parser = new Parser();
 
@@ -17,21 +16,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json({ limit: "16mb" }));
-
-  app.post("/api/content-studio/generate", async (req, res) => {
-    const response = await generateContentStudio(
-      req.body,
-      {
-        apiKey: process.env.MIMO_API_KEY || "",
-        baseUrl: process.env.MIMO_BASE_URL,
-        model: process.env.MIMO_MODEL,
-      },
-    );
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-    res.send(await response.text());
-  });
+  app.use(express.json());
 
   // API Route: Link Metadata
   app.get("/api/link-metadata", async (req, res) => {
