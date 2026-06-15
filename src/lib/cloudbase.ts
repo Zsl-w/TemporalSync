@@ -12,22 +12,26 @@
 import cloudbase from "@cloudbase/js-sdk";
 
 // --- Configuration ---
-const ENV_ID =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_CLOUDBASE_ENV_ID) ||
-  "";
+// CloudBase 核心配置：env + region + accessKey 是前端公开信息，必须硬编码
+// 否则线上构建时 .env 不可用导致 "Failed to fetch"
+const ENV_ID = "tsync-d3g3w7jmab93b9b25";
+const REGION = "ap-shanghai";
+const ACCESS_KEY =
+  "eyJhbGciOiJSUzI1NiIsImtpZCI6IjlkMWRjMzFlLWI0ZDAtNDQ4Yi1hNzZmLWIwY2M2M2Q4MTQ5OCJ9." +
+  "eyJpc3MiOiJodHRwczovL3RzeW5jLWQzZzN3N2ptYWI5M2I5YjI1LmFwLXNoYW5naGFpLnRjYi1hcGkudGVuY2VudGNsb3VkYXBpLmNvbSIsInN1YiI6ImFub24iLCJhdWQiOiJ0c3luYy1kM2czdzdqbWFiOTNiOWIyNSIsImV4cCI6NDA4NTE3MjcyMywiaWF0IjoxNzgxNDg5NTIzLCJub25jZSI6ImdDQ0FRSENmU0VXOFV1dXNtMnNHcGciLCJhdF9oYXNoIjoiZ0NDQVFIQ2ZTRVc4VXV1c20yc0dwZyIsIm5hbWUiOiJBbm9ueW1vdXMiLCJzY29wZSI6ImFub255bW91cyIsInByb2plY3RfaWQiOiJ0c3luYy1kM2czdzdqbWFiOTNiOWIyNSIsIm1ldGEiOnsicGxhdGZvcm0iOiJQdWJsaXNoYWJsZUtleSJ9LCJ1c2VyX3R5cGUiOiIiLCJjbGllbnRfdHlwZSI6ImNsaWVudF91c2VyIiwiaXNfc3lzdGVtX2FkbWluIjpmYWxzZX0." +
+  "qJJWniHTsDk4Ch3cXGQa0AsBNWbC-UHwBXBrF0u8KanuJAaxyPOtXtnVsbz72-FVQoigc3alWpWf0JNgTM_H2kPBNze3tIrckvmwAyM1zhEOKOKDpdxZIvYT_FNiO3b6sGnGr11AWamjGCcZXK-OiL3clPJZ0oi51FmpJLCJQUczfivHdhTqqJGhJ7LvNEXcpdzRKTMFyVDLnw1hTWz8JvRAiHmRMyTBZ8ljH0xNy9ba2A-RzY9RAo_pK5ko12NiOIbUPMVFLlb2QLIIjvLsiMQC3TRpPOmb7efTMmPpiih4G5KrR3-Y0HQu-V6Zlmoh4fWWFcBfJnbqzuWx8RQbuw";
 
-// Google Client ID (kept for future use)
+// Google Client ID
 const GOOGLE_CLIENT_ID =
   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID) ||
   "";
 
-if (!ENV_ID) {
-  console.warn("[CloudBase] VITE_CLOUDBASE_ENV_ID is not set. Auth and database features will be disabled.");
-}
-
 // --- CloudBase App Instance ---
 const app = cloudbase.init({
-  env: ENV_ID || "__placeholder__",
+  env: ENV_ID,
+  region: REGION,
+  accessKey: ACCESS_KEY,
+  auth: { detectSessionInUrl: true },
 });
 
 // --- Auth instance ---
