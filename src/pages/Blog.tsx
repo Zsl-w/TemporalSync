@@ -26,7 +26,6 @@ import { cn } from '../lib/utils';
 import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { marked } from 'marked';
-import BorderGlow from '../components/BorderGlow';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -165,38 +164,24 @@ const getFirstImageUrl = (content: string): string | null => {
   return null;
 };
 
-const CoverPlaceholder = ({ title }: { title: string }) => {
+const CoverPlaceholder = ({ title, accentColor }: { title: string; accentColor: string }) => {
+  const firstLetter = title ? title.trim().charAt(0).toUpperCase() : 'T';
   return (
-    <div className="w-full h-full bg-gradient-to-br from-[#B497CF]/20 via-[#FAF6EE] to-[#ff9aa5]/10 relative flex flex-col justify-between p-6 select-none overflow-hidden border-b border-ts-hairline">
-      {/* Background abstract layout elements representing a magazine page */}
-      <div className="absolute inset-0 bg-[radial-gradient(rgba(180,151,207,0.06)_1px,transparent_1px)] [background-size:12px_12px]" />
-      <div className="absolute right-[-10%] top-[-10%] w-48 h-48 bg-[#B497CF]/5 rounded-full blur-2xl" />
-      <div className="absolute left-[10%] bottom-[10%] w-40 h-40 bg-[#ff9aa5]/5 rounded-full blur-2xl" />
-      
-      {/* Grid line pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(44,38,33,0.01)_1px,transparent_1px),linear-gradient(0deg,rgba(44,38,33,0.01)_1px,transparent_1px)] bg-[size:32px_32px] opacity-50" />
-      
-      {/* Top Header Tag */}
-      <div className="relative z-10 flex items-center justify-between border-b border-[#B497CF]/10 pb-2.5">
-        <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#B497CF]">TSync Studio</span>
-        <span className="text-[8px] font-black uppercase tracking-[0.25em] text-ts-muted">Writing</span>
-      </div>
-      
-      {/* Centered Graphic Element */}
-      <div className="relative z-10 my-auto py-2 flex flex-col items-center justify-center gap-2 text-center">
-        <div className="w-10 h-10 rounded-[10px] bg-white border border-[#B497CF]/15 flex items-center justify-center text-[#B497CF] shadow-[0_2px_8px_rgba(180,151,207,0.12)]">
-          <BookOpen size={20} />
-        </div>
-      </div>
-      
-      {/* Footer Title / Date */}
-      <div className="relative z-10 pt-2 border-t border-[#B497CF]/10 flex justify-between items-end">
-        <span className="text-[9px] font-bold text-ts-muted tracking-tight font-serif truncate max-w-[70%]">
-          {title}
-        </span>
-        <span className="text-[7px] font-black uppercase tracking-widest text-[#B497CF]/60 font-mono">
-          Vol. {new Date().getFullYear()}
-        </span>
+    <div 
+      className="w-full h-full absolute inset-0 select-none overflow-hidden transition-all duration-300 bg-ts-shiyun-green-bg"
+    >
+      {/* Editorial Decorative Background Grid */}
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(127,155,117,0.08)_1.5px,transparent_1.5px)] [background-size:16px_16px] opacity-60" />
+      <div 
+        className="absolute right-[-10%] top-[-10%] w-44 h-44 rounded-full blur-3xl opacity-15 transition-colors duration-500" 
+        style={{ backgroundColor: 'var(--color-ts-shiyun-green)' }}
+      />
+
+      {/* Large Decorative Serif Letter behind */}
+      <div 
+        className="absolute right-8 bottom-6 font-serif text-[140px] font-black pointer-events-none select-none leading-none opacity-[0.06] transition-colors duration-500 text-ts-shiyun-green"
+      >
+        {firstLetter}
       </div>
     </div>
   );
@@ -463,7 +448,7 @@ function convertMarkdownToWechatHtmlInner(markdown: string): string {
 
 export const Blog = () => {
   const { isAdmin } = useAuth();
-  const { language } = useSettings();
+  const { language, accentColor } = useSettings();
   const containerRef = useRef<HTMLDivElement>(null);
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -471,10 +456,17 @@ export const Blog = () => {
   useFloatingOrbs(containerRef);
   useScrollReveal(containerRef);
 
+  // States
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<'list' | 'detail' | 'create' | 'edit'>(id ? 'detail' : 'list');
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   // GSAP transition refs
   const viewContainerRef = useRef<HTMLDivElement>(null);
   const prevViewRef = useRef<'list' | 'detail' | 'create' | 'edit'>('list');
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Accessibility: check prefers-reduced-motion
   const prefersReducedMotion = useMemo(() => 
@@ -507,8 +499,11 @@ export const Blog = () => {
   useGSAP(() => {
     const el = viewContainerRef.current;
     if (!el) return;
-    if (prevViewRef.current === view) return;
     if (prefersReducedMotion) { prevViewRef.current = view; return; }
+
+    const isInitialPostLoad = view === 'list' && !loading && posts.length > 0 && prevViewRef.current === 'list' && el.querySelectorAll('.blog-card').length > 0;
+
+    if (prevViewRef.current === view && !isInitialPostLoad) return;
 
     const config = getEntranceConfig(prevViewRef.current, view);
     const tl = gsap.timeline();
@@ -516,7 +511,7 @@ export const Blog = () => {
     // Container entrance
     tl.fromTo(el, config.from, { ...config.to, clearProps: 'opacity,y,x,scale' });
 
-    // Stagger blog cards when returning to list
+    // Stagger blog cards when in list view
     if (view === 'list') {
       const cards = el.querySelectorAll('.blog-card');
       if (cards.length) {
@@ -530,7 +525,7 @@ export const Blog = () => {
 
     tl.call(() => setIsTransitioning(false));
     prevViewRef.current = view;
-  }, { scope: viewContainerRef, dependencies: [view] });
+  }, { scope: viewContainerRef, dependencies: [view, loading, posts.length] });
 
   // Animated view switcher: exit animation → then state swap triggers useGSAP entrance
   const switchView = useCallback((newView: 'list' | 'detail' | 'create' | 'edit') => {
@@ -562,13 +557,6 @@ export const Blog = () => {
       }
     });
   }, [isTransitioning, prefersReducedMotion]);
-
-  // States
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<'list' | 'detail' | 'create' | 'edit'>('list');
-  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPosts = useMemo(() => {
     if (!searchQuery.trim()) return posts;
@@ -709,6 +697,16 @@ export const Blog = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  // If initial load of posts is in progress, show loading spinner
+  if (loading && posts.length === 0) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-24 opacity-50">
+        <Loader2 size={32} className="animate-spin text-ts-primary" />
+        <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-ts-muted mt-4">Loading...</span>
+      </div>
+    );
+  }
 
   // Handle Publish / Create
   const handleCreatePost = async (e: React.FormEvent) => {
@@ -1052,87 +1050,85 @@ export const Blog = () => {
               {filteredPosts.map((post) => {
                 const coverUrl = getFirstImageUrl(post.content);
                 return (
-                  <BorderGlow
+                  <div
                     key={post.id}
-                    edgeSensitivity={30}
-                    glowColor="271 37 70"
-                    backgroundColor="var(--color-ts-surface)"
-                    borderRadius={12}
-                    glowRadius={30}
-                    glowIntensity={0.8}
-                    coneSpread={20}
-                    animated={false}
-                    colors={['#B497CF', '#ff9aa5', '#e2d6f5']}
-                    className="blog-card flex flex-col h-[380px] w-full"
+                    className="blog-card shiyun-card group relative flex flex-col h-[270px] w-full overflow-hidden cursor-pointer"
+                    onClick={() => {
+                      userNavRef.current = true;
+                      setSelectedPost(post);
+                      switchView('detail');
+                      navigate(`/writing/${post.id}`);
+                    }}
                   >
-                    {/* Header Image Cover */}
-                    <div className="relative w-full h-[190px] overflow-hidden bg-ts-surface-elevated/40 shrink-0">
+                    {/* Background Cover Image or Monogram Placeholder */}
+                    <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
                       {coverUrl ? (
                         <img 
                           src={coverUrl} 
                           alt={post.title} 
-                          className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-[1.03]"
+                          className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
                           loading="lazy"
                         />
                       ) : (
-                        <CoverPlaceholder title={post.title} />
+                        <CoverPlaceholder title={post.title} accentColor={accentColor} />
                       )}
+                      {/* Light Gradient Overlay for Text Readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-ts-shiyun-green-bg via-ts-shiyun-green-bg/85 to-transparent z-10 opacity-90 group-hover:opacity-95 transition-opacity duration-300" />
                     </div>
 
-                    {/* Card Content body */}
-                    <div className="flex-1 p-5 flex flex-col justify-between min-h-0 bg-transparent">
-                      {/* Meta & Title */}
-                      <div className="space-y-2 min-h-0">
-                        {/* Meta tags */}
-                        <div className="flex flex-wrap items-center gap-2 text-[9px] text-ts-muted font-bold uppercase tracking-wider font-mono">
-                          <span>{formatDate(post.createdAt)}</span>
-                          <span className="w-1 h-1 rounded-full bg-ts-hairline" />
-                          <span>{getReadTime(post.content, language === 'zh')}</span>
-                        </div>
-
-                        {/* Title button */}
-                        <button
-                          onClick={() => { userNavRef.current = true; setSelectedPost(post); switchView('detail'); navigate(`/writing/${post.id}`); }}
-                          className="text-left block group/title font-serif text-lg font-bold text-ts-ink leading-snug cursor-pointer transition-colors max-h-[48px] overflow-hidden line-clamp-2"
-                          title={post.title}
-                        >
-                          <span className="relative inline-block hover:text-ts-primary">
-                            {post.title}
-                          </span>
-                        </button>
+                    {/* Card Content body overlayed */}
+                    <div className="absolute inset-0 p-5 flex flex-col justify-between z-20 select-none">
+                      {/* Top Row: Meta Tags */}
+                      <div className="flex items-center gap-2 text-[10px] text-ts-shiyun-muted font-bold uppercase tracking-wider font-mono">
+                        <span>{formatDate(post.createdAt)}</span>
+                        <span className="w-1 h-1 rounded-full bg-ts-shiyun-green/40" />
+                        <span>{getReadTime(post.content, language === 'zh')}</span>
                       </div>
 
-                      {/* Footer: Tags & Actions */}
-                      <div className="pt-3 border-t border-ts-hairline flex flex-col gap-2.5">
+                      {/* Bottom Section: Title, Tags & Footer */}
+                      <div className="space-y-3">
+                        {/* Title */}
+                        <h3 
+                          className="text-left font-serif text-base md:text-lg font-bold text-ts-shiyun-ink leading-snug line-clamp-2 transition-colors duration-300 group-hover:text-ts-shiyun-green"
+                        >
+                          {post.title}
+                        </h3>
+
                         {/* Tags */}
                         {post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 max-h-[20px] overflow-hidden">
+                          <div className="flex flex-wrap gap-1.5 max-h-[22px] overflow-hidden">
                             {post.tags.slice(0, 3).map((tag) => (
                               <span 
                                 key={tag}
-                                className="px-1.5 py-0.5 rounded-[4px] text-[8px] font-semibold bg-ts-surface-elevated text-ts-muted border border-ts-hairline flex items-center gap-0.5"
+                                className="px-2 py-0.5 rounded-[4px] text-[9px] font-semibold flex items-center gap-1 border bg-ts-shiyun-green-soft text-ts-shiyun-ink/80 border-ts-shiyun-green/15 transition-colors duration-300"
                               >
-                                <Tag size={8} />
+                                <Tag size={8} className="text-ts-shiyun-green" />
                                 {tag}
                               </span>
                             ))}
                           </div>
                         )}
 
-                        {/* Action buttons */}
-                        <div className="flex items-center justify-between">
+                        {/* Footer: Admin controls & Read More link */}
+                        <div className="flex items-center justify-between pt-3 border-t border-ts-shiyun-green/10">
                           {isAdmin ? (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 pointer-events-auto">
                               <button
-                                onClick={() => handleOpenEdit(post)}
-                                className="p-1 text-ts-muted-soft hover:text-ts-ink hover:bg-ts-surface-elevated rounded-[4px] transition-all cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenEdit(post);
+                                }}
+                                className="p-1.5 text-ts-shiyun-muted hover:text-ts-shiyun-green hover:bg-ts-shiyun-green-soft rounded-[6px] border border-transparent hover:border-ts-shiyun-green/15 transition-all duration-300 cursor-pointer"
                                 title={t.edit}
                               >
                                 <Edit3 size={12} />
                               </button>
                               <button
-                                onClick={() => handleDeletePost(post.id)}
-                                className="p-1 text-ts-muted-soft hover:text-ts-error hover:bg-ts-error-bg rounded-[4px] transition-all cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeletePost(post.id);
+                                }}
+                                className="p-1.5 text-ts-shiyun-muted hover:text-ts-error hover:bg-ts-error-bg/10 rounded-[6px] border border-transparent hover:border-ts-error/20 transition-all duration-300 cursor-pointer"
                                 title={t.delete}
                               >
                                 <Trash2 size={12} />
@@ -1142,17 +1138,19 @@ export const Blog = () => {
                             <div />
                           )}
 
-                          <button
-                            onClick={() => { userNavRef.current = true; setSelectedPost(post); switchView('detail'); navigate(`/writing/${post.id}`); }}
-                            className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-ts-muted hover:text-ts-primary transition-colors group/read cursor-pointer"
+                          <div 
+                            className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.15em] text-ts-shiyun-muted group-hover:text-ts-shiyun-green transition-colors duration-300"
                           >
                             <span>{language === 'zh' ? '阅读全文' : 'Read Article'}</span>
-                            <ArrowRight size={10} className="transform group-hover/read:translate-x-1 transition-transform duration-300" />
-                          </button>
+                            <ArrowRight 
+                              size={10} 
+                              className="transform transition-transform duration-300 group-hover:translate-x-1 text-ts-shiyun-green"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </BorderGlow>
+                  </div>
                 );
               })}
             </div>
@@ -1174,7 +1172,8 @@ export const Blog = () => {
       )}
 
       {/* VIEW: Blog Detail */}
-      {view === 'detail' && selectedPost && (
+      {/* VIEW: Blog Detail */}
+      {view === 'detail' && (
         <div className="space-y-8 max-w-3xl mx-auto pt-6">
           {/* Back button & controls */}
           <div className="flex justify-between items-center pb-4 border-b border-ts-hairline dark:border-ts-navy-700">
@@ -1186,7 +1185,7 @@ export const Blog = () => {
               {t.back}
             </button>
 
-            {isAdmin && (
+            {isAdmin && selectedPost && (
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => handleOpenEdit(selectedPost)}
@@ -1206,58 +1205,64 @@ export const Blog = () => {
             )}
           </div>
 
-          {/* Shiyun WeChat MD Style Reading Interface */}
-          <div className="w-full bg-[#f3f1ea] p-4 sm:p-6 md:p-8 rounded-[12px] border border-[#eee6d6] shadow-[0_4px_24px_rgba(44,38,33,0.05)] text-left">
-            <article className="max-w-[720px] mx-auto bg-[#fffdf8] rounded-[8px] border border-[#eee6d6] overflow-hidden">
-              {/* Header section (styled inline WeChat-style) */}
-              <div style={{ padding: "28px 24px 0", background: "#fffdf8", color: "#24302f", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif" }}>
-                {/* Top Tags */}
-                <div style={{ margin: "0 0 18px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {selectedPost.tags.length > 0 ? (
-                    selectedPost.tags.map((tag) => (
-                      <span key={tag} style={{ display: "inline-block", padding: "4px 10px", borderRadius: "999px", background: "#edf4e7", color: "#5b7855", fontSize: "13px", fontWeight: 700, lineHeight: 1.6 }}>
+          {!selectedPost ? (
+            <div className="flex items-center justify-center p-24">
+              <Loader2 size={32} className="animate-spin text-ts-primary" />
+            </div>
+          ) : (
+            /* Shiyun WeChat MD Style Reading Interface */
+            <div className="w-full bg-[#f3f1ea] p-4 sm:p-6 md:p-8 rounded-[12px] border border-[#eee6d6] shadow-[0_4px_24px_rgba(44,38,33,0.05)] text-left">
+              <article className="max-w-[720px] mx-auto bg-[#fffdf8] rounded-[8px] border border-[#eee6d6] overflow-hidden">
+                {/* Header section (styled inline WeChat-style) */}
+                <div style={{ padding: "28px 24px 0", background: "#fffdf8", color: "#24302f", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif" }}>
+                  {/* Top Tags */}
+                  <div style={{ margin: "0 0 18px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    {selectedPost.tags.length > 0 ? (
+                      selectedPost.tags.map((tag) => (
+                        <span key={tag} style={{ display: "inline-block", padding: "4px 10px", borderRadius: "999px", background: "#edf4e7", color: "#5b7855", fontSize: "13px", fontWeight: 700, lineHeight: 1.6 }}>
+                          {tag}
+                        </span>
+                      ))
+                    ) : (
+                      <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: "999px", background: "#edf4e7", color: "#5b7855", fontSize: "13px", fontWeight: 700, lineHeight: 1.6 }}>
+                        {language === 'zh' ? '自修笔记' : 'Notes'}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <h1 style={{ margin: "0 0 12px", color: "#223030", fontSize: "26px", lineHeight: 1.35, fontWeight: 800, letterSpacing: 0 }}>
+                    {selectedPost.title}
+                  </h1>
+
+                  {/* Metadata */}
+                  <p style={{ margin: "0 0 26px", color: "#7a817b", fontSize: "13px", lineHeight: 1.8 }}>
+                    作者: {selectedPost.userName} / 发布时间: {formatDate(selectedPost.createdAt)} / {getReadTime(selectedPost.content, language === 'zh')}
+                  </p>
+                </div>
+
+                {/* WeChat Article Body */}
+                <div 
+                  dangerouslySetInnerHTML={{ __html: convertMarkdownToWechatHtmlInner(selectedPost.content) }}
+                />
+
+                {/* Tags footer */}
+                {selectedPost.tags.length > 0 && (
+                  <div style={{ padding: "0 24px 28px", background: "#fffdf8", display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                    {selectedPost.tags.map((tag) => (
+                      <span 
+                        key={tag}
+                        style={{ padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: 600, background: "#edf4e7", color: "#3f583f", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                      >
+                        <Tag size={10} />
                         {tag}
                       </span>
-                    ))
-                  ) : (
-                    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: "999px", background: "#edf4e7", color: "#5b7855", fontSize: "13px", fontWeight: 700, lineHeight: 1.6 }}>
-                      {language === 'zh' ? '自修笔记' : 'Notes'}
-                    </span>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h1 style={{ margin: "0 0 12px", color: "#223030", fontSize: "26px", lineHeight: 1.35, fontWeight: 800, letterSpacing: 0 }}>
-                  {selectedPost.title}
-                </h1>
-
-                {/* Metadata */}
-                <p style={{ margin: "0 0 26px", color: "#7a817b", fontSize: "13px", lineHeight: 1.8 }}>
-                  作者: {selectedPost.userName} / 发布时间: {formatDate(selectedPost.createdAt)} / {getReadTime(selectedPost.content, language === 'zh')}
-                </p>
-              </div>
-
-              {/* WeChat Article Body */}
-              <div 
-                dangerouslySetInnerHTML={{ __html: convertMarkdownToWechatHtmlInner(selectedPost.content) }}
-              />
-
-              {/* Tags footer */}
-              {selectedPost.tags.length > 0 && (
-                <div style={{ padding: "0 24px 28px", background: "#fffdf8", display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {selectedPost.tags.map((tag) => (
-                    <span 
-                      key={tag}
-                      style={{ padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: 600, background: "#edf4e7", color: "#3f583f", display: "inline-flex", alignItems: "center", gap: "4px" }}
-                    >
-                      <Tag size={10} />
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </article>
-          </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </div>
+          )}
         </div>
       )}
 
