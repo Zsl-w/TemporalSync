@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -27,6 +27,8 @@ import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { marked } from 'marked';
 import BorderGlow from '../components/BorderGlow';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 interface BlogPost {
   id: string;
@@ -469,6 +471,48 @@ export const Blog = () => {
   useFloatingOrbs(containerRef);
   useScrollReveal(containerRef);
 
+  // GSAP transition refs
+  const viewContainerRef = useRef<HTMLDivElement>(null);
+  const prevViewRef = useRef<'list' | 'detail' | 'create' | 'edit'>('list');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // useGSAP: animate view entrance when view changes
+  useGSAP(() => {
+    const el = viewContainerRef.current;
+    if (!el) return;
+    if (prevViewRef.current === view) return;
+    gsap.fromTo(el, 
+      { opacity: 0, y: 24, scale: 0.98 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'expo.out', clearProps: 'opacity,y,scale' }
+    );
+    prevViewRef.current = view;
+  }, { scope: viewContainerRef, dependencies: [view] });
+
+  // Animated view switcher: exit animation → then state swap triggers useGSAP entrance
+  const switchView = useCallback((newView: 'list' | 'detail' | 'create' | 'edit') => {
+    if (isTransitioning) return;
+    const el = viewContainerRef.current;
+    if (!el) {
+      setView(newView);
+      return;
+    }
+
+    setIsTransitioning(true);
+
+    gsap.to(el, {
+      opacity: 0,
+      scale: 0.97,
+      y: -12,
+      duration: 0.2,
+      ease: 'power2.in',
+      onComplete: () => {
+        setView(newView);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        setTimeout(() => setIsTransitioning(false), 400);
+      }
+    });
+  }, [isTransitioning]);
+
   // States
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -492,21 +536,29 @@ export const Blog = () => {
     return Array.from(new Set(allTags)).filter(Boolean);
   }, [posts]);
 
+  // Track if navigation was triggered by user click (not URL-based)
+  const userNavRef = useRef(false);
+
   useEffect(() => {
     if (loading) return;
+
+    // Skip if user already triggered switchView via click
+    if (userNavRef.current) {
+      userNavRef.current = false;
+      return;
+    }
 
     if (id) {
       const post = posts.find(p => p.id === id);
       if (post) {
         setSelectedPost(post);
-        setView('detail');
+        switchView('detail');
       } else {
         navigate('/writing', { replace: true });
       }
     } else {
       if (view === 'detail') {
-        setSelectedPost(null);
-        setView('list');
+        switchView('list');
       }
     }
   }, [id, posts, loading]);
@@ -547,7 +599,7 @@ export const Blog = () => {
       setContent(parsed.content);
 
       if (importSourceRef.current === 'list') {
-        setView('create');
+        switchView('create');
       }
     };
     reader.readAsText(file);
@@ -670,7 +722,7 @@ export const Blog = () => {
     setSummary(post.summary);
     setTags(post.tags.join(', '));
     setContent(post.content);
-    setView('edit');
+    switchView('edit');
   };
 
   // Handle Save Update
@@ -865,6 +917,7 @@ export const Blog = () => {
 
   return (
     <div ref={containerRef} className="space-y-12 pb-24 immersive-section">
+      <div ref={viewContainerRef}>
       
       {/* Immersive Header Section (Lists only, details handle internally) */}
       {view === 'list' && (
@@ -905,7 +958,7 @@ export const Blog = () => {
                     setSummary('');
                     setTags('');
                     setContent('');
-                    setView('create');
+                    switchView('create');
                   }}
                   className="flex items-center gap-2 px-5 py-3 rounded-[8px] bg-ts-primary text-white text-xs font-bold hover:bg-ts-primary-hover transition-all shadow-sm cursor-pointer"
                 >
@@ -989,7 +1042,7 @@ export const Blog = () => {
 
                         {/* Title button */}
                         <button
-                          onClick={() => navigate(`/writing/${post.id}`)}
+                          onClick={() => { userNavRef.current = true; setSelectedPost(post); switchView('detail'); navigate(`/writing/${post.id}`); }}
                           className="text-left block group/title font-serif text-lg font-bold text-ts-ink leading-snug cursor-pointer transition-colors max-h-[48px] overflow-hidden line-clamp-2"
                           title={post.title}
                         >
@@ -1040,7 +1093,7 @@ export const Blog = () => {
                           )}
 
                           <button
-                            onClick={() => navigate(`/writing/${post.id}`)}
+                            onClick={() => { userNavRef.current = true; setSelectedPost(post); switchView('detail'); navigate(`/writing/${post.id}`); }}
                             className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-ts-muted hover:text-ts-primary transition-colors group/read cursor-pointer"
                           >
                             <span>{language === 'zh' ? '阅读全文' : 'Read Article'}</span>
@@ -1076,7 +1129,7 @@ export const Blog = () => {
           {/* Back button & controls */}
           <div className="flex justify-between items-center pb-4 border-b border-ts-hairline dark:border-ts-navy-700">
             <button
-              onClick={() => navigate('/writing')}
+              onClick={() => { userNavRef.current = true; switchView('list'); navigate('/writing'); }}
               className="inline-flex items-center gap-2 text-xs font-bold text-ts-muted hover:text-ts-ink transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
@@ -1164,7 +1217,7 @@ export const Blog = () => {
           {/* Header Bar */}
           <div className="flex justify-between items-center pb-4 border-b border-ts-hairline dark:border-ts-navy-700">
             <button
-              onClick={() => navigate('/writing')}
+              onClick={() => { userNavRef.current = true; switchView('list'); navigate('/writing'); }}
               className="inline-flex items-center gap-2 text-xs font-bold text-ts-muted hover:text-ts-ink transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
@@ -1324,6 +1377,7 @@ export const Blog = () => {
           </form>
         </div>
       )}
+      </div>
       <input
         type="file"
         ref={fileInputRef}
