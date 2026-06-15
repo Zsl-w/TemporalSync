@@ -142,7 +142,7 @@ const getReadTime = (content: string, isZh: boolean) => {
   return isZh ? `${minutes} 分钟阅读` : `${minutes} min read`;
 };
 
-// isAdmin is now imported from AuthContext
+// isAdmin from AuthContext
 
 const getFirstImageUrl = (content: string): string | null => {
   if (!content) return null;
@@ -460,7 +460,7 @@ function convertMarkdownToWechatHtmlInner(markdown: string): string {
 }
 
 export const Blog = () => {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const { language } = useSettings();
   const containerRef = useRef<HTMLDivElement>(null);
   const { id } = useParams<{ id?: string }>();
@@ -611,7 +611,7 @@ export const Blog = () => {
   // Handle Publish / Create
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!isAdmin) return;
     if (!title.trim() || !content.trim()) return;
 
     setSaving(true);
@@ -625,18 +625,11 @@ export const Blog = () => {
       summary: summary.trim() || (content.slice(0, 120) + '...'),
       tags: parsedTags,
       content: content,
-      userId: user.uid,
-      userName: user.displayName || user.email || 'Author',
+      userId: 'admin',
+      userName: 'Admin',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-
-    if (user.isMock) {
-      // Offline mock storage
-      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
-      const localBlogs = localBlogsRaw ? JSON.parse(localBlogsRaw) : [];
-      const newPost = {
-        ...postData,
         id: `local_${Date.now()}`
       };
       localBlogs.unshift(newPost);
@@ -697,7 +690,7 @@ export const Blog = () => {
   // Handle Save Update
   const handleUpdatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !selectedPost) return;
+    if (!isAdmin || !selectedPost) return;
     if (!title.trim() || !content.trim()) return;
 
     setSaving(true);
@@ -706,7 +699,7 @@ export const Blog = () => {
       .map(t => t.trim())
       .filter(Boolean);
 
-    const isLocal = selectedPost.id.startsWith('local_') || user.isMock;
+    const isLocal = selectedPost.id.startsWith('local_');
 
     if (isLocal) {
       const localBlogsRaw = localStorage.getItem('ts-local-blogs');

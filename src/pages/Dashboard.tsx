@@ -7,7 +7,6 @@ import { useCounterAnimation } from '../hooks/useCounterAnimation';
 import { useScrollRefresh } from '../hooks/useScrollRefresh';
 import { cn } from '../lib/utils';
 import { Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { 
   AreaChart, 
@@ -40,7 +39,6 @@ const BRAND_COLORS = {
 };
 
 export const Dashboard = () => {
-  const { user } = useAuth();
   const { language } = useSettings();
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -169,7 +167,7 @@ export const Dashboard = () => {
           </div>
           <h1 className="text-[64px] lg:text-[84px] font-display font-black text-ts-neutral-900 leading-[0.9] tracking-tighter mb-6">
             {t.welcome}<br />
-            <span className="text-ts-navy-800 drop-shadow-[0_0_15px_rgba(0,47,167,0.1)]"> {user?.displayName || (language === 'zh' ? '访客' : 'Guest')}.</span>
+            <span className="text-ts-navy-800 drop-shadow-[0_0_15px_rgba(0,47,167,0.1)]"> {language === 'zh' ? '访客' : 'Guest'}.</span>
           </h1>
           <div className="flex flex-col md:flex-row md:items-center gap-8">
             <p className="text-ts-neutral-400 text-[15px] font-medium max-w-md leading-relaxed">

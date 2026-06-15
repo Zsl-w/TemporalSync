@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 
 export const SettingsPage = () => {
   const { theme, setTheme, accentColor, setAccentColor, fontSize, setFontSize, language, setLanguage, resetSettings } = useSettings();
-  const { user, signOut } = useAuth();
+  const { isAdmin, toggleAdmin } = useAuth();
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -33,38 +33,28 @@ export const SettingsPage = () => {
         <div className="relative z-10 space-y-10">
           <div className="flex items-start gap-3 px-1">
             <UserIcon size={14} className="text-ts-primary" />
-            <h2 className="text-[11px] font-black text-ts-neutral-400 uppercase tracking-widest">账户管理</h2>
+            <h2 className="text-[11px] font-black text-ts-neutral-400 uppercase tracking-widest">管理员</h2>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="flex items-center gap-6">
-              <div className="relative">
-                <div className="w-20 h-20 rounded-[8px] bg-ts-primary flex items-center justify-center text-white overflow-hidden shadow-2xl">
-                  {user?.photoURL ? (
-                    <img src={user.photoURL} alt="Avatar" className="w-full h-full object-cover" />
-                  ) : (
-                    <UserIcon size={32} />
-                  )}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-white text-ts-success">
-                  <ShieldCheck size={16} fill="currentColor" className="text-white" />
-                </div>
+              <div className="w-20 h-20 rounded-[8px] bg-ts-primary/10 flex items-center justify-center overflow-hidden shadow-2xl">
+                <ShieldCheck size={32} className={isAdmin ? "text-ts-primary" : "text-ts-neutral-300"} />
               </div>
               <div>
-                <h3 className="text-[20px] font-display font-black text-ts-neutral-900">{user?.displayName || '未认证访客'}</h3>
+                <h3 className="text-[20px] font-display font-black text-ts-neutral-900">{isAdmin ? '管理模式已开启' : '管理模式已关闭'}</h3>
                 <div className="flex items-center gap-2 mt-1 text-ts-neutral-400">
-                  <Mail size={12} />
-                  <span className="text-[12px] font-medium">{user?.email || '未绑定邮箱'}</span>
+                  <span className="text-[12px] font-medium">{isAdmin ? '你可以编辑博客和内容' : '点击导航栏盾牌图标进入管理模式'}</span>
                 </div>
               </div>
             </div>
 
-            {user && (
+            {isAdmin && (
               <button 
-                onClick={signOut}
+                onClick={() => toggleAdmin()}
                 className="px-8 h-14 glass-card rounded-2xl flex items-center gap-3 text-ts-error hover:bg-ts-error hover:text-white transition-all text-[12px] font-black uppercase tracking-widest group/logout"
               >
-                登出账户
+                退出管理模式
                 <LogOut size={18} className="group-hover/logout:translate-x-1 transition-transform" />
               </button>
             )}
