@@ -630,20 +630,6 @@ export const Blog = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-        id: `local_${Date.now()}`
-      };
-      localBlogs.unshift(newPost);
-      localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
-      
-      setTitle('');
-      setSummary('');
-      setTags('');
-      setContent('');
-      await fetchPosts();
-      navigate('/writing');
-      setSaving(false);
-      return;
-    }
 
     try {
       await addDocument('blogs', postData);

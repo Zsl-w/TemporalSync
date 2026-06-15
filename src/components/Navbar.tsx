@@ -78,6 +78,7 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
   };
 
   return (
+    <>
     <header 
       ref={navRef} 
       className="sticky top-4 mt-4 z-50 w-[calc(100%-2rem)] max-w-7xl mx-auto h-14 border rounded-[12px] shadow-sm transition-all duration-300"
@@ -156,7 +157,8 @@ export const Navbar = ({ showContact, setShowContact }: NavbarProps) => {
             </button>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* Admin password prompt */}
       {showAdminPrompt && (
