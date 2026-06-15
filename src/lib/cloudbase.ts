@@ -11,6 +11,38 @@
 
 import cloudbase from "@cloudbase/js-sdk";
 
+// ============================================================
+// Fetch interceptor: Rewrite CloudBase API calls through
+// same-origin Node Function proxy to bypass CORS.
+//
+// The free CloudBase plan blocks adding custom CORS domains.
+// This proxy routes all tcloudbasegateway.com requests through
+// /tcb-proxy/* (Node Function) which runs on the same origin.
+//
+// Only active on non-localhost origins (production).
+// ============================================================
+const _nativeFetch = globalThis.fetch.bind(globalThis);
+const CLOUDBASE_GATEWAY_PATTERN = /\.api\.tcloudbasegateway\.com\//;
+
+const isProduction = typeof window !== "undefined"
+  && window.location
+  && !window.location.hostname.includes("localhost")
+  && !window.location.hostname.includes("127.0.0.1");
+
+if (isProduction) {
+  globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+
+    if (CLOUDBASE_GATEWAY_PATTERN.test(url)) {
+      const parsed = new URL(url);
+      const proxyPath = "/tcb-proxy/" + parsed.pathname.replace(/^\//, "") + parsed.search;
+      return _nativeFetch(proxyPath, init);
+    }
+
+    return _nativeFetch(input, init);
+  };
+}
+
 // --- Configuration ---
 // CloudBase 核心配置：env + region + accessKey 是前端公开信息，必须硬编码
 // 否则线上构建时 .env 不可用导致 "Failed to fetch"
