@@ -2,8 +2,7 @@
  * CloudBase API reverse proxy.
  *
  * Forwards all requests to CloudBase gateway, bypassing CORS restrictions
- * that occur when the front-end domain is not in CloudBase's allowlist
- * (free tier limitation).
+ * for the free-tier plan that can't add custom domains.
  *
  * Route: /tcb-proxy/*
  * Target: https://{envId}.api.tcloudbasegateway.com/*
@@ -18,51 +17,64 @@ export async function onRequest(context: {
 }) {
   const { request, params } = context;
 
-  // Extract the remaining path from the catch-all param
-  // params.default is an array of path segments
-  const routePath = params.default?.join("/") ?? "";
-  const targetUrl = `${TARGET_BASE}/${routePath}`;
+  // Handle preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }
 
-  // Forward query string
-  const url = new URL(request.url);
-  const queryString = url.search;
-  const fullTarget = `${targetUrl}${queryString}`;
+  // Build target URL from catch-all params
+  const routePath = (params.default ?? []).join("/");
+  const targetUrl = TARGET_BASE + "/" + routePath + new URL(request.url).search;
 
   try {
-    // Build forwarded request with original headers
-    const headers = new Headers(request.headers);
-
-    // Remove hop-by-hop headers to avoid issues
-    headers.delete("host");
-    headers.delete("origin");
-    headers.delete("referer");
-
-    const proxyRequest = new Request(fullTarget, {
-      method: request.method,
-      headers,
-      body: request.method !== "GET" && request.method !== "HEAD"
-        ? await request.clone().arrayBuffer()
-        : undefined,
+    // Forward headers (strip browser-specific ones)
+    const forwardHeaders = new Headers();
+    request.headers.forEach((value, key) => {
+      const lower = key.toLowerCase();
+      if (lower !== "host" && lower !== "origin" && lower !== "referer") {
+        forwardHeaders.set(key, value);
+      }
     });
 
-    const proxyResponse = await fetch(proxyRequest);
+    // Read body as raw bytes (works for GET too if there's no body)
+    let body: ArrayBuffer | null = null;
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      try {
+        body = await request.arrayBuffer();
+      } catch {
+        // no body
+      }
+    }
 
-    // Build response with CORS headers
-    const responseHeaders = new Headers(proxyResponse.headers);
-    responseHeaders.set("Access-Control-Allow-Origin", "*");
-    responseHeaders.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-    responseHeaders.set("Access-Control-Allow-Headers", "*");
-    responseHeaders.delete("set-cookie"); // cookies not needed for auth API
+    const proxyResponse = await fetch(targetUrl, {
+      method: request.method,
+      headers: forwardHeaders,
+      body: body && body.byteLength > 0 ? body : undefined,
+    });
+
+    // Return proxy response with CORS headers
+    const respHeaders = new Headers(proxyResponse.headers);
+    respHeaders.set("Access-Control-Allow-Origin", "*");
+    respHeaders.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS");
+    respHeaders.set("Access-Control-Allow-Headers", "*");
 
     return new Response(proxyResponse.body, {
       status: proxyResponse.status,
       statusText: proxyResponse.statusText,
-      headers: responseHeaders,
+      headers: respHeaders,
     });
   } catch (e: any) {
-    console.error("[TCB Proxy] Error forwarding request:", e.message);
+    console.error("[TCB Proxy] Error:", e.message || e);
     return new Response(
-      JSON.stringify({ error: "Proxy error", detail: e.message }),
+      JSON.stringify({ error: "Proxy error", detail: String(e.message || e) }),
       {
         status: 502,
         headers: {
