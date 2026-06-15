@@ -476,21 +476,67 @@ export const Blog = () => {
   const prevViewRef = useRef<'list' | 'detail' | 'create' | 'edit'>('list');
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Accessibility: check prefers-reduced-motion
+  const prefersReducedMotion = useMemo(() => 
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  , []);
+
+  // View-specific entrance animation configs
+  const getEntranceConfig = (fromView: string, toView: string) => {
+    if (toView === 'detail') {
+      // Article rises from below — reading immersion
+      return { from: { opacity: 0, y: 20, scale: 0.98 }, to: { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'expo.out' } };
+    }
+    if (toView === 'list' && fromView === 'detail') {
+      // Return to list — subtle retreat
+      return { from: { opacity: 0, y: -8 }, to: { opacity: 1, y: 0, duration: 0.25, ease: 'expo.out' } };
+    }
+    if (toView === 'create' || toView === 'edit') {
+      // Editor slides in from right — workspace feel
+      return { from: { opacity: 0, x: 40 }, to: { opacity: 1, x: 0, duration: 0.3, ease: 'power3.out' } };
+    }
+    if (toView === 'list' && (fromView === 'create' || fromView === 'edit')) {
+      // Return from editor — collapse left
+      return { from: { opacity: 0, x: -20 }, to: { opacity: 1, x: 0, duration: 0.25, ease: 'power2.inOut' } };
+    }
+    // Default
+    return { from: { opacity: 0, y: 16, scale: 0.98 }, to: { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'expo.out' } };
+  };
+
   // useGSAP: animate view entrance when view changes
   useGSAP(() => {
     const el = viewContainerRef.current;
     if (!el) return;
     if (prevViewRef.current === view) return;
-    gsap.fromTo(el, 
-      { opacity: 0, y: 24, scale: 0.98 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'expo.out', clearProps: 'opacity,y,scale' }
-    );
+    if (prefersReducedMotion) { prevViewRef.current = view; return; }
+
+    const config = getEntranceConfig(prevViewRef.current, view);
+    const tl = gsap.timeline();
+
+    // Container entrance
+    tl.fromTo(el, config.from, { ...config.to, clearProps: 'opacity,y,x,scale' });
+
+    // Stagger blog cards when returning to list
+    if (view === 'list') {
+      const cards = el.querySelectorAll('.blog-card');
+      if (cards.length) {
+        tl.fromTo(cards, 
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.25, stagger: 0.06, ease: 'expo.out', clearProps: 'opacity,y' },
+          0.1 // start slightly after container
+        );
+      }
+    }
+
+    tl.call(() => setIsTransitioning(false));
     prevViewRef.current = view;
   }, { scope: viewContainerRef, dependencies: [view] });
 
   // Animated view switcher: exit animation → then state swap triggers useGSAP entrance
   const switchView = useCallback((newView: 'list' | 'detail' | 'create' | 'edit') => {
     if (isTransitioning) return;
+    if (prefersReducedMotion) { setView(newView); return; }
+
     const el = viewContainerRef.current;
     if (!el) {
       setView(newView);
@@ -499,19 +545,23 @@ export const Blog = () => {
 
     setIsTransitioning(true);
 
+    // Exit animation: fade out + slight retreat
+    const exitY = newView === 'list' ? 8 : -12; // going back feels "up", going deeper feels "down"
+    const exitX = (newView === 'create' || newView === 'edit') ? -30 : 0; // editor exits left
+
     gsap.to(el, {
       opacity: 0,
       scale: 0.97,
-      y: -12,
-      duration: 0.2,
+      y: exitY,
+      x: exitX,
+      duration: 0.18,
       ease: 'power2.in',
       onComplete: () => {
         setView(newView);
         window.scrollTo({ top: 0, behavior: 'instant' });
-        setTimeout(() => setIsTransitioning(false), 400);
       }
     });
-  }, [isTransitioning]);
+  }, [isTransitioning, prefersReducedMotion]);
 
   // States
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -1013,7 +1063,7 @@ export const Blog = () => {
                     coneSpread={20}
                     animated={false}
                     colors={['#B497CF', '#ff9aa5', '#e2d6f5']}
-                    className="flex flex-col h-[380px] w-full"
+                    className="blog-card flex flex-col h-[380px] w-full"
                   >
                     {/* Header Image Cover */}
                     <div className="relative w-full h-[190px] overflow-hidden bg-ts-surface-elevated/40 shrink-0">
