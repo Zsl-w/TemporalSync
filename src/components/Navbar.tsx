@@ -123,8 +123,6 @@ export const Navbar = () => {
             <NavItem to="/blog" label="BLOG" />
           </nav>
 
-          <span className="hidden sm:inline w-px h-4 bg-ts-hairline" />
-
           {/* Social Icons & Controls */}
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Language Toggle */}

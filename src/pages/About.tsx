@@ -94,7 +94,7 @@ export const About = () => {
             {['AI WATCH', 'BLOG', 'TOOLS', 'STUDIO ID'].map(item => (
               <span
                 key={item}
-                className="border border-ts-hairline bg-ts-surface px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-ts-body/80"
+                className="bg-ts-surface/40 dark:bg-black/10 backdrop-blur-sm px-4.5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.28em] text-ts-body/80 shadow-sm"
               >
                 {item}
               </span>
