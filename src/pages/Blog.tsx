@@ -237,8 +237,13 @@ export const Blog = () => {
   return (
     <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
       {!id && (
-        <div className="w-full h-[220px] mt-[-4rem] relative bg-[linear-gradient(135deg,#F4C095_0%,#EE7B62_25%,#E1516E_50%,#A84A8C_75%,#6A3783_100%)] overflow-hidden flex items-end pb-7 select-none z-10 shadow-inner">
-          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay" />
+        <div 
+          className="w-full h-[220px] mt-[-4rem] relative overflow-hidden flex items-end pb-7 select-none z-10 shadow-inner"
+          style={{
+            background: 'radial-gradient(circle at 10% 20%, rgba(244, 192, 149, 0.9) 0%, transparent 45%), radial-gradient(circle at 90% 10%, rgba(168, 74, 140, 0.9) 0%, transparent 50%), radial-gradient(circle at 50% 80%, rgba(225, 81, 110, 0.95) 0%, transparent 60%), radial-gradient(circle at 80% 90%, rgba(106, 55, 131, 1) 0%, transparent 60%), radial-gradient(circle at 0% 90%, rgba(238, 123, 98, 0.95) 0%, transparent 55%), linear-gradient(135deg, #EE7B62, #6A3783)'
+          }}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay" />
           <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
             <div className="flex items-center gap-5 bg-white/10 dark:bg-black/15 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-white/15 dark:hover:bg-black/20 hover:scale-[1.01] hover:-translate-y-0.5 group/capsule cursor-pointer max-w-xl">
               
