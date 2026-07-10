@@ -462,11 +462,6 @@ function getFallbackEnrichment(title: string, summary: string) {
     }
   });
 
-  // Serve the shiyun-wechat-md project statically under /shiyun-wechat-md
-  app.use("/shiyun-wechat-md", express.static(path.join(process.cwd(), "../shiyun-wechat-md")));
-  app.get("/shiyun-wechat-md", (req, res) => {
-    res.redirect("/shiyun-wechat-md/shiyun-wechat-converter.html");
-  });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {

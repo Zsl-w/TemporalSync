@@ -2,9 +2,7 @@
   "name": "temporalsync",
   "buildCommand": "npm run build",
   "outputDirectory": "./dist",
-  "redirects": [
-    { "source": "/shiyun-wechat-md", "destination": "/shiyun-wechat-md/shiyun-wechat-converter.html", "statusCode": 302 }
-  ],
+  "redirects": [],
   "headers": [
     {
       "source": "/assets/*",
