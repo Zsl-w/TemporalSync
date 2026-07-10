@@ -64,7 +64,7 @@ const getFirstImageUrl = (content: string): string | null => {
 // Apple inspired dynamic brand logo cover placeholder
 const CoverPlaceholder = () => {
   return (
-    <div className="w-full h-full absolute inset-0 select-none overflow-hidden flex flex-col items-center justify-center p-6 border border-ts-hairline/40 rounded-2xl bg-gradient-to-br from-ts-canvas to-ts-surface-elevated transition-colors duration-500">
+    <div className="w-full h-full absolute inset-0 select-none overflow-hidden flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-ts-canvas to-ts-surface-elevated transition-colors duration-500">
       {/* Dynamic Background subtle grid */}
       <div className="absolute inset-0 bg-[radial-gradient(rgba(120,119,198,0.05)_1px,transparent_1px)] [background-size:20px_20px] opacity-60" />
       
@@ -73,7 +73,7 @@ const CoverPlaceholder = () => {
 
       {/* Brand logo container */}
       <div className="relative z-10 flex flex-col items-center gap-3">
-        <div className="p-3.5 rounded-2xl bg-ts-surface/40 backdrop-blur-md border border-ts-hairline/60 shadow-sm transition-transform duration-500 group-hover:scale-[1.08]">
+        <div className="p-3.5 rounded-2xl bg-ts-surface/40 backdrop-blur-md shadow-sm transition-transform duration-500 group-hover:scale-[1.08]">
           <img 
             src="/logo-mark.png" 
             alt="TSync Logo" 
@@ -291,13 +291,13 @@ export const Blog = () => {
                     className="group flex flex-col space-y-4 cursor-pointer"
                     onClick={() => navigate(`/blog/${post.id}`)}
                   >
-                    {/* Cover image wrapper */}
-                    <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden relative bg-[#1C1C24]">
+                    {/* Cover image wrapper (elevated on hover with shadow transformations) */}
+                    <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden relative bg-ts-surface-elevated shadow-md dark:shadow-black/25 transition-all duration-300 ease-out group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:shadow-black/10 dark:group-hover:shadow-black/50">
                       {coverUrl ? (
                         <img 
                           src={coverUrl} 
                           alt={post.title} 
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.01]"
                           loading="lazy"
                         />
                       ) : (
