@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Mail, Instagram, Twitter, Globe, Settings, Github } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useSettings } from '../context/SettingsContext';
@@ -32,6 +32,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
 
 export const Navbar = () => {
   const { language, setLanguage } = useSettings();
+  const location = useLocation();
 
   return (
     <header className="w-full h-16 sticky top-0 bg-ts-canvas/80 backdrop-blur-md flex items-center select-none z-50 transition-all duration-300">
@@ -53,7 +54,58 @@ export const Navbar = () => {
           <nav className="hidden md:flex items-center h-full gap-1">
             <NavItem to="/" label={language === 'zh' ? '关于' : 'ABOUT'} />
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
-            <NavItem to="/work" label={language === 'zh' ? '自习室' : 'WORK'} />
+            
+            {/* WORK Item with hover sub-navigation */}
+            <div className="relative h-full group flex items-center">
+              <NavLink
+                to="/work"
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center h-full px-4 text-[15.3px] font-bold tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
+                    (isActive || location.pathname === '/shiyun-wechat-md') && "text-ts-ink"
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span>{language === 'zh' ? '自习室' : 'WORK'}</span>
+                    {(isActive || location.pathname === '/shiyun-wechat-md') && (
+                      <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
+                    )}
+                  </>
+                )}
+              </NavLink>
+
+              {/* Sub-navigation Dropdown popup */}
+              <div className="absolute top-[calc(100%-8px)] left-1/2 -translate-x-1/2 pt-3 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 ease-out origin-top z-[100] w-52">
+                <div className="bg-ts-surface/90 backdrop-blur-md border border-ts-hairline rounded-xl shadow-xl overflow-hidden p-1.5 flex flex-col gap-0.5">
+                  <NavLink
+                    to="/work"
+                    end
+                    className={({ isActive }) =>
+                      cn(
+                        "px-3 py-2 text-[13px] font-semibold rounded-lg text-ts-ink/80 hover:text-ts-ink hover:bg-ts-surface-elevated/60 transition-colors flex items-center justify-between",
+                        isActive && "bg-ts-surface-elevated text-ts-ink"
+                      )
+                    }
+                  >
+                    <span>{language === 'zh' ? '自习室首页' : 'Work Sandbox'}</span>
+                  </NavLink>
+                  <NavLink
+                    to="/shiyun-wechat-md"
+                    className={({ isActive }) =>
+                      cn(
+                        "px-3 py-2 text-[13px] font-semibold rounded-lg text-ts-ink/80 hover:text-ts-ink hover:bg-ts-surface-elevated/60 transition-colors flex items-center justify-between",
+                        isActive && "bg-ts-surface-elevated text-ts-ink"
+                      )
+                    }
+                  >
+                    <span>{language === 'zh' ? '微信排版工具' : 'WeChat Formatter'}</span>
+                  </NavLink>
+                </div>
+              </div>
+            </div>
+
             <NavItem to="/blog" label={language === 'zh' ? '博客' : 'BLOG'} />
           </nav>
         </div>
