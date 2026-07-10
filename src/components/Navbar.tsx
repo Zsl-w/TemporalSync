@@ -36,7 +36,7 @@ export const Navbar = () => {
 
   return (
     <header className="w-full h-16 sticky top-0 bg-ts-canvas/94 backdrop-blur-md flex items-center select-none z-50 transition-all duration-300">
-      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-full">
+      <div className="w-full max-w-[1720px] mx-auto px-6 md:px-12 flex items-center justify-between h-full">
         {/* Left Section: Logo & Brand */}
         <div className="flex items-center h-full">
           <NavLink to="/" className="flex items-center gap-3 group mr-8">
