@@ -408,8 +408,8 @@ export const Blog = () => {
                   [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ul]:space-y-1.5
                   [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>ol]:space-y-1.5
                   [&>blockquote]:border-l-4 [&>blockquote]:border-[#F9B9A6] [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-[#86868B] [&>blockquote]:my-4
-                  [&>pre]:bg-[#1C1C24] dark:[&>pre]:bg-[#1C1C24] [&>pre]:p-4 [&>pre]:rounded-lg [&>pre]:overflow-x-auto [&>pre]:my-4 [&>pre]:font-mono [&>pre]:text-xs
-                  [&>code]:font-mono [&>code]:bg-[#1C1C24] dark:[&>code]:bg-[#1C1C24] [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-[#F9B6B6]"
+                  [&>pre]:bg-neutral-100 [&>pre]:text-neutral-800 dark:[&>pre]:bg-[#1C1C24] dark:[&>pre]:text-[#E3E3E6] [&>pre]:p-4 [&>pre]:rounded-lg [&>pre]:overflow-x-auto [&>pre]:my-4 [&>pre]:font-mono [&>pre]:text-xs
+                  [&>code]:font-mono [&>code]:bg-neutral-100 [&>code]:text-[#c13838] dark:[&>code]:bg-[#1C1C24] dark:[&>code]:text-[#F9B6B6] [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded"
                 dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
               />
             </article>
