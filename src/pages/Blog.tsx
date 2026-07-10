@@ -302,7 +302,7 @@ export const Blog = () => {
 
                     {/* Content info */}
                     <div className="space-y-2">
-                      <h3 className="text-xl md:text-2xl font-display font-bold text-ts-ink leading-tight">
+                      <h3 className="text-xl md:text-2xl font-display font-bold text-ts-ink leading-tight line-clamp-1">
                         {post.title}
                       </h3>
                       <p className="text-ts-ink text-sm md:text-base line-clamp-2 leading-relaxed h-[3.25em] overflow-hidden">
