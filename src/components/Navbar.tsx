@@ -76,19 +76,21 @@ export const Navbar = () => {
                 )}
               </NavLink>
 
-              {/* Sub-navigation Dropdown popup */}
-              <div className="absolute top-[calc(100%-8px)] left-1/2 -translate-x-1/2 pt-3 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 ease-out origin-top z-[100] w-52">
-                <div className="bg-ts-surface/80 backdrop-blur-md border border-ts-hairline rounded-xl shadow-xl overflow-hidden p-1.5 flex flex-col">
+              {/* Sub-navigation Dropdown popup (Replicating user's design reference) */}
+              <div className="absolute top-[calc(100%-12px)] left-4 pt-3.5 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-300 ease-out origin-top-left z-[100] w-60">
+                <div className="bg-white/40 dark:bg-[#12121a]/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[20px] shadow-2xl p-6 flex flex-col gap-4 select-none">
                   <NavLink
                     to="/shiyun-wechat-md"
                     className={({ isActive }) =>
                       cn(
-                        "px-3 py-2 text-[13px] font-semibold rounded-lg text-ts-ink/80 hover:text-ts-ink hover:bg-ts-surface-elevated/60 transition-colors flex items-center justify-between",
-                        isActive && "bg-ts-surface-elevated text-ts-ink"
+                        "text-[13.5px] font-bold font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        isActive
+                          ? "text-ts-ink"
+                          : "text-ts-ink/75 hover:text-ts-ink"
                       )
                     }
                   >
-                    <span>{language === 'zh' ? '微信排版工具' : 'WeChat Formatter'}</span>
+                    {language === 'zh' ? '微信排版工具' : 'WeChat Formatter'}
                   </NavLink>
                 </div>
               </div>
