@@ -237,14 +237,30 @@ export const Blog = () => {
   return (
     <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
       {!id && (
-        <div className="w-full h-[180px] mt-[-4rem] relative bg-gradient-to-r from-[#FF8C66] via-[#FF5E62] to-[#A254F2] dark:from-[#9c4c32] dark:via-[#913234] dark:to-[#5e2b8f] overflow-hidden flex items-end pb-6 select-none z-10">
-          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:16px_16px] opacity-45" />
+        <div className="w-full h-[220px] mt-[-4rem] relative bg-[linear-gradient(135deg,#F4C095_0%,#EE7B62_25%,#E1516E_50%,#A84A8C_75%,#6A3783_100%)] overflow-hidden flex items-end pb-7 select-none z-10 shadow-inner">
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay" />
           <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
-            <div className="flex items-center gap-3.5 bg-white/10 dark:bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 dark:border-white/10 shadow-sm">
-              <BookOpen size={16} className="text-white" />
-              <span className="text-[13px] md:text-[14px] font-display font-bold tracking-[0.08em] text-white uppercase">
-                {language === 'zh' ? '想法流 · 记录创造与技术日常' : 'LOGGING COGNITIVE FLUX & DIGITAL CRAFTS'}
-              </span>
+            <div className="flex items-center gap-5 bg-white/10 dark:bg-black/15 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-white/15 dark:hover:bg-black/20 hover:scale-[1.01] hover:-translate-y-0.5 group/capsule cursor-pointer max-w-xl">
+              
+              {/* Layered 3D Sticker Stack */}
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#FF9F66] to-[#FF416C] opacity-40 transform -rotate-12 translate-x-[-2px] translate-y-[2px] transition-transform duration-500 group-hover/capsule:-rotate-[18deg]" />
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#A84A8C] to-[#6A3783] opacity-60 transform rotate-6 translate-x-[2px] translate-y-[-1px] transition-transform duration-500 group-hover/capsule:rotate-[12deg]" />
+                <div className="absolute inset-0 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-md transition-transform duration-500 group-hover/capsule:scale-105">
+                  <BookOpen size={20} className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]" />
+                </div>
+              </div>
+
+              {/* Text Slogan */}
+              <div className="space-y-1">
+                <span className="text-[10px] font-black text-white/55 tracking-[0.2em] uppercase leading-none block">
+                  {language === 'zh' ? '主题专栏' : 'Theme Slogan'}
+                </span>
+                <span className="text-[14px] sm:text-[15px] font-display font-bold tracking-[0.06em] text-white uppercase leading-snug block drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+                  {language === 'zh' ? '想法流 · 记录创造与技术日常' : 'LOGGING COGNITIVE FLUX & DIGITAL CRAFTS'}
+                </span>
+              </div>
+
             </div>
           </div>
         </div>
