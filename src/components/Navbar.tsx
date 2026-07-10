@@ -35,7 +35,7 @@ export const Navbar = () => {
   const location = useLocation();
 
   return (
-    <header className="w-full h-16 sticky top-0 bg-ts-canvas/80 backdrop-blur-md flex items-center select-none z-50 transition-all duration-300">
+    <header className="w-full h-16 sticky top-0 bg-ts-surface/90 backdrop-blur-md border-b border-ts-hairline/40 flex items-center select-none z-50 transition-all duration-300">
       <div className="w-full max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-full">
         {/* Left Section: Logo & Brand */}
         <div className="flex items-center h-full">
