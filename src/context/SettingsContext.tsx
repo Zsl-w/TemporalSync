@@ -19,7 +19,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem('ts-theme') as Theme) || 'light'
+    () => (localStorage.getItem('ts-theme') as Theme) || 'dark'
   );
   const [accentColor, setAccentColor] = useState(
     () => localStorage.getItem('ts-accent') || '#B497CF'
@@ -31,16 +31,32 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     () => (localStorage.getItem('ts-lang') as Language) || 'en'
   );
 
-  // Apply Theme (Permanently forced to dark mode for Raycast background)
+  // Apply Theme
   useEffect(() => {
-    localStorage.setItem('ts-theme', 'dark');
+    localStorage.setItem('ts-theme', theme);
     const root = window.document.documentElement;
     const meta = window.document.getElementById('theme-color-meta');
 
-    root.classList.add('dark');
-    root.classList.remove('light');
-    root.style.backgroundColor = '#FAF6EE';
-    if (meta) meta.setAttribute('content', '#FAF6EE');
+    // Trigger smooth transition class
+    root.classList.add('theme-transition');
+
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      root.style.backgroundColor = '#120D26';
+      if (meta) meta.setAttribute('content', '#120D26');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+      root.style.backgroundColor = 'rgb(250, 250, 250)';
+      if (meta) meta.setAttribute('content', 'rgb(250, 250, 250)');
+    }
+
+    const timer = setTimeout(() => {
+      root.classList.remove('theme-transition');
+    }, 900); // slightly longer than CSS transition to ensure completion
+
+    return () => clearTimeout(timer);
   }, [theme]);
 
   // Apply Accent Color

@@ -12,8 +12,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const About = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const revealRef = useRef<HTMLDivElement>(null);
   const heroInnerRef = useRef<HTMLDivElement>(null);
   const studioSectionRef = useRef<HTMLDivElement>(null);
   const atlasSectionRef = useRef<HTMLDivElement>(null);
@@ -102,37 +100,8 @@ export const About = () => {
     }
   }, { scope: containerRef });
 
-  const spotlightRadius = useRef(140);
-
-  useEffect(() => {
-    const handleResize = () => {
-      spotlightRadius.current = window.innerWidth < 768 ? 80 : 140;
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!revealRef.current) return;
-    const rect = revealRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const cp = `circle(${spotlightRadius.current}px at ${x}px ${y}px)`;
-    revealRef.current.style.clipPath = cp;
-    (revealRef.current.style as any).WebkitClipPath = cp;
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    if (!revealRef.current) return;
-    revealRef.current.style.clipPath = 'circle(0px at -300px -300px)';
-    (revealRef.current.style as any).WebkitClipPath = 'circle(0px at -300px -300px)';
-  }, []);
-
   const line1 = language === 'zh' ? '白昼，与万象同频。' : 'By day, I sync intelligence.';
   const line2 = language === 'zh' ? '入夜，为时间塑形。' : 'By night, I shape time.';
-  const altLine1 = language === 'zh' ? 'By day, I sync intelligence.' : '白昼，与万象同频。';
-  const altLine2 = language === 'zh' ? 'By night, I shape time.' : '入夜，为时间塑形。';
 
   const heroCopy =
     language === 'zh'
@@ -145,7 +114,7 @@ export const About = () => {
     <div ref={containerRef} className="relative flex flex-col overflow-hidden">
       <section className="relative z-10 min-h-screen overflow-hidden px-6 pb-10 pt-24 md:px-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(0deg,rgba(0,0,0,0.025)_1px,transparent_1px)] bg-[size:96px_96px] opacity-35" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:96px_96px] opacity-40" />
           <div className="absolute left-[-8%] top-[17%] h-[58vh] w-[48vw] rotate-[-11deg] rounded-full border border-ts-hairline blur-[1px]" />
           <div className="absolute left-[18%] top-[11%] h-[82vh] w-[1px] rotate-[72deg] bg-ts-hairline" />
         </div>
@@ -165,20 +134,11 @@ export const About = () => {
 
             {/* Hero Title Area */}
             <div className="relative w-full">
-              {/* Invisible full-viewport mouse capture layer */}
-              <div
-                ref={heroRef}
-                className="absolute z-20 cursor-default"
-                style={{ left: 'calc(-50vw + 50%)', width: '100vw', top: '-6rem', bottom: '-6rem' }}
-
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-              />
               {/* === Base Layer: animated entrance, dark ink text === */}
               <div className="flex flex-col items-center gap-2 md:gap-4 lg:gap-5 w-full">
                 <SplitText
                   text={line1}
-                  className={`${titleClass} text-ts-ink drop-shadow-[0_4px_12px_rgba(44,38,33,0.05)] pointer-events-none`}
+                  className={`${titleClass} text-ts-ink drop-shadow-[0_4px_12px_rgba(255,255,255,0.01)] pointer-events-none`}
                   delay={32}
                   duration={0.9}
                   ease="power3.out"
@@ -191,7 +151,7 @@ export const About = () => {
                 />
                 <SplitText
                   text={line2}
-                  className={`${titleClass} text-ts-ink drop-shadow-[0_4px_12px_rgba(44,38,33,0.05)] pointer-events-none`}
+                  className={`${titleClass} text-ts-ink drop-shadow-[0_4px_12px_rgba(255,255,255,0.01)] pointer-events-none`}
                   delay={48}
                   duration={0.9}
                   ease="power3.out"
@@ -202,34 +162,6 @@ export const About = () => {
                   overflow="visible"
                   tag="h1"
                 />
-              </div>
-
-              {/* === Reveal Layer: static text, dark bg + light text, clip-path spotlight === */}
-              <div
-                ref={revealRef}
-                className="absolute inset-0 pointer-events-none select-none z-10 rounded-lg"
-                style={{
-                  clipPath: 'circle(0px at -300px -300px)',
-                  WebkitClipPath: 'circle(0px at -300px -300px)',
-                  transition: 'clip-path 0.06s linear, -webkit-clip-path 0.06s linear',
-                  backgroundColor: '#2C2621',
-                  willChange: 'clip-path',
-                }}
-              >
-                <div className="flex flex-col items-center gap-2 md:gap-4 lg:gap-5 w-full h-full justify-center">
-                  <h1
-                    className={`${titleClass} text-[#FAF6EE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]`}
-                    style={{ display: 'inline-block', textAlign: 'center', overflow: 'visible' }}
-                  >
-                    {altLine1}
-                  </h1>
-                  <h1
-                    className={`${titleClass} text-[#FAF6EE] drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]`}
-                    style={{ display: 'inline-block', textAlign: 'center', overflow: 'visible' }}
-                  >
-                    {altLine2}
-                  </h1>
-                </div>
               </div>
             </div>
 
@@ -437,7 +369,7 @@ export const About = () => {
       </section>
 
 
-      <footer className="relative z-10 border-t border-ts-hairline px-6 py-8">
+      <footer className="relative z-10 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex flex-col items-center gap-2 text-[12px] text-ts-muted sm:flex-row sm:gap-4">
             <span>&copy; {new Date().getFullYear()} TemporalSync</span>

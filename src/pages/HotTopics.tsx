@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ExternalLink, Loader2, Zap, Clock, ArrowRight, Share2, Sparkles } from 'lucide-react';
-import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
-import { useScrollReveal } from '../hooks/useScrollReveal';
-import { useScrollRefresh } from '../hooks/useScrollRefresh';
+import { Search, ExternalLink, Loader2, Zap, Clock, ArrowRight, Share2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useSettings } from '../context/SettingsContext';
 import { fetchNews, getCachedNews } from '../services/newsService';
@@ -29,7 +26,7 @@ const AuthorAvatar = ({ avatarUrl, source }: { avatarUrl?: string; source: strin
   }
 
   return (
-    <div className="w-8 h-8 rounded-full border border-ts-shiyun-green/20 overflow-hidden flex-shrink-0 bg-white">
+    <div className="w-8 h-8 rounded-full border border-ts-hairline overflow-hidden flex-shrink-0 bg-ts-surface">
       <img
         src={avatarUrl}
         alt=""
@@ -43,8 +40,6 @@ const AuthorAvatar = ({ avatarUrl, source }: { avatarUrl?: string; source: strin
 export const HotTopics = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { language } = useSettings();
-  useFloatingOrbs(containerRef);
-  useScrollReveal(containerRef);
   
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,8 +87,6 @@ export const HotTopics = () => {
     loadNews();
     return () => clearTimeout(hintTimer);
   }, []);
-
-  useScrollRefresh(loading);
 
   const filteredNews = useMemo(() => {
     return news.filter(item => {
@@ -188,7 +181,7 @@ export const HotTopics = () => {
       </section>
 
       {/* Category Tabs & Search Bar Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 border-b border-ts-hairline relative z-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 relative z-20">
         {/* Category Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1 relative z-20">
           {["全部", "模型", "产品", "行业", "论文", "技巧"].map((cat) => {
@@ -247,23 +240,22 @@ export const HotTopics = () => {
       {/* Content Section */}
       <div className="relative pt-4">
         {loading ? (
-          /* Timeline Skeleton Loader */
           <div className="relative pl-6 md:pl-20 space-y-12 animate-pulse">
-            <div className="absolute left-[35px] md:left-[83px] top-2 bottom-2 w-[2px] bg-ts-primary/10 dark:bg-ts-primary-light/15" />
+            <div className="absolute left-[34px] md:left-[82px] top-2 bottom-2 w-[4px] bg-ts-ink/5 dark:bg-white/5 rounded-full backdrop-blur-[1px] border-l border-white/20 dark:border-white/10 border-r border-black/5 dark:border-black/20 shadow-sm" />
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex gap-6 md:gap-12">
                 <div className="hidden md:block w-16 h-4 bg-ts-surface-elevated rounded mt-6" />
                 <div className="w-3.5 h-3.5 rounded-full bg-ts-surface-elevated border-4 border-ts-canvas mt-6" />
-                <div className="shiyun-card flex-1 p-8 space-y-4">
+                <div className="bg-ts-surface rounded-2xl flex-1 p-8 space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-ts-shiyun-green-soft/60" />
-                      <div className="w-20 h-3 bg-ts-shiyun-green-soft/60 rounded" />
+                      <div className="w-8 h-8 rounded-full bg-ts-surface-elevated/60" />
+                      <div className="w-20 h-3 bg-ts-surface-elevated/60 rounded" />
                     </div>
-                    <div className="w-16 h-4 bg-ts-shiyun-green-soft/60 rounded-full" />
+                    <div className="w-16 h-4 bg-ts-surface-elevated/60 rounded-full" />
                   </div>
-                  <div className="w-2/3 h-5 bg-ts-shiyun-green-soft/60 rounded" />
-                  <div className="w-full h-12 bg-ts-shiyun-green-soft/60 rounded" />
+                  <div className="w-2/3 h-5 bg-ts-surface-elevated/60 rounded" />
+                  <div className="w-full h-12 bg-ts-surface-elevated/60 rounded" />
                 </div>
               </div>
             ))}
@@ -316,7 +308,7 @@ export const HotTopics = () => {
                       className="relative pl-6 md:pl-20 space-y-8 overflow-hidden pt-6"
                     >
                       {/* Vertical line connecting all items inside this date group */}
-                      <div className="absolute left-[35px] md:left-[83px] top-2 bottom-2 w-[2px] bg-ts-primary/30 dark:bg-ts-primary-light/35" />
+                      <div className="absolute left-[34px] md:left-[82px] top-2 bottom-2 w-[4px] bg-ts-ink/5 dark:bg-white/5 rounded-full backdrop-blur-[1px] border-l border-white/20 dark:border-white/10 border-r border-black/5 dark:border-black/20 shadow-sm" />
 
                       {group.items.map((item) => {
                         const timeStr = formatItemTime(item.time);
@@ -328,7 +320,7 @@ export const HotTopics = () => {
                             </div>
 
                             {/* Timeline Node/Dot */}
-                            <div className="absolute left-[29px] md:left-[77px] top-6 w-3.5 h-3.5 rounded-full bg-ts-primary border-4 border-ts-canvas dark:border-ts-navy-900 z-10 shadow-[0_0_10px_rgba(177,85,90,0.55)] dark:shadow-[0_0_12px_rgba(219,131,132,0.65)]" />
+                            <div className="absolute left-[29px] md:left-[77px] top-6 w-3.5 h-3.5 rounded-full bg-ts-primary border-4 border-ts-canvas dark:border-ts-canvas z-10 shadow-[0_0_10px_rgba(249,185,166,0.3)]" />
 
                             {/* Mobile Time (Show time inline for smaller screens) */}
                             <div className="md:hidden flex items-center gap-2 pl-8 text-xs font-bold text-ts-muted font-mono">
@@ -338,13 +330,13 @@ export const HotTopics = () => {
 
                             {/* Card container */}
                             <div className="flex-1 pl-8 md:pl-0">
-                              <div className="shiyun-card p-6 md:p-8 flex flex-col gap-5 transition-all duration-300 relative group overflow-hidden">
+                              <div className="bg-ts-surface rounded-2xl p-6 md:p-8 flex flex-col gap-5 transition-all duration-300 relative group overflow-hidden">
                                 {/* Header: Author + Score */}
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <AuthorAvatar avatarUrl={item.avatar} source={item.source} />
                                     <div className="flex flex-col">
-                                      <span className="text-xs font-bold text-ts-shiyun-ink">
+                                      <span className="text-xs font-bold text-ts-ink">
                                         {item.source}
                                       </span>
                                     </div>
@@ -359,23 +351,23 @@ export const HotTopics = () => {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 group/link"
                                   >
-                                    <h3 className="text-base md:text-lg font-bold text-ts-shiyun-ink leading-snug group-hover/link:text-ts-shiyun-green transition-colors">
+                                    <h3 className="text-base md:text-lg font-bold text-ts-ink leading-snug group-hover/link:text-ts-primary transition-colors">
                                       {item.title}
                                     </h3>
-                                    <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-shiyun-green transition-opacity shrink-0" />
+                                    <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-primary transition-opacity shrink-0" />
                                   </a>
-                                  <p className="text-ts-shiyun-body text-sm leading-relaxed">
+                                  <p className="text-ts-body text-sm leading-relaxed">
                                     {item.summary}
                                   </p>
                                 </div>
 
                                 {/* Image: Display if exists */}
                                 {item.image && (
-                                  <div className="w-full max-w-xl rounded-[8px] overflow-hidden border border-ts-shiyun-green/10">
+                                  <div className="w-full max-w-xl rounded-[8px] overflow-hidden border border-ts-hairline">
                                     <img
                                       src={item.image}
                                       alt={item.title}
-                                      className="w-full max-h-60 md:max-h-80 object-cover object-center group-hover:scale-[1.02] transition-transform duration-500"
+                                      className="w-full max-h-60 md:max-h-80 object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
                                       loading="lazy"
                                       onError={(e) => {
                                         (e.target as HTMLElement).parentElement!.style.display = 'none';
@@ -390,7 +382,7 @@ export const HotTopics = () => {
                                     {item.tags.map((tag) => (
                                       <span
                                         key={tag}
-                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-shiyun-green-soft text-ts-shiyun-ink/80 border border-ts-shiyun-green/15"
+                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary border border-ts-hairline"
                                       >
                                         {tag}
                                       </span>
@@ -411,7 +403,7 @@ export const HotTopics = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="py-24 flex flex-col items-center justify-center card border-dashed border-ts-hairline bg-ts-surface-elevated/40">
+          <div className="py-24 flex flex-col items-center justify-center rounded-2xl border border-dashed border-ts-hairline bg-ts-surface-elevated/40">
             <Zap size={48} className="text-ts-muted mb-4" />
             <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{t.emptyTitle}</p>
             <p className="text-xs text-ts-muted-soft mt-1">{t.emptyDesc}</p>

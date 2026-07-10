@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ExternalLink, Sparkles, Code, AppWindow, ArrowRight, Heart, MessageCircle, Star, Send } from 'lucide-react';
-import { useFloatingOrbs } from '../hooks/useFloatingOrbs';
-import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useSettings } from '../context/SettingsContext';
 import { cn } from '../lib/utils';
 import { marked } from 'marked';
+import { Link } from 'react-router-dom';
 
 // Simple sanitizer to keep the HTML safe in mockup
 const parseMarkdownToHtml = (markdown: string): string => {
@@ -35,10 +34,10 @@ const Md2RedMockup = () => {
   }, [markdown]);
 
   return (
-    <div className="card w-full flex flex-col xl:flex-row gap-6 border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface dark:bg-ts-navy-900 rounded-[16px] overflow-hidden shadow-lg h-[500px]">
+    <div className="card w-full flex flex-col xl:flex-row gap-6 border border-ts-hairline bg-ts-surface rounded-[16px] overflow-hidden shadow-lg h-[500px]">
       {/* Editor Panel (Left/Top) */}
-      <div className="flex-1 flex flex-col border-b xl:border-b-0 xl:border-r border-ts-hairline dark:border-ts-navy-700 h-1/2 xl:h-full min-h-0">
-        <div className="bg-ts-surface-elevated dark:bg-ts-navy-800/50 px-4 py-2 flex items-center justify-between border-b border-ts-hairline dark:border-ts-navy-700">
+      <div className="flex-1 flex flex-col border-b xl:border-b-0 xl:border-r border-ts-hairline h-1/2 xl:h-full min-h-0">
+        <div className="bg-ts-surface-elevated px-4 py-2 flex items-center justify-between border-b border-ts-hairline">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-ts-primary/80" />
             <span className="text-[10px] font-bold text-ts-muted uppercase tracking-wider font-mono">markdown_editor.md</span>
@@ -54,7 +53,7 @@ const Md2RedMockup = () => {
       </div>
 
       {/* Xiaohongshu Preview Card (Right/Bottom) */}
-      <div className="w-full xl:w-[360px] bg-ts-canvas dark:bg-ts-neutral-800/40 p-6 flex flex-col justify-center items-center h-1/2 xl:h-full overflow-y-auto">
+      <div className="w-full xl:w-[360px] bg-ts-canvas p-6 flex flex-col justify-center items-center h-1/2 xl:h-full overflow-y-auto">
         <div className="relative w-full max-w-[280px] bg-white text-neutral-800 rounded-[12px] shadow-md border border-neutral-100 flex flex-col overflow-hidden aspect-[3/4] h-[340px]">
           {/* Card Header (Red accent / mock image top) */}
           <div className="h-2 bg-gradient-to-r from-ts-primary to-orange-500" />
@@ -106,9 +105,6 @@ export const StudyRoom = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { language } = useSettings();
 
-  useFloatingOrbs(containerRef);
-  useScrollReveal(containerRef);
-
   const apps = useMemo(() => [
     {
       id: 'md2red',
@@ -156,7 +152,7 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+        <div className="card w-full flex items-center justify-center border border-ts-hairline bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
           <div className="absolute inset-0 bg-[radial-gradient(#7f9b75_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
           <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
             <div className="w-16 h-16 rounded-[20px] bg-[#7f9b75]/10 border border-[#7f9b75]/20 flex items-center justify-center text-[#7f9b75] shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
@@ -192,9 +188,9 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full flex items-center justify-center border border-ts-hairline dark:border-ts-navy-700 bg-ts-surface-elevated dark:bg-ts-navy-900/50 rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+        <div className="card w-full flex items-center justify-center border border-ts-hairline bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
           {/* Animated Matrix/Code effect to represent background daemon */}
-          <div className="absolute inset-0 bg-[radial-gradient(#B1555A_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
+          <div className="absolute inset-0 bg-[radial-gradient(var(--color-ts-primary)_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
           <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
             <div className="w-16 h-16 rounded-[20px] bg-ts-primary/10 border border-ts-primary/20 flex items-center justify-center text-ts-primary shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
               <Code size={32} />
@@ -302,15 +298,25 @@ export const StudyRoom = () => {
                 {/* Call to action (if applicable) */}
                 {app.link && (
                   <div className="pt-4">
-                    <a
-                      href={app.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] bg-ts-navy-800 hover:bg-ts-navy-900 text-white text-xs font-bold transition-all hover:translate-x-1 shadow-sm"
-                    >
-                      {language === 'zh' ? '前往体验' : 'Visit App'}
-                      <ArrowRight size={14} />
-                    </a>
+                    {app.link.startsWith('/') ? (
+                      <Link
+                        to={app.link}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] bg-ts-navy-800 hover:bg-ts-navy-900 text-white text-xs font-bold transition-all hover:translate-x-1 shadow-sm font-display uppercase tracking-wider"
+                      >
+                        {language === 'zh' ? '前往体验' : 'Visit App'}
+                        <ArrowRight size={14} />
+                      </Link>
+                    ) : (
+                      <a
+                        href={app.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] bg-ts-navy-800 hover:bg-ts-navy-900 text-white text-xs font-bold transition-all hover:translate-x-1 shadow-sm font-display uppercase tracking-wider"
+                      >
+                        {language === 'zh' ? '前往体验' : 'Visit App'}
+                        <ArrowRight size={14} />
+                      </a>
+                    )}
                   </div>
                 )}
               </div>

@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Moon, Sun, Monitor, Type, Palette, CheckCircle2, RotateCcw, User as UserIcon, LogOut, ShieldCheck, Mail, Globe } from 'lucide-react';
+import { Type, Palette, CheckCircle2, RotateCcw, Globe } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { UI_CLASSES } from '../constants/ui';
 import { useSettings } from '../context/SettingsContext';
-import { useAuth } from '../context/AuthContext';
 
 export const SettingsPage = () => {
   const { theme, setTheme, accentColor, setAccentColor, fontSize, setFontSize, language, setLanguage, resetSettings } = useSettings();
-  const { isAdmin, toggleAdmin } = useAuth();
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -20,53 +18,24 @@ export const SettingsPage = () => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-[700px] mx-auto space-y-12 pb-20 mt-10 px-6"
+      className="max-w-[700px] mx-auto space-y-12 pb-20 mt-10 px-6 text-left"
     >
       <div className="space-y-2">
-        <h1 className="text-[28px] font-black text-ts-neutral-900 tracking-tight">偏好设置</h1>
-        <p className="text-ts-neutral-500 text-[13px] font-bold uppercase tracking-widest">个性化您的同步空间</p>
+        <h1 className="text-[28px] font-black text-ts-ink tracking-tight">
+          {language === 'zh' ? '偏好设置' : 'Preferences'}
+        </h1>
+        <p className="text-ts-muted text-[13px] font-bold uppercase tracking-widest">
+          {language === 'zh' ? '个性化您的同步空间' : 'Personalize Your Space'}
+        </p>
       </div>
-
-      {/* Account Section */}
-      <section className={cn(UI_CLASSES.card, "p-10 relative overflow-hidden group")}>
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-ts-primary/5 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-1000" />
-        <div className="relative z-10 space-y-10">
-          <div className="flex items-start gap-3 px-1">
-            <UserIcon size={14} className="text-ts-primary" />
-            <h2 className="text-[11px] font-black text-ts-neutral-400 uppercase tracking-widest">管理员</h2>
-          </div>
-
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <div className="flex items-center gap-6">
-              <div className="w-20 h-20 rounded-[8px] bg-ts-primary/10 flex items-center justify-center overflow-hidden shadow-2xl">
-                <ShieldCheck size={32} className={isAdmin ? "text-ts-primary" : "text-ts-neutral-300"} />
-              </div>
-              <div>
-                <h3 className="text-[20px] font-display font-black text-ts-neutral-900">{isAdmin ? '管理模式已开启' : '管理模式已关闭'}</h3>
-                <div className="flex items-center gap-2 mt-1 text-ts-neutral-400">
-                  <span className="text-[12px] font-medium">{isAdmin ? '你可以编辑博客和内容' : '点击导航栏盾牌图标进入管理模式'}</span>
-                </div>
-              </div>
-            </div>
-
-            {isAdmin && (
-              <button 
-                onClick={() => toggleAdmin()}
-                className="px-8 h-14 glass-card rounded-2xl flex items-center gap-3 text-ts-error hover:bg-ts-error hover:text-white transition-all text-[12px] font-black uppercase tracking-widest group/logout"
-              >
-                退出管理模式
-                <LogOut size={18} className="group-hover/logout:translate-x-1 transition-transform" />
-              </button>
-            )}
-          </div>
-        </div>
-      </section>
 
       {/* Language */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 px-1">
           <Globe size={14} className="text-ts-primary" />
-          <h2 className="text-[11px] font-black text-ts-neutral-400 uppercase tracking-widest">语言 / Language</h2>
+          <h2 className="text-[11px] font-black text-ts-muted uppercase tracking-widest">
+            {language === 'zh' ? '语言 / Language' : 'Language / 语言'}
+          </h2>
         </div>
         <div className="grid grid-cols-2 gap-4">
           {[
@@ -77,8 +46,8 @@ export const SettingsPage = () => {
               key={lang.id}
               onClick={() => setLanguage(lang.id as any)}
               className={cn(
-                "bg-ts-surface border-2 rounded-[12px] flex items-center justify-center gap-3 h-16 px-4 transition-all",
-                language === lang.id ? "border-ts-primary shadow-lg shadow-ts-primary/10" : "border-ts-hairline hover:border-ts-muted-soft"
+                "bg-ts-surface border rounded-[12px] flex items-center justify-center gap-3 h-16 px-4 transition-all cursor-pointer",
+                language === lang.id ? "border-ts-primary shadow-lg shadow-ts-primary/5" : "border-ts-hairline hover:border-ts-muted-soft"
               )}
             >
               <span className={cn(
@@ -89,7 +58,7 @@ export const SettingsPage = () => {
               </span>
               <span className={cn(
                 "text-[11px]",
-                language === lang.id ? "text-ts-primary-light" : "text-ts-muted-soft"
+                language === lang.id ? "text-ts-primary/75" : "text-ts-muted-soft"
               )}>
                 {lang.sub}
               </span>
@@ -99,15 +68,19 @@ export const SettingsPage = () => {
       </section>
 
       {/* Visual Tuning */}
-      <section className={cn(UI_CLASSES.card, "p-10 space-y-10")}>
+      <section className={cn("p-10 space-y-10 rounded-[12px] border border-ts-hairline bg-ts-surface")}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
           <div className="flex items-center gap-5">
             <div className="w-14 h-14 rounded-[20px] bg-ts-primary/10 text-ts-primary flex items-center justify-center shadow-inner">
               <Palette size={24} />
             </div>
             <div>
-              <h3 className="text-[16px] font-display font-black text-ts-neutral-900 uppercase tracking-tight">主题基调</h3>
-              <p className="text-ts-neutral-400 text-[11px] font-bold mt-0.5">选取全站核心感知色</p>
+              <h3 className="text-[16px] font-bold text-ts-ink uppercase tracking-tight">
+                {language === 'zh' ? '主题基调' : 'Accent Theme'}
+              </h3>
+              <p className="text-ts-muted text-[11px] font-bold mt-0.5">
+                {language === 'zh' ? '选取全站核心感知色' : 'Select core accents'}
+              </p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -116,7 +89,7 @@ export const SettingsPage = () => {
                 key={color} 
                 onClick={() => setAccentColor(color)}
                 className={cn(
-                  "w-12 h-12 rounded-[18px] transition-all hover:scale-110 flex items-center justify-center border-4 border-transparent shadow-lg",
+                  "w-12 h-12 rounded-[18px] transition-all hover:scale-110 flex items-center justify-center border-4 border-transparent shadow-lg cursor-pointer",
                   color === accentColor ? "border-white ring-2 ring-ts-primary" : "opacity-40 hover:opacity-100"
                 )}
                 style={{ backgroundColor: color }}
@@ -127,7 +100,7 @@ export const SettingsPage = () => {
           </div>
         </div>
 
-        <div className="h-px bg-ts-surface-elevated" />
+        <div className="h-px bg-ts-hairline" />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
           <div className="flex items-center gap-5">
@@ -135,12 +108,16 @@ export const SettingsPage = () => {
               <Type size={24} />
             </div>
             <div>
-              <h3 className="text-[16px] font-display font-black text-ts-neutral-900 uppercase tracking-tight">文字缩放</h3>
-              <p className="text-ts-neutral-400 text-[11px] font-bold mt-0.5">调优阅读辅助体验 ({fontSize}%)</p>
+              <h3 className="text-[16px] font-bold text-ts-ink uppercase tracking-tight">
+                {language === 'zh' ? '文字缩放' : 'Text Scaling'}
+              </h3>
+              <p className="text-ts-muted text-[11px] font-bold mt-0.5">
+                {language === 'zh' ? `调优阅读辅助体验 (${fontSize}%)` : `Tune layout scaling (${fontSize}%)`}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-6 w-full sm:w-72 bg-ts-surface-elevated px-6 py-5 rounded-2xl border border-ts-hairline">
-            <span className="text-[10px] text-ts-neutral-400 font-black italic">MIN</span>
+            <span className="text-[10px] text-ts-muted font-black italic">MIN</span>
             <input 
               type="range" 
               min="90" 
@@ -150,7 +127,7 @@ export const SettingsPage = () => {
               onChange={(e) => setFontSize(parseInt(e.target.value))}
               className="flex-1 accent-ts-primary h-2 rounded-full cursor-pointer appearance-none bg-ts-hairline" 
             />
-            <span className="text-[10px] text-ts-neutral-400 font-black italic">MAX</span>
+            <span className="text-[10px] text-ts-muted font-black italic">MAX</span>
           </div>
         </div>
       </section>
@@ -159,18 +136,17 @@ export const SettingsPage = () => {
       <section className="flex flex-col sm:flex-row justify-end gap-4">
         <button 
           onClick={resetSettings}
-          className={cn(UI_CLASSES.buttonOutline, "h-16 px-10 rounded-[8px] border-ts-hairline text-ts-neutral-400 hover:text-ts-neutral-900 flex items-center gap-3")}
+          className="h-16 px-10 rounded-[8px] border border-ts-hairline text-ts-muted hover:text-ts-ink flex items-center justify-center gap-3 bg-transparent cursor-pointer transition-colors"
         >
           <RotateCcw size={20} />
-          <span className="font-black text-[14px] uppercase tracking-widest leading-none">重置为默认</span>
+          <span className="font-black text-[14px] uppercase tracking-widest leading-none">
+            {language === 'zh' ? '重置为默认' : 'Reset defaults'}
+          </span>
         </button>
         <button 
           onClick={handleSave}
           disabled={saved}
-          className={cn(
-            UI_CLASSES.buttonPrimary, 
-            "h-16 px-14 rounded-[8px] shadow-2xl shadow-ts-primary/20 relative min-w-[240px]"
-          )}
+          className="h-16 px-14 rounded-[8px] shadow-2xl relative min-w-[240px] bg-ts-primary text-white hover:bg-ts-primary-hover transition-colors font-bold uppercase tracking-widest cursor-pointer disabled:opacity-80"
         >
           <AnimatePresence mode="wait">
             {saved ? (
@@ -179,9 +155,9 @@ export const SettingsPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center gap-3"
+                className="flex items-center justify-center gap-3"
               >
-                已同步全局偏好 <CheckCircle2 size={24} />
+                {language === 'zh' ? '已同步全局偏好' : 'Preferences Synced'} <CheckCircle2 size={24} />
               </motion.div>
             ) : (
               <motion.span
@@ -191,7 +167,7 @@ export const SettingsPage = () => {
                 exit={{ opacity: 0 }}
                 className="font-black text-[15px] uppercase tracking-[0.2em]"
               >
-                同步设置
+                {language === 'zh' ? '同步设置' : 'Sync Preferences'}
               </motion.span>
             )}
           </AnimatePresence>
