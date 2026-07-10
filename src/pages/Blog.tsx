@@ -235,43 +235,45 @@ export const Blog = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 md:px-12 py-12 text-left">
+    <div className="space-y-12 pb-24 immersive-section text-left">
       {!id ? (
         /* LIST VIEW */
         <div className="space-y-12">
-          {/* Immersive Header (matching WORK page style) */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 pb-8 border-b border-ts-hairline">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="w-12 h-[1px] bg-ts-primary" />
-                <span className="text-[12px] font-black text-ts-primary uppercase tracking-[0.3em]">
-                  {language === 'zh' ? '想法流' : 'DEV WRITING'}
-                </span>
+          {/* Immersive Header Section (matching WORK & HOT page style) */}
+          <section className="relative pt-12 pb-8 overflow-hidden">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-12 h-[1px] bg-ts-primary" />
+                  <span className="text-[12px] font-black text-ts-primary uppercase tracking-[0.3em]">
+                    {language === 'zh' ? '想法流' : 'DEV WRITING'}
+                  </span>
+                </div>
+                <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-4">
+                  <span className="text-ts-primary block">{language === 'zh' ? '博客' : 'BLOG'}</span>
+                  <span className="text-ts-ink/80 block mt-2">
+                    {language === 'zh' ? '文章与日常思考.' : 'Thoughts & Notes.'}
+                  </span>
+                </h1>
+                <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
+                  {t.subtitle}
+                </p>
               </div>
-              <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-4">
-                <span className="text-ts-primary block">{language === 'zh' ? '博客' : 'BLOG'}</span>
-                <span className="text-ts-ink/80 block mt-2">
-                  {language === 'zh' ? '文章与日常思考.' : 'Thoughts & Notes.'}
-                </span>
-              </h1>
-              <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
-                {t.subtitle}
-              </p>
-            </div>
 
-            {/* Search */}
-            {posts.length > 0 && (
-              <div className="relative w-full md:w-80">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B]" size={16} />
-                <input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-ts-surface-elevated text-ts-ink border border-ts-hairline pl-11 pr-4 h-11 w-full rounded-lg text-sm focus:border-ts-primary outline-none transition-all placeholder:text-[#86868B]"
-                  placeholder={t.searchPlaceholder}
-                />
-              </div>
-            )}
-          </div>
+              {/* Search */}
+              {posts.length > 0 && (
+                <div className="relative w-full md:w-80 mb-2">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B]" size={16} />
+                  <input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-ts-surface-elevated text-ts-ink border border-ts-hairline pl-11 pr-4 h-11 w-full rounded-lg text-sm focus:border-ts-primary outline-none transition-all placeholder:text-[#86868B]"
+                    placeholder={t.searchPlaceholder}
+                  />
+                </div>
+              )}
+            </div>
+          </section>
 
           {/* Post Grid */}
           {filteredPosts.length === 0 ? (
