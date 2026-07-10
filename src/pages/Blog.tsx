@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
-import { getCollection } from '../lib/cloudbase';
+import { getCollection } from '../lib/supabase';
 import { 
   BookOpen, 
   ArrowLeft, 

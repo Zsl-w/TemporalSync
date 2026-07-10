@@ -20,7 +20,7 @@ import {
   addDocument, 
   updateDocument, 
   deleteDocument 
-} from '../lib/cloudbase';
+} from '../lib/supabase';
 import { marked } from 'marked';
 
 interface BlogPost {
