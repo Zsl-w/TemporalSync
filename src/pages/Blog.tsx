@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { marked } from 'marked';
+import { FluidCanvas } from '../components/FluidCanvas';
 
 interface BlogPost {
   id: string;
@@ -238,15 +239,8 @@ export const Blog = () => {
     <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
       {!id && (
         <div className="w-full h-[220px] mt-[-4rem] relative overflow-hidden flex items-end pb-7 select-none z-10 shadow-inner bg-[#53216f]">
-          {/* Fluid Mesh Gradient Blobs */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#EE7B62] to-[#6A3783] opacity-30" />
-            <div className="absolute w-[35%] h-[160%] top-[-40%] left-[-5%] rounded-full bg-[#F4C095] opacity-90" style={{ filter: 'blur(50px)' }} />
-            <div className="absolute w-[30%] h-[140%] bottom-[-50%] left-[20%] rounded-full bg-[#EE7B62] opacity-95" style={{ filter: 'blur(45px)' }} />
-            <div className="absolute w-[25%] h-[130%] top-[-40%] left-[45%] rounded-full bg-[#E1516E] opacity-95" style={{ filter: 'blur(45px)' }} />
-            <div className="absolute w-[25%] h-[120%] top-[-30%] right-[15%] rounded-full bg-[#EE7B62] opacity-80" style={{ filter: 'blur(40px)' }} />
-            <div className="absolute w-[35%] h-[150%] bottom-[-45%] right-[-5%] rounded-full bg-[#3b1254] opacity-90" style={{ filter: 'blur(50px)' }} />
-          </div>
+          {/* Fluid GPU Shader Canvas Engine */}
+          <FluidCanvas />
           <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
           <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
             <div className="flex items-center gap-5 bg-white/10 dark:bg-black/15 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-white/15 dark:hover:bg-black/20 hover:scale-[1.01] hover:-translate-y-0.5 group/capsule cursor-pointer max-w-xl">
