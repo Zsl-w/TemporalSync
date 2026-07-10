@@ -323,13 +323,13 @@ export const Blog = () => {
                       <h3 className="text-xl md:text-2xl font-display font-bold text-ts-ink leading-tight">
                         {post.title}
                       </h3>
-                      <p className="text-[#86868B] text-sm md:text-base line-clamp-2 leading-relaxed">
+                      <p className="text-ts-ink text-sm md:text-base line-clamp-2 leading-relaxed">
                         {post.summary}
                       </p>
                     </div>
 
                     {/* Read Link */}
-                    <div className="inline-flex items-center gap-1.5 text-xs font-display font-bold uppercase tracking-wider text-[#F9B9A6] group-hover:text-[#F9B6B6] transition-colors">
+                    <div className="inline-flex items-center gap-1.5 text-xs font-display font-bold uppercase tracking-wider text-ts-ink">
                       <span>{t.readArticle}</span>
                       <ArrowRight size={12} className="transform transition-transform group-hover:translate-x-1" />
                     </div>
