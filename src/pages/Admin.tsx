@@ -277,14 +277,32 @@ export const AdminPage = () => {
         // Update
         const isLocal = activePostId.startsWith('local_');
         if (isLocal) {
-          const localBlogsRaw = localStorage.getItem('ts-local-blogs');
-          if (localBlogsRaw) {
-            let localBlogs = JSON.parse(localBlogsRaw);
-            localBlogs = localBlogs.map((p: any) => p.id === activePostId ? {
-              ...p,
-              ...postData
-            } : p);
-            localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+          try {
+            const matchedLocal = posts.find(p => p.id === activePostId);
+            const newPostData = {
+              ...postData,
+              createdAt: matchedLocal?.createdAt || new Date().toISOString()
+            };
+            const res = await addDocument('blogs', newPostData);
+            // Delete from localStorage on success
+            const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+            if (localBlogsRaw) {
+              let localBlogs = JSON.parse(localBlogsRaw);
+              localBlogs = localBlogs.filter((p: any) => p.id !== activePostId);
+              localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+            }
+            setActivePostId(res.id);
+          } catch (dbErr) {
+            console.warn('Uploading local post failed, updating local fallback', dbErr);
+            const localBlogsRaw = localStorage.getItem('ts-local-blogs');
+            if (localBlogsRaw) {
+              let localBlogs = JSON.parse(localBlogsRaw);
+              localBlogs = localBlogs.map((p: any) => p.id === activePostId ? {
+                ...p,
+                ...postData
+              } : p);
+              localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
+            }
           }
         } else {
           await updateDocument('blogs', activePostId, postData);
