@@ -49,12 +49,12 @@ export const FluidCanvas = () => {
         float w3 = sin((uv.x + uv.y) * 1.6 + t * 1.0) * 0.5 + 0.5;
         float w4 = cos((uv.x - uv.y) * 2.0 - t * 0.6) * 0.5 + 0.5;
 
-        // macOS Monterey / Apple sunset fluid color palette
-        vec3 c1 = vec3(0.95, 0.75, 0.58); // #F4C095 (Peach)
-        vec3 c2 = vec3(0.93, 0.48, 0.38); // #EE7B62 (Coral)
-        vec3 c3 = vec3(0.88, 0.31, 0.43); // #E1516E (Rose)
-        vec3 c4 = vec3(0.65, 0.29, 0.55); // #A84A8C (Plum)
-        vec3 c5 = vec3(0.41, 0.21, 0.51); // #6A3783 (Indigo)
+        // Custom brand fluid color palette (Teal #275E61, Deep Indigo #120D26, Coral Pink #F9B9A6, Lavender)
+        vec3 c1 = vec3(0.15, 0.37, 0.38); // #275E61 (Teal)
+        vec3 c2 = vec3(0.09, 0.08, 0.22); // #181438 (Deep Indigo)
+        vec3 c3 = vec3(0.98, 0.73, 0.65); // #F9B9A6 (Coral Pink)
+        vec3 c4 = vec3(0.68, 0.40, 0.78); // #ae66c7 (Lavender)
+        vec3 c5 = vec3(0.24, 0.58, 0.60); // #3d9499 (Bright Teal)
 
         // Organic color blending (fluid mixing)
         vec3 color = mix(c5, c1, w1);

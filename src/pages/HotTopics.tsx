@@ -159,7 +159,7 @@ export const HotTopics = () => {
   return (
     <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
       {/* Sunset Fluid Header Banner */}
-      <div className="w-full h-[220px] mt-[-4rem] relative overflow-hidden flex items-end pb-7 select-none z-10 shadow-inner bg-[#53216f]">
+      <div className="w-full h-[160px] mt-[-4rem] relative overflow-hidden flex items-end pb-4 select-none z-10 shadow-inner bg-[#53216f]">
         {/* Fluid GPU Shader Canvas Engine */}
         <FluidCanvas />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
@@ -189,7 +189,7 @@ export const HotTopics = () => {
         </div>
       </div>
 
-      <div ref={containerRef} className="pb-24 immersive-section text-left pt-12 space-y-8">
+      <div ref={containerRef} className="pb-24 immersive-section text-left pt-8 space-y-8">
 
       {/* Category Tabs & Search Bar Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 relative z-20">

@@ -238,7 +238,7 @@ export const Blog = () => {
   return (
     <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
       {!id && (
-        <div className="w-full h-[220px] mt-[-4rem] relative overflow-hidden flex items-end pb-7 select-none z-10 shadow-inner bg-[#53216f]">
+        <div className="w-full h-[160px] mt-[-4rem] relative overflow-hidden flex items-end pb-4 select-none z-10 shadow-inner bg-[#53216f]">
           {/* Fluid GPU Shader Canvas Engine */}
           <FluidCanvas />
           <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
@@ -271,7 +271,7 @@ export const Blog = () => {
 
       <div className={cn(
         "pb-24 immersive-section text-left",
-        !id ? "pt-12 space-y-8" : "pt-6 space-y-8"
+        !id ? "pt-8 space-y-8" : "pt-6 space-y-8"
       )}>
         {!id ? (
           /* LIST VIEW */
