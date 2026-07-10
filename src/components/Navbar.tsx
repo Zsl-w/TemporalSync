@@ -62,14 +62,14 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   cn(
                     "flex items-center h-full px-4 text-[15.3px] font-bold tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
-                    (isActive || location.pathname === '/shiyun-wechat-md') && "text-ts-ink"
+                    (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red') && "text-ts-ink"
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
                     <span>{language === 'zh' ? '自习室' : 'WORK'}</span>
-                    {(isActive || location.pathname === '/shiyun-wechat-md') && (
+                    {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red') && (
                       <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
                     )}
                   </>
@@ -91,6 +91,19 @@ export const Navbar = () => {
                     }
                   >
                     {language === 'zh' ? '微信排版工具' : 'WeChat Formatter'}
+                  </NavLink>
+                  <NavLink
+                    to="/md2red"
+                    className={({ isActive }) =>
+                      cn(
+                        "text-[13.5px] font-bold font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        isActive
+                          ? "text-ts-ink"
+                          : "text-ts-ink/75 hover:text-ts-ink"
+                      )
+                    }
+                  >
+                    {language === 'zh' ? '小红书卡片生成' : 'Red Formatter'}
                   </NavLink>
                 </div>
               </div>

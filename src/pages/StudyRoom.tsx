@@ -128,7 +128,7 @@ export const StudyRoom = () => {
           ],
       isInteractive: true,
       component: <Md2RedMockup />,
-      link: 'https://md2red.temporalsync.online'
+      link: '/md2red'
     },
     {
       id: 'shiyun-wechat-md',

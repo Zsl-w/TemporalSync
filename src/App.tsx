@@ -14,6 +14,7 @@ const Blog = lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })))
 const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default: m.SettingsPage })));
 const AdminPage = lazy(() => import('./pages/Admin').then(m => ({ default: m.AdminPage })));
 const WeChatConverter = lazy(() => import('./pages/WeChatConverter').then(m => ({ default: m.WeChatConverter })));
+const Md2Red = lazy(() => import('./pages/Md2Red').then(m => ({ default: m.Md2Red })));
 
 const LoadingFallback = () => (
   <div className="flex-1 flex flex-col items-center justify-center p-20 gap-4 opacity-50">
@@ -40,7 +41,8 @@ const AnimatedAppContent = () => {
         '/blog': '博客 · TemporalSync',
         '/settings': '设置 · TemporalSync',
         '/admin': '控制台 · TemporalSync',
-        '/shiyun-wechat-md': '微信排版转换器 · TemporalSync'
+        '/shiyun-wechat-md': '微信排版转换器 · TemporalSync',
+        '/md2red': '小红书卡片生成器 · TemporalSync'
       },
       en: {
         '/': 'About · TemporalSync',
@@ -49,7 +51,8 @@ const AnimatedAppContent = () => {
         '/blog': 'Blog · TemporalSync',
         '/settings': 'Settings · TemporalSync',
         '/admin': 'Dashboard · TemporalSync',
-        '/shiyun-wechat-md': 'WeChat Post Formatter · TemporalSync'
+        '/shiyun-wechat-md': 'WeChat Post Formatter · TemporalSync',
+        '/md2red': 'Xiaohongshu Card Formatter · TemporalSync'
       }
     };
 
@@ -67,7 +70,7 @@ const AnimatedAppContent = () => {
       <NewsPrefetcher />
       
       <Navbar />
-
+  
       <main className="flex-1 w-full mx-auto relative z-10 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
@@ -88,6 +91,7 @@ const AnimatedAppContent = () => {
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/shiyun-wechat-md" element={<WeChatConverter />} />
+                <Route path="/md2red" element={<Md2Red />} />
               </Routes>
             </Suspense>
           </motion.div>

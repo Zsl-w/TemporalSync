@@ -239,13 +239,22 @@ export const Blog = () => {
       {!id ? (
         /* LIST VIEW */
         <div className="space-y-12">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-[#242728]/15 pb-8">
-            <div>
-              <h1 className="text-[44px] md:text-[56px] font-display font-bold tracking-tight text-ts-ink mb-2 uppercase">
-                {t.title}
+          {/* Immersive Header (matching WORK page style) */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 pb-8 border-b border-ts-hairline">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="w-12 h-[1px] bg-ts-primary" />
+                <span className="text-[12px] font-black text-ts-primary uppercase tracking-[0.3em]">
+                  {language === 'zh' ? '想法流' : 'DEV WRITING'}
+                </span>
+              </div>
+              <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-4">
+                <span className="text-ts-primary block">{language === 'zh' ? '博客' : 'BLOG'}</span>
+                <span className="text-ts-ink/80 block mt-2">
+                  {language === 'zh' ? '文章与日常思考.' : 'Thoughts & Notes.'}
+                </span>
               </h1>
-              <p className="text-[#86868B] text-base max-w-lg">
+              <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
                 {t.subtitle}
               </p>
             </div>
