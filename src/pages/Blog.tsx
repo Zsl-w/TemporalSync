@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { marked } from 'marked';
+import { motion } from 'motion/react';
 
 interface BlogPost {
   id: string;
@@ -244,7 +245,12 @@ export const Blog = () => {
           <div className="space-y-8">
             {/* Search Row */}
             {posts.length > 0 && (
-              <div className="flex justify-end mb-4">
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                className="flex justify-end mb-4"
+              >
                 <div className="relative w-full md:w-80">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B]" size={16} />
                   <input
@@ -254,7 +260,7 @@ export const Blog = () => {
                     placeholder={t.searchPlaceholder}
                   />
                 </div>
-              </div>
+              </motion.div>
             )}
 
           {/* Post Grid */}
@@ -265,11 +271,14 @@ export const Blog = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16">
-              {filteredPosts.map((post) => {
+              {filteredPosts.map((post, index) => {
                 const coverUrl = getFirstImageUrl(post.content);
                 return (
-                  <div
+                  <motion.div
                     key={post.id}
+                    initial={{ opacity: 0, y: 25 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.08, ease: 'easeOut' }}
                     className="group flex flex-col space-y-4 cursor-pointer"
                     onClick={() => navigate(`/blog/${post.id}`)}
                   >
@@ -315,7 +324,7 @@ export const Blog = () => {
                       <span className="underline underline-offset-4 decoration-ts-ink/40">{t.readArticle}</span>
                       <ArrowRight size={12} className="transform transition-transform group-hover:translate-x-1" />
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -338,7 +347,12 @@ export const Blog = () => {
               <Loader2 size={32} className="animate-spin text-[#86868B]" />
             </div>
           ) : (
-            <article className="space-y-10">
+            <motion.article 
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="space-y-10"
+            >
               {/* Title & Metadata */}
               <div className="flex flex-col items-center justify-center space-y-4 pt-4">
                 <div className="text-[10px] sm:text-[11px] font-display font-bold tracking-[0.22em] text-[#86868B] uppercase text-center">
@@ -378,7 +392,7 @@ export const Blog = () => {
                   [&>code]:font-mono [&>code]:bg-neutral-100 [&>code]:text-[#c13838] dark:[&>code]:bg-[#1C1C24] dark:[&>code]:text-[#F9B6B6] [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded"
                 dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
               />
-            </article>
+            </motion.article>
           )}
         </div>
       )}

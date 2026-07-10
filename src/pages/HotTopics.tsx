@@ -160,7 +160,12 @@ export const HotTopics = () => {
       <div ref={containerRef} className="pb-24 immersive-section text-left pt-10 space-y-8">
 
       {/* Category Tabs & Search Bar Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 relative z-20">
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 relative z-20"
+      >
         {/* Category Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar py-1 relative z-20">
           {["全部", "模型", "产品", "行业", "论文", "技巧"].map((cat) => {
@@ -214,7 +219,7 @@ export const HotTopics = () => {
             {t.searchBtn}
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content Section */}
       <div className="relative pt-4">
@@ -250,8 +255,14 @@ export const HotTopics = () => {
           </div>
         ) : groupedNews.length > 0 ? (
           <div className="space-y-12">
-            {groupedNews.map((group) => (
-              <div key={group.dateLabel} className="flex flex-col">
+            {groupedNews.map((group, groupIdx) => (
+              <motion.div 
+                key={group.dateLabel} 
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: groupIdx * 0.12, ease: 'easeOut' }}
+                className="flex flex-col"
+              >
                 {/* Date Header */}
                 <button
                   onClick={() => toggleGroup(group.dateLabel)}
@@ -377,7 +388,7 @@ export const HotTopics = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             ))}
           </div>
         ) : (
