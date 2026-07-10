@@ -320,7 +320,7 @@ export const Blog = () => {
 
                     {/* Content info */}
                     <div className="space-y-2">
-                      <h3 className="text-xl md:text-2xl font-display font-bold text-ts-ink group-hover:text-[#F9B6B6] transition-colors leading-tight">
+                      <h3 className="text-xl md:text-2xl font-display font-bold text-ts-ink leading-tight">
                         {post.title}
                       </h3>
                       <p className="text-[#86868B] text-sm md:text-base line-clamp-2 leading-relaxed">
