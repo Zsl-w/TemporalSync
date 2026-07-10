@@ -51,10 +51,10 @@ export const Navbar = () => {
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center h-full gap-1">
-            <NavItem to="/" label={language === 'zh' ? '关于' : 'ABOUT'} />
+            <NavItem to="/about" label={language === 'zh' ? '关于' : 'ABOUT'} />
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
             <NavItem to="/work" label={language === 'zh' ? '自习室' : 'WORK'} />
-            <NavItem to="/writing" label={language === 'zh' ? '博客' : 'WRITING'} />
+            <NavItem to="/blog" label={language === 'zh' ? '博客' : 'BLOG'} />
           </nav>
         </div>
 
@@ -62,10 +62,10 @@ export const Navbar = () => {
         <div className="flex items-center gap-4 sm:gap-6 text-ts-ink/70">
           {/* Mobile Nav Links */}
           <nav className="flex md:hidden items-center gap-1">
-            <NavItem to="/" label="ABOUT" />
+            <NavItem to="/about" label="ABOUT" />
             <NavItem to="/hot" label="HOT" />
             <NavItem to="/work" label="WORK" />
-            <NavItem to="/writing" label="WRITING" />
+            <NavItem to="/blog" label="BLOG" />
           </nav>
 
           <span className="hidden sm:inline w-px h-4 bg-ts-hairline" />

@@ -170,7 +170,7 @@ export const Blog = () => {
       if (post) {
         setSelectedPost(post);
       } else {
-        navigate('/writing', { replace: true });
+        navigate('/blog', { replace: true });
       }
     } else {
       setSelectedPost(null);
@@ -209,7 +209,7 @@ export const Blog = () => {
       readArticle: '阅读全文'
     },
     en: {
-      title: 'WRITING',
+      title: 'BLOG',
       subtitle: 'Thoughts on tech, design, and personal workflows.',
       searchPlaceholder: 'Search posts...',
       empty: 'No posts available',
@@ -272,7 +272,7 @@ export const Blog = () => {
                   <div
                     key={post.id}
                     className="group flex flex-col space-y-4 cursor-pointer"
-                    onClick={() => navigate(`/writing/${post.id}`)}
+                    onClick={() => navigate(`/blog/${post.id}`)}
                   >
                     {/* Cover image wrapper */}
                     <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden relative bg-[#1C1C24]">
@@ -327,7 +327,7 @@ export const Blog = () => {
         <div className="max-w-3xl mx-auto space-y-8 pt-6">
           {/* Back button */}
           <button
-            onClick={() => navigate('/writing')}
+            onClick={() => navigate('/blog')}
             className="inline-flex items-center gap-2 text-xs font-display font-bold text-[#86868B] hover:text-ts-ink transition-colors cursor-pointer"
           >
             <ArrowLeft size={16} />

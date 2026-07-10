@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { SettingsProvider } from './context/SettingsContext';
 import { Loader2 } from 'lucide-react';
@@ -39,7 +39,7 @@ const AnimatedAppContent = () => {
       <main className="flex-1 w-full mx-auto relative z-10 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
-            key={location.pathname.startsWith('/writing') ? '/writing' : location.pathname}
+            key={location.pathname.startsWith('/blog') ? '/blog' : location.pathname}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -48,11 +48,12 @@ const AnimatedAppContent = () => {
           >
             <Suspense fallback={<LoadingFallback />}>
               <Routes location={location}>
-                <Route path="/" element={<About />} />
+                <Route path="/" element={<Navigate to="/blog" replace />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/hot" element={<HotTopics />} />
                 <Route path="/work" element={<StudyRoom />} />
-                <Route path="/writing" element={<Blog />} />
-                <Route path="/writing/:id" element={<Blog />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:id" element={<Blog />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/shiyun-wechat-md" element={<WeChatConverter />} />
