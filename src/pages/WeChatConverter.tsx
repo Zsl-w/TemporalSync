@@ -8,12 +8,12 @@ const colors = {
   title: '#223030',
   body: '#4f5b58',
   muted: '#7a817b',
-  green: '#7f9b75',
-  greenText: '#3f583f',
-  greenSoft: '#edf4e7',
+  green: '#275E61',
+  greenText: '#275E61',
+  greenSoft: '#edf5f5',
   paper: '#fffdf8',
-  blueText: '#426475',
-  blueSoft: '#e7f0f4',
+  blueText: '#275E61',
+  blueSoft: '#edf5f5',
   warmSoft: '#fffaf2',
   border: '#eee6d6',
 };
@@ -51,7 +51,7 @@ function smartJoinLines(lines: string[]) {
 
 function inlineMarkdown(value: string) {
   let text = escapeHtml(value);
-  text = text.replace(/`([^`]+)`/g, `<code style="padding:2px 5px;border-radius:4px;background:#eef3ee;color:${colors.greenText};font-size:13px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;">$1</code>`);
+  text = text.replace(/`([^`]+)`/g, `<code style="padding:2px 5px;border-radius:4px;background:${colors.greenSoft};color:${colors.greenText};font-size:13px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;">$1</code>`);
   text = text.replace(/\*\*([^*]+)\*\*/g, `<strong style="padding:1px 4px;border-radius:4px;background:${colors.greenSoft};color:${colors.greenText};font-weight:800;">$1</strong>`);
   return text;
 }
@@ -90,7 +90,7 @@ function image(alt: string, src: string) {
 
 function quote(lines: string[]) {
   const content = inlineMarkdown(smartJoinLines(lines));
-  return `<section style="margin:0 0 24px;padding:14px 15px;border-left:4px solid ${colors.green};background:#f5f8f0;border-radius:0 8px 8px 0;"><p style="margin:0;color:#475547;font-size:15px;line-height:1.85;text-align:left;">${content}</p></section>`;
+  return `<section style="margin:0 0 24px;padding:14px 15px;border-left:4px solid ${colors.green};background:${colors.greenSoft};border-radius:0 8px 8px 0;"><p style="margin:0;color:${colors.body};font-size:15px;line-height:1.85;text-align:left;">${content}</p></section>`;
 }
 
 function codeBlock(code: string, lang = '') {
@@ -99,7 +99,7 @@ function codeBlock(code: string, lang = '') {
     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
     .replace(/ /g, '&nbsp;')
     .replace(/\n/g, '<br>');
-  return `<section style="margin:0 0 22px;border:1px solid #dfe5d7;background:#f6f8f2;border-radius:8px;overflow:hidden;"><section style="padding:8px 12px;background:#e9f0e4;border-bottom:1px solid #dfe5d7;"><p style="margin:0;color:#587052;font-size:13px;font-weight:800;line-height:1.6;">${label}</p></section><section style="padding:14px 15px;"><p style="margin:0;color:#40504a;font-size:13px;line-height:1.8;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;white-space:pre-wrap;text-align:left;">${formattedCode}</p></section></section>`;
+  return `<section style="margin:0 0 22px;border:1px solid ${colors.border};background:${colors.greenSoft};border-radius:8px;overflow:hidden;"><section style="padding:8px 12px;background:${colors.greenSoft};border-bottom:1px solid ${colors.border};"><p style="margin:0;color:${colors.greenText};font-size:13px;font-weight:800;line-height:1.6;">${label}</p></section><section style="padding:14px 15px;"><p style="margin:0;color:${colors.ink};font-size:13px;line-height:1.8;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;white-space:pre-wrap;text-align:left;">${formattedCode}</p></section></section>`;
 }
 
 function list(items: string[]) {
@@ -458,7 +458,7 @@ export const WeChatConverter = () => {
 
           <button
             onClick={copyRich}
-            className="flex items-center gap-1.5 h-9 px-4.5 rounded-lg bg-gradient-to-r from-[#F9B6B6] via-[#F9B9A6] to-[#D2A8D9] text-[#1D1D1F] text-xs font-bold font-display uppercase tracking-wider cursor-pointer hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 h-9 px-4.5 rounded-lg bg-ts-ink text-ts-canvas text-xs font-bold font-display uppercase tracking-wider cursor-pointer hover:opacity-90 transition-opacity"
           >
             <Copy size={13} />
             <span>{t.copyRich}</span>
