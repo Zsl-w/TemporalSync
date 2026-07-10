@@ -3,13 +3,24 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
+let supabaseClient: any = null;
+
+if (supabaseUrl && supabaseAnonKey) {
+  try {
+    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  } catch (err) {
+    console.error('[Supabase] Failed to initialize client:', err);
+  }
+} else {
   console.warn('[Supabase] Missing credentials in environment variables.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = supabaseClient;
 
 export async function getCollection(collectionName: string): Promise<any[]> {
+  if (!supabase) {
+    throw new Error('Supabase client is not initialized due to missing environment variables.');
+  }
   const { data, error } = await supabase
     .from(collectionName)
     .select('*');
@@ -24,6 +35,9 @@ export async function addDocument(
   collectionName: string,
   data: Record<string, any>
 ): Promise<{ id: string }> {
+  if (!supabase) {
+    throw new Error('Supabase client is not initialized due to missing environment variables.');
+  }
   const cleanData = { ...data };
   // Remove fields that might cause primary key conflicts or type mismatches
   delete cleanData.id;
@@ -46,6 +60,9 @@ export async function updateDocument(
   docId: string,
   data: Record<string, any>
 ): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase client is not initialized due to missing environment variables.');
+  }
   const cleanData = { ...data };
   delete cleanData.id;
   delete cleanData._id;
@@ -64,6 +81,9 @@ export async function deleteDocument(
   collectionName: string,
   docId: string
 ): Promise<void> {
+  if (!supabase) {
+    throw new Error('Supabase client is not initialized due to missing environment variables.');
+  }
   const { error } = await supabase
     .from(collectionName)
     .delete()
