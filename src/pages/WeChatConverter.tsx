@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Code, Copy, Check, Upload, Sparkles } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Code, Copy, Check, Upload, Sparkles, AppWindow } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
+import { FluidCanvas } from '../components/FluidCanvas';
 
 const colors = {
   ink: '#24302f',
@@ -409,65 +410,96 @@ export const WeChatConverter = () => {
   }[language];
 
   return (
-    <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-6 py-6 gap-6 h-[calc(100vh-5rem)] min-h-0 text-left relative select-none">
-      
-      {/* Back button and page header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4">
-        <div className="space-y-1.5">
-          <button
-            onClick={() => navigate('/work')}
-            className="inline-flex items-center gap-1 text-xs font-display font-bold text-ts-body hover:text-ts-ink transition-colors cursor-pointer"
-          >
-            <ArrowLeft size={14} />
-            <span>{language === 'zh' ? '返回自习室' : 'Back'}</span>
-          </button>
-          <h1 className="text-xl md:text-2xl font-display font-bold text-ts-ink flex items-center gap-2">
-            <span>{t.title}</span>
-            <Sparkles size={16} className="text-ts-primary animate-pulse" />
-          </h1>
-          <p className="text-xs text-ts-body">
-            {t.desc}
-          </p>
-        </div>
+    <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
+      {/* Fluid Header Banner */}
+      <div className="w-full h-[160px] mt-[-4rem] relative overflow-hidden flex items-end pb-4 select-none z-10 shadow-inner bg-[#53216f]">
+        <span className="absolute inset-0 pointer-events-none z-0"><FluidCanvas /></span>
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
+        <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
+          <div className="flex items-center gap-3.5 bg-white/10 dark:bg-black/15 backdrop-blur-md px-4.5 py-2.5 rounded-xl border border-white/20 dark:border-white/10 shadow-[0_8px_24px_0_rgba(0,0,0,0.12)] transition-all duration-300 hover:bg-white/15 dark:hover:bg-black/20 hover:scale-[1.01] hover:-translate-y-0.5 group/capsule cursor-pointer max-w-xl">
+            
+            {/* Layered 3D Sticker Stack */}
+            <div className="relative w-8 h-8 flex-shrink-0">
+              <div className="absolute inset-0 rounded-md bg-gradient-to-br from-[#FF9F66] to-[#FF416C] opacity-40 transform -rotate-12 translate-x-[-1.5px] translate-y-[1.5px] transition-transform duration-500 group-hover/capsule:-rotate-[18deg]" />
+              <div className="absolute inset-0 rounded-md bg-gradient-to-br from-[#A84A8C] to-[#6A3783] opacity-60 transform rotate-6 translate-x-[1.5px] translate-y-[-1px] transition-transform duration-500 group-hover/capsule:rotate-[12deg]" />
+              <div className="absolute inset-0 rounded-md bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-sm transition-transform duration-500 group-hover/capsule:scale-105">
+                <AppWindow size={14} className="text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]" />
+              </div>
+            </div>
 
-        {/* Action button toolbar */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
-          >
-            <RefreshCw size={13} />
-            <span>{t.reset}</span>
-          </button>
+            {/* Text Slogan */}
+            <div className="space-y-0.5">
+              <span className="text-[9px] font-black text-white/50 tracking-[0.22em] uppercase leading-none block">
+                {language === 'zh' ? '微信排版' : 'WeChat Converter'}
+              </span>
+              <span className="text-[12px] sm:text-[13px] font-display font-bold tracking-[0.05em] text-white uppercase leading-tight block drop-shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
+                {language === 'zh' ? '时韵公众号排版转换器 · 优雅文章美化排版' : 'SHIYUN WECHAT POST FORMATTER'}
+              </span>
+            </div>
 
-          <button
-            onClick={handleImportClick}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
-          >
-            <Upload size={13} />
-            <span>{t.import}</span>
-          </button>
-
-          <button
-            onClick={copyHtml}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer font-display shadow-sm hover:shadow"
-          >
-            <Code size={13} />
-            <span>{t.copyHtml}</span>
-          </button>
-
-          <button
-            onClick={copyRich}
-            className="flex items-center gap-1.5 h-9 px-4.5 rounded-lg bg-ts-ink text-ts-canvas text-xs font-bold font-display uppercase tracking-wider cursor-pointer hover:opacity-90 transition-opacity"
-          >
-            <Copy size={13} />
-            <span>{t.copyRich}</span>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* Editor & Preview Workspace grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+      <div className="flex-1 w-full max-w-[1440px] mx-auto px-6 md:px-12 py-8 flex flex-col gap-6 text-left relative select-none">
+        
+        {/* Back button and page header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4">
+          <div className="space-y-1.5">
+            <button
+              onClick={() => navigate('/work')}
+              className="inline-flex items-center gap-1 text-xs font-display font-bold text-ts-body hover:text-ts-ink transition-colors cursor-pointer"
+            >
+              <ArrowLeft size={14} />
+              <span>{language === 'zh' ? '返回自习室' : 'Back'}</span>
+            </button>
+            <h1 className="text-xl md:text-2xl font-display font-bold text-ts-ink flex items-center gap-2">
+              <span>{t.title}</span>
+              <Sparkles size={16} className="text-ts-primary animate-pulse" />
+            </h1>
+            <p className="text-xs text-ts-body">
+              {t.desc}
+            </p>
+          </div>
+
+          {/* Action button toolbar */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
+            >
+              <RefreshCw size={13} />
+              <span>{t.reset}</span>
+            </button>
+
+            <button
+              onClick={handleImportClick}
+              className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
+            >
+              <Upload size={13} />
+              <span>{t.import}</span>
+            </button>
+
+            <button
+              onClick={copyHtml}
+              className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer font-display shadow-sm hover:shadow"
+            >
+              <Code size={13} />
+              <span>{t.copyHtml}</span>
+            </button>
+
+            <button
+              onClick={copyRich}
+              className="flex items-center gap-1.5 h-9 px-4.5 rounded-lg bg-ts-ink text-ts-canvas text-xs font-bold font-display uppercase tracking-wider cursor-pointer hover:opacity-90 transition-opacity"
+            >
+              <Copy size={13} />
+              <span>{t.copyRich}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Editor & Preview Workspace grid */}
+        <div className="h-[calc(100vh-16rem)] min-h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Left pane: Editor */}
         <div className="flex flex-col bg-ts-surface rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-full min-h-0">
@@ -519,6 +551,7 @@ export const WeChatConverter = () => {
         </div>
       )}
 
+      </div>
     </div>
   );
 };
