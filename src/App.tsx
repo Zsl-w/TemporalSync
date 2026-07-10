@@ -48,8 +48,7 @@ const AnimatedAppContent = () => {
           >
             <Suspense fallback={<LoadingFallback />}>
               <Routes location={location}>
-                <Route path="/" element={<Navigate to="/blog" replace />} />
-                <Route path="/about" element={<About />} />
+                <Route path="/" element={<About />} />
                 <Route path="/hot" element={<HotTopics />} />
                 <Route path="/work" element={<StudyRoom />} />
                 <Route path="/blog" element={<Blog />} />
