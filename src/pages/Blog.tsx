@@ -284,7 +284,7 @@ export const Blog = () => {
                   <input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-ts-surface-elevated text-ts-ink border border-ts-hairline pl-11 pr-4 h-11 w-full rounded-lg text-sm focus:border-ts-primary outline-none transition-all placeholder:text-[#86868B]"
+                    className="bg-ts-surface-elevated text-ts-ink pl-11 pr-4 h-11 w-full rounded-lg text-sm focus:bg-ts-surface outline-none transition-all placeholder:text-[#86868B]"
                     placeholder={t.searchPlaceholder}
                   />
                 </div>
@@ -293,7 +293,7 @@ export const Blog = () => {
 
           {/* Post Grid */}
           {filteredPosts.length === 0 ? (
-            <div className="py-24 flex flex-col items-center justify-center border border-dashed border-ts-hairline rounded-2xl bg-ts-surface-elevated/40">
+            <div className="py-24 flex flex-col items-center justify-center rounded-2xl bg-ts-surface-elevated/40 shadow-sm">
               <BookOpen size={48} className="text-[#86868B] mb-4" />
               <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{t.empty}</p>
             </div>
@@ -390,7 +390,7 @@ export const Blog = () => {
 
               {/* Cover Image if exists */}
               {getFirstImageUrl(selectedPost.content) && (
-                <div className="w-full rounded-2xl overflow-hidden bg-[#1C1C24]/10 border border-ts-hairline shadow-sm">
+                <div className="w-full rounded-2xl overflow-hidden bg-[#1C1C24]/10 shadow-sm">
                   <img 
                     src={getFirstImageUrl(selectedPost.content)!} 
                     alt={selectedPost.title}
@@ -399,17 +399,16 @@ export const Blog = () => {
                 </div>
               )}
 
-              {/* Main Content */}
               <div 
                 className="blog-content prose dark:prose-invert max-w-none text-ts-ink/90 leading-relaxed text-sm md:text-base space-y-6
-                  [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:text-ts-ink [&>h1]:mt-8 [&>h1]:mb-4 [&>h1]:border-b [&>h1]:border-ts-hairline [&>h1]:pb-2
+                  [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:text-ts-ink [&>h1]:mt-8 [&>h1]:mb-4 [&>h1]:pb-2
                   [&>h2]:text-xl [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:mt-6 [&>h2]:mb-3
                   [&>h3]:text-lg [&>h3]:font-bold [&>h3]:text-ts-ink [&>h3]:mt-4 [&>h3]:mb-2
                   [&>p]:mb-4
                   [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ul]:space-y-1.5
                   [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>ol]:space-y-1.5
                   [&>blockquote]:border-l-4 [&>blockquote]:border-[#F9B9A6] [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-[#86868B] [&>blockquote]:my-4
-                  [&>pre]:bg-[#1C1C24] dark:[&>pre]:bg-[#1C1C24] [&>pre]:p-4 [&>pre]:rounded-lg [&>pre]:overflow-x-auto [&>pre]:my-4 [&>pre]:font-mono [&>pre]:text-xs [&>pre]:border [&>pre]:border-ts-hairline
+                  [&>pre]:bg-[#1C1C24] dark:[&>pre]:bg-[#1C1C24] [&>pre]:p-4 [&>pre]:rounded-lg [&>pre]:overflow-x-auto [&>pre]:my-4 [&>pre]:font-mono [&>pre]:text-xs
                   [&>code]:font-mono [&>code]:bg-[#1C1C24] dark:[&>code]:bg-[#1C1C24] [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-[#F9B6B6]"
                 dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
               />

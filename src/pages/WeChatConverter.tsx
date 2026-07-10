@@ -412,7 +412,7 @@ export const WeChatConverter = () => {
     <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-6 py-6 gap-6 h-[calc(100vh-5rem)] min-h-0 text-left relative select-none">
       
       {/* Back button and page header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-ts-hairline">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4">
         <div className="space-y-1.5">
           <button
             onClick={() => navigate('/work')}
@@ -434,7 +434,7 @@ export const WeChatConverter = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={handleReset}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg border border-ts-hairline bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer"
+            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
           >
             <RefreshCw size={13} />
             <span>{t.reset}</span>
@@ -442,7 +442,7 @@ export const WeChatConverter = () => {
 
           <button
             onClick={handleImportClick}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg border border-ts-hairline bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer"
+            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
           >
             <Upload size={13} />
             <span>{t.import}</span>
@@ -450,7 +450,7 @@ export const WeChatConverter = () => {
 
           <button
             onClick={copyHtml}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg border border-ts-hairline bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer font-display"
+            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer font-display shadow-sm hover:shadow"
           >
             <Code size={13} />
             <span>{t.copyHtml}</span>
@@ -470,8 +470,8 @@ export const WeChatConverter = () => {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
         
         {/* Left pane: Editor */}
-        <div className="flex flex-col border border-ts-hairline bg-ts-surface rounded-2xl overflow-hidden shadow-lg h-full min-h-0">
-          <div className="p-3 border-b border-ts-hairline flex items-center justify-between bg-ts-surface-elevated/40">
+        <div className="flex flex-col bg-ts-surface rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-full min-h-0">
+          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/40">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.editorTitle}</span>
             <span className="text-[10px] text-ts-body">{t.editorHint}</span>
           </div>
@@ -485,8 +485,8 @@ export const WeChatConverter = () => {
         </div>
 
         {/* Right pane: WeChat Preview */}
-        <div className="flex flex-col border border-ts-hairline bg-ts-surface rounded-2xl overflow-hidden shadow-lg h-full min-h-0">
-          <div className="p-3 border-b border-ts-hairline flex items-center justify-between bg-ts-surface-elevated/40">
+        <div className="flex flex-col bg-ts-surface rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-full min-h-0">
+          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/40">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.previewTitle}</span>
             <span className="text-[10px] text-ts-body">{t.previewHint}</span>
           </div>
@@ -494,7 +494,7 @@ export const WeChatConverter = () => {
           <div className="flex-1 overflow-y-auto p-6 bg-[#eee9de] dark:bg-[#2b2b35]/20 select-text scrollbar-thin">
             <div 
               ref={previewRef}
-              className="max-w-[620px] mx-auto bg-[#fffdf8] shadow-xl border border-[#eee6d6]"
+              className="max-w-[620px] mx-auto bg-[#fffdf8] shadow-xl"
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
           </div>
@@ -513,7 +513,7 @@ export const WeChatConverter = () => {
 
       {/* Global rich overlay toast alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[100] px-4.5 py-2.5 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-ts-ink font-semibold text-xs shadow-2xl flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-[100] px-4.5 py-2.5 rounded-lg bg-ts-surface-elevated text-ts-ink font-semibold text-xs shadow-2xl flex items-center gap-2 animate-bounce">
           <Check size={14} className="text-ts-success" />
           <span>{toastMessage}</span>
         </div>

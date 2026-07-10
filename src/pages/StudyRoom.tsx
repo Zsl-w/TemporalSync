@@ -35,10 +35,10 @@ const Md2RedMockup = () => {
   }, [markdown]);
 
   return (
-    <div className="card w-full flex flex-col xl:flex-row gap-6 border border-ts-hairline bg-ts-surface rounded-[16px] overflow-hidden shadow-lg h-[500px]">
+    <div className="card w-full flex flex-col xl:flex-row gap-6 bg-ts-surface rounded-[16px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-[500px]">
       {/* Editor Panel (Left/Top) */}
-      <div className="flex-1 flex flex-col border-b xl:border-b-0 xl:border-r border-ts-hairline h-1/2 xl:h-full min-h-0">
-        <div className="bg-ts-surface-elevated px-4 py-2 flex items-center justify-between border-b border-ts-hairline">
+      <div className="flex-1 flex flex-col h-1/2 xl:h-full min-h-0">
+        <div className="bg-ts-surface-elevated px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-ts-primary/80" />
             <span className="text-[10px] font-bold text-ts-muted uppercase tracking-wider font-mono">markdown_editor.md</span>
@@ -55,7 +55,7 @@ const Md2RedMockup = () => {
 
       {/* Xiaohongshu Preview Card (Right/Bottom) */}
       <div className="w-full xl:w-[360px] bg-ts-canvas p-6 flex flex-col justify-center items-center h-1/2 xl:h-full overflow-y-auto">
-        <div className="relative w-full max-w-[280px] bg-white text-neutral-800 rounded-[12px] shadow-md border border-neutral-100 flex flex-col overflow-hidden aspect-[3/4] h-[340px]">
+        <div className="relative w-full max-w-[280px] bg-white text-neutral-800 rounded-[12px] shadow-md flex flex-col overflow-hidden aspect-[3/4] h-[340px]">
           {/* Card Header (Red accent / mock image top) */}
           <div className="h-2 bg-gradient-to-r from-ts-primary to-orange-500" />
           
@@ -63,7 +63,7 @@ const Md2RedMockup = () => {
           <div className="flex-1 p-4 overflow-y-auto scrollbar-thin text-left select-none">
             <div 
               className="prose prose-sm text-[11px] text-neutral-700 leading-relaxed font-sans space-y-2
-                [&>h1]:text-[13px] [&>h1]:font-black [&>h1]:text-neutral-900 [&>h1]:mb-3 [&>h1]:pb-1.5 [&>h1]:border-b [&>h1]:border-neutral-100
+                [&>h1]:text-[13px] [&>h1]:font-black [&>h1]:text-neutral-900 [&>h1]:mb-3 [&>h1]:pb-1.5
                 [&>p]:mb-2
                 [&>ul]:list-none [&>ul]:pl-0 [&>ul]:space-y-1.5
                 [&>ol]:list-decimal [&>ol]:pl-4 [&>ol]:space-y-1.5
@@ -73,7 +73,7 @@ const Md2RedMockup = () => {
           </div>
 
           {/* Card Footer (Xiaohongshu style interaction bar) */}
-          <div className="bg-white border-t border-neutral-50 px-4 py-2.5 flex items-center justify-between text-neutral-400 text-[10px]">
+          <div className="bg-white px-4 py-2.5 flex items-center justify-between text-neutral-400 text-[10px]">
             <div className="flex items-center gap-1.5">
               <div className="w-5 h-5 rounded-full bg-ts-primary/10 flex items-center justify-center text-ts-primary font-bold text-[9px]">
                 时
@@ -153,10 +153,10 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full flex items-center justify-center border border-ts-hairline bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+        <div className="card w-full flex items-center justify-center bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
           <div className="absolute inset-0 bg-[radial-gradient(#7f9b75_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
           <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
-            <div className="w-16 h-16 rounded-[20px] bg-[#7f9b75]/10 border border-[#7f9b75]/20 flex items-center justify-center text-[#7f9b75] shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-16 h-16 rounded-[20px] bg-[#7f9b75]/10 flex items-center justify-center text-[#7f9b75] shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
               <AppWindow size={32} />
             </div>
             <span className="text-xs font-bold text-[#7f9b75] uppercase tracking-[0.2em] font-mono">WeChat Converter</span>
@@ -189,11 +189,11 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full flex items-center justify-center border border-ts-hairline bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
+        <div className="card w-full flex items-center justify-center bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
           {/* Animated Matrix/Code effect to represent background daemon */}
           <div className="absolute inset-0 bg-[radial-gradient(var(--color-ts-primary)_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
           <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
-            <div className="w-16 h-16 rounded-[20px] bg-ts-primary/10 border border-ts-primary/20 flex items-center justify-center text-ts-primary shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-16 h-16 rounded-[20px] bg-ts-primary/10 flex items-center justify-center text-ts-primary shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
               <Code size={32} />
             </div>
             <span className="text-xs font-bold text-ts-primary uppercase tracking-[0.2em] font-mono">Daemon Active</span>
@@ -284,7 +284,7 @@ export const StudyRoom = () => {
               <div className="w-full lg:w-[45%] space-y-6">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-black uppercase text-ts-primary px-2.5 py-0.5 rounded bg-ts-primary/10 border border-ts-primary/20">
+                    <span className="text-[10px] font-mono font-black uppercase text-ts-primary px-2.5 py-0.5 rounded bg-ts-primary/10">
                       {app.title}
                     </span>
                     <Sparkles className="text-ts-primary" size={14} />
@@ -342,7 +342,7 @@ export const StudyRoom = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: apps.length * 0.15 + 0.1 }}
-        className="card p-10 flex flex-col items-center text-center max-w-3xl mx-auto border-dashed bg-ts-surface-elevated/40"
+        className="card p-10 flex flex-col items-center text-center max-w-3xl mx-auto bg-ts-surface-elevated/40 shadow-sm"
       >
         <AppWindow size={36} className="text-ts-primary/45 mb-4 animate-pulse" />
         <h4 className="text-base font-bold text-ts-ink uppercase tracking-wider">{t.upcomingTitle}</h4>

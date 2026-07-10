@@ -27,7 +27,7 @@ const AuthorAvatar = ({ avatarUrl, source }: { avatarUrl?: string; source: strin
   }
 
   return (
-    <div className="w-8 h-8 rounded-full border border-ts-hairline overflow-hidden flex-shrink-0 bg-ts-surface">
+    <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-ts-surface shadow-sm">
       <img
         src={avatarUrl}
         alt=""
@@ -218,8 +218,8 @@ export const HotTopics = () => {
                 {/* Inactive Button Background & Border */}
                 <div 
                   className={cn(
-                    "absolute inset-0 rounded-full border border-ts-hairline -z-20 transition-all duration-300",
-                    isActive ? "opacity-0" : "bg-ts-surface-elevated hover:bg-ts-surface opacity-100"
+                    "absolute inset-0 rounded-full -z-20 transition-all duration-300",
+                    isActive ? "opacity-0" : "bg-ts-surface-elevated hover:bg-ts-surface opacity-100 shadow-sm"
                   )} 
                 />
 
@@ -236,7 +236,7 @@ export const HotTopics = () => {
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-ts-surface-elevated text-ts-ink border border-ts-hairline pl-10 pr-4 h-10 rounded-[6px] text-xs font-medium focus:bg-ts-surface focus:border-ts-primary outline-none transition-all placeholder:text-ts-muted-soft w-full md:w-64"
+              className="bg-ts-surface-elevated text-ts-ink pl-10 pr-4 h-10 rounded-[6px] text-xs font-medium focus:bg-ts-surface outline-none transition-all placeholder:text-ts-muted-soft w-full md:w-64"
               placeholder={t.searchPlaceholder}
             />
           </div>
@@ -374,7 +374,7 @@ export const HotTopics = () => {
 
                                 {/* Image: Display if exists */}
                                 {item.image && (
-                                  <div className="w-full max-w-xl rounded-[8px] overflow-hidden border border-ts-hairline">
+                                  <div className="w-full max-w-[480px] rounded-[12px] overflow-hidden shadow-md">
                                     <img
                                       src={item.image}
                                       alt={item.title}
@@ -393,7 +393,7 @@ export const HotTopics = () => {
                                     {item.tags.map((tag) => (
                                       <span
                                         key={tag}
-                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary border border-ts-hairline"
+                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary"
                                       >
                                         {tag}
                                       </span>
@@ -414,7 +414,7 @@ export const HotTopics = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="py-24 flex flex-col items-center justify-center rounded-2xl border border-dashed border-ts-hairline bg-ts-surface-elevated/40">
+          <div className="py-24 flex flex-col items-center justify-center rounded-2xl bg-ts-surface-elevated/40 shadow-sm">
             <Zap size={48} className="text-ts-muted mb-4" />
             <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{t.emptyTitle}</p>
             <p className="text-xs text-ts-muted-soft mt-1">{t.emptyDesc}</p>

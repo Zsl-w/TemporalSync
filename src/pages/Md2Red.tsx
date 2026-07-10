@@ -94,7 +94,7 @@ export const Md2Red = () => {
     <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto px-6 py-6 gap-6 h-[calc(100vh-5rem)] min-h-0 text-left relative select-none">
       
       {/* Back button and page header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-ts-hairline">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4">
         <div className="space-y-1.5">
           <button
             onClick={() => navigate('/work')}
@@ -116,7 +116,7 @@ export const Md2Red = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={handleReset}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg border border-ts-hairline bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer"
+            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
           >
             <RefreshCw size={13} />
             <span>{t.reset}</span>
@@ -124,7 +124,7 @@ export const Md2Red = () => {
 
           <button
             onClick={handleImportClick}
-            className="flex items-center gap-1 h-9 px-3 rounded-lg border border-ts-hairline bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer"
+            className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
           >
             <Upload size={13} />
             <span>{t.import}</span>
@@ -144,8 +144,8 @@ export const Md2Red = () => {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
         
         {/* Left pane: Editor */}
-        <div className="flex flex-col border border-ts-hairline bg-ts-surface rounded-2xl overflow-hidden shadow-lg h-full min-h-0">
-          <div className="p-3 border-b border-ts-hairline flex items-center justify-between bg-ts-surface-elevated/40">
+        <div className="flex flex-col bg-ts-surface rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-full min-h-0">
+          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/40">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.editorTitle}</span>
             <span className="text-[10px] text-ts-body">{t.editorHint}</span>
           </div>
@@ -159,14 +159,14 @@ export const Md2Red = () => {
         </div>
 
         {/* Right pane: Phone simulator preview */}
-        <div className="flex flex-col border border-ts-hairline bg-ts-surface rounded-2xl overflow-hidden shadow-lg h-full min-h-0">
-          <div className="p-3 border-b border-ts-hairline flex items-center justify-between bg-ts-surface-elevated/40">
+        <div className="flex flex-col bg-ts-surface rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-full min-h-0">
+          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/40">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.previewTitle}</span>
             <span className="text-[10px] text-ts-body">{t.previewHint}</span>
           </div>
           {/* Mobile simulator environment */}
           <div className="flex-1 overflow-y-auto p-6 bg-ts-canvas/40 dark:bg-black/20 flex justify-center items-center select-text scrollbar-thin">
-            <div className="relative w-full max-w-[290px] bg-white text-neutral-800 rounded-[24px] shadow-2xl border border-neutral-100 flex flex-col overflow-hidden aspect-[3/4] h-[380px]">
+            <div className="relative w-full max-w-[290px] bg-white text-neutral-800 rounded-[24px] shadow-2xl flex flex-col overflow-hidden aspect-[3/4] h-[380px]">
               
               {/* Dynamic Header top band */}
               <div className="h-2.5 bg-gradient-to-r from-ts-primary to-orange-500 shrink-0" />
@@ -185,7 +185,7 @@ export const Md2Red = () => {
               </div>
 
               {/* Interaction simulation footer */}
-              <div className="bg-white border-t border-neutral-100 px-4 py-3 flex items-center justify-between text-neutral-400 text-[10px] shrink-0">
+              <div className="bg-white px-4 py-3 flex items-center justify-between text-neutral-400 text-[10px] shrink-0">
                 <div className="flex items-center gap-1.5">
                   <div className="w-5.5 h-5.5 rounded-full bg-ts-primary/10 flex items-center justify-center text-ts-primary font-bold text-[9px]">
                     时
@@ -224,7 +224,7 @@ export const Md2Red = () => {
 
       {/* Global rich overlay toast alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-[100] px-4.5 py-2.5 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-ts-ink font-semibold text-xs shadow-2xl flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-[100] px-4.5 py-2.5 rounded-lg bg-ts-surface-elevated text-ts-ink font-semibold text-xs shadow-2xl flex items-center gap-2 animate-bounce">
           <Check size={14} className="text-ts-success" />
           <span>{toastMessage}</span>
         </div>
