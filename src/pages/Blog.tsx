@@ -357,7 +357,7 @@ export const Blog = () => {
         </div>
       ) : (
         /* DETAIL VIEW */
-        <div className="max-w-3xl mx-auto space-y-8 pt-6">
+        <div className="max-w-4xl mx-auto space-y-8 pt-6">
           {/* Back button */}
           <button
             onClick={() => navigate('/blog')}
@@ -383,7 +383,7 @@ export const Blog = () => {
                   )}
                 </div>
                 
-                <h1 className="text-3xl sm:text-4xl md:text-[46px] font-display font-bold tracking-tight text-ts-ink leading-[1.2] text-center uppercase max-w-2xl mx-auto">
+                <h1 className="text-3xl sm:text-4xl md:text-[46px] font-display font-bold tracking-tight text-ts-ink leading-[1.2] text-center uppercase max-w-3xl mx-auto">
                   {selectedPost.title}
                 </h1>
               </div>
