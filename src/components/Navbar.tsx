@@ -78,19 +78,7 @@ export const Navbar = () => {
 
               {/* Sub-navigation Dropdown popup */}
               <div className="absolute top-[calc(100%-8px)] left-1/2 -translate-x-1/2 pt-3 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-200 ease-out origin-top z-[100] w-52">
-                <div className="bg-ts-surface/90 backdrop-blur-md border border-ts-hairline rounded-xl shadow-xl overflow-hidden p-1.5 flex flex-col gap-0.5">
-                  <NavLink
-                    to="/work"
-                    end
-                    className={({ isActive }) =>
-                      cn(
-                        "px-3 py-2 text-[13px] font-semibold rounded-lg text-ts-ink/80 hover:text-ts-ink hover:bg-ts-surface-elevated/60 transition-colors flex items-center justify-between",
-                        isActive && "bg-ts-surface-elevated text-ts-ink"
-                      )
-                    }
-                  >
-                    <span>{language === 'zh' ? '自习室首页' : 'Work Sandbox'}</span>
-                  </NavLink>
+                <div className="bg-ts-surface/80 backdrop-blur-md border border-ts-hairline rounded-xl shadow-xl overflow-hidden p-1.5 flex flex-col">
                   <NavLink
                     to="/shiyun-wechat-md"
                     className={({ isActive }) =>
