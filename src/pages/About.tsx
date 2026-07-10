@@ -1,8 +1,9 @@
 import { useRef } from 'react';
-import { Github, Mail } from 'lucide-react';
+import { Github, Mail, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSettings } from '../context/SettingsContext';
 import { SplitText } from '../components/SplitText';
+import { FluidCanvas } from '../components/FluidCanvas';
 
 export const About = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,9 +20,39 @@ export const About = () => {
   const titleClass = 'max-w-none w-full text-center font-display text-[44px] font-bold leading-none tracking-[0.03em] md:text-[76px] lg:text-[92px] lg:tracking-[0.06em] lg:whitespace-nowrap';
 
   return (
-    <div ref={containerRef} className="relative flex flex-col justify-between h-[calc(100vh-4rem)] w-full overflow-hidden select-none bg-ts-canvas">
+    <div ref={containerRef} className="w-full min-h-screen flex flex-col bg-ts-canvas">
+      {/* Fluid Header Banner */}
+      <div className="w-full h-[160px] mt-[-4rem] relative overflow-hidden flex items-end pb-4 select-none z-10 shadow-inner bg-[#53216f]">
+        <span className="absolute inset-0 pointer-events-none z-0"><FluidCanvas /></span>
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
+        <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
+          <div className="flex items-center gap-3.5 bg-white/10 dark:bg-black/15 backdrop-blur-md px-4.5 py-2.5 rounded-xl border border-white/20 dark:border-white/10 shadow-[0_8px_24px_0_rgba(0,0,0,0.12)] transition-all duration-300 hover:bg-white/15 dark:hover:bg-black/20 hover:scale-[1.01] hover:-translate-y-0.5 group/capsule cursor-pointer max-w-xl">
+            
+            {/* Layered 3D Sticker Stack */}
+            <div className="relative w-8 h-8 flex-shrink-0">
+              <div className="absolute inset-0 rounded-md bg-gradient-to-br from-[#FF9F66] to-[#FF416C] opacity-40 transform -rotate-12 translate-x-[-1.5px] translate-y-[1.5px] transition-transform duration-500 group-hover/capsule:-rotate-[18deg]" />
+              <div className="absolute inset-0 rounded-md bg-gradient-to-br from-[#A84A8C] to-[#6A3783] opacity-60 transform rotate-6 translate-x-[1.5px] translate-y-[-1px] transition-transform duration-500 group-hover/capsule:rotate-[12deg]" />
+              <div className="absolute inset-0 rounded-md bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-sm transition-transform duration-500 group-hover/capsule:scale-105">
+                <Sparkles size={14} className="text-white fill-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]" />
+              </div>
+            </div>
+
+            {/* Text Slogan */}
+            <div className="space-y-0.5">
+              <span className="text-[9px] font-black text-white/50 tracking-[0.22em] uppercase leading-none block">
+                {language === 'zh' ? '工作室' : 'TemporalSync'}
+              </span>
+              <span className="text-[12px] sm:text-[13px] font-display font-bold tracking-[0.05em] text-white uppercase leading-tight block drop-shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
+                {language === 'zh' ? '时韵个人时间工作室 · 整理智能情报，记录创造过程' : 'TEMPORALSYNC STUDIO · SIGNAL WATCHER'}
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       {/* 1. HERO CONTENT SECTION */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 relative">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 relative py-12">
         {/* Background Grid & Decorative Shapes */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:96px_96px] opacity-40" />
