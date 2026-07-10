@@ -177,6 +177,12 @@ export const Blog = () => {
     }
   }, [id, posts, loading]);
 
+  useEffect(() => {
+    if (selectedPost) {
+      document.title = `${selectedPost.title} · TemporalSync`;
+    }
+  }, [selectedPost]);
+
   const filteredPosts = useMemo(() => {
     if (!searchQuery.trim()) return posts;
     const query = searchQuery.toLowerCase().trim();

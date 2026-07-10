@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
-import { SettingsProvider } from './context/SettingsContext';
+import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { Loader2 } from 'lucide-react';
 import { prefetchNews } from './services/newsService';
 import { ThemeToggle } from './components/ThemeToggle';
@@ -29,6 +29,38 @@ const NewsPrefetcher = () => {
 
 const AnimatedAppContent = () => {
   const location = useLocation();
+  const { language } = useSettings();
+
+  useEffect(() => {
+    const routeTitles: Record<string, Record<string, string>> = {
+      zh: {
+        '/': '关于 · TemporalSync',
+        '/hot': 'AI 热点 · TemporalSync',
+        '/work': '自习室 · TemporalSync',
+        '/blog': '博客 · TemporalSync',
+        '/settings': '设置 · TemporalSync',
+        '/admin': '控制台 · TemporalSync',
+        '/shiyun-wechat-md': '微信排版转换器 · TemporalSync'
+      },
+      en: {
+        '/': 'About · TemporalSync',
+        '/hot': 'AI Hot Topics · TemporalSync',
+        '/work': 'Study Room · TemporalSync',
+        '/blog': 'Blog · TemporalSync',
+        '/settings': 'Settings · TemporalSync',
+        '/admin': 'Dashboard · TemporalSync',
+        '/shiyun-wechat-md': 'WeChat Post Formatter · TemporalSync'
+      }
+    };
+
+    const path = location.pathname;
+    const titles = routeTitles[language] || routeTitles.en;
+    if (titles[path]) {
+      document.title = titles[path];
+    } else if (path.startsWith('/blog/')) {
+      document.title = language === 'zh' ? '博客文章 · TemporalSync' : 'Blog Article · TemporalSync';
+    }
+  }, [location.pathname, language]);
 
   return (
     <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
