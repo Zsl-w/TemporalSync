@@ -3,7 +3,6 @@ import { Github, Mail, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSettings } from '../context/SettingsContext';
 import { SplitText } from '../components/SplitText';
-import { FluidCanvas } from '../components/FluidCanvas';
 
 export const About = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,9 +21,7 @@ export const About = () => {
   return (
     <div ref={containerRef} className="w-full min-h-screen flex flex-col bg-ts-canvas">
       {/* Fluid Header Banner */}
-      <div className="w-full h-[160px] mt-[-4rem] relative overflow-hidden flex items-end pb-4 select-none z-10 shadow-inner bg-[#53216f]">
-        <span className="absolute inset-0 pointer-events-none z-0"><FluidCanvas /></span>
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
+      <div className="w-full h-[160px] mt-[-4rem] relative overflow-hidden flex items-end pb-4 select-none z-10 shadow-inner bg-transparent">
         <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
           <div className="flex items-center gap-3.5 bg-white/10 dark:bg-black/15 backdrop-blur-md px-4.5 py-2.5 rounded-xl border border-white/20 dark:border-white/10 shadow-[0_8px_24px_0_rgba(0,0,0,0.12)] transition-all duration-300 hover:bg-white/15 dark:hover:bg-black/20 hover:scale-[1.01] hover:-translate-y-0.5 group/capsule cursor-pointer max-w-xl">
             

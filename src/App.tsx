@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { prefetchNews } from './services/newsService';
 import { ThemeToggle } from './components/ThemeToggle';
 import { AnimatePresence, motion } from 'motion/react';
+import { FluidCanvas } from './components/FluidCanvas';
 
 const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
 const HotTopics = lazy(() => import('./pages/HotTopics').then(m => ({ default: m.HotTopics })));
@@ -65,11 +66,20 @@ const AnimatedAppContent = () => {
     }
   }, [location.pathname, language]);
 
+  const showFluid = ['/', '/hot', '/work', '/blog', '/shiyun-wechat-md', '/md2red'].includes(location.pathname);
+
   return (
     <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
       <NewsPrefetcher />
       
       <Navbar />
+
+      {showFluid && (
+        <div className="absolute top-0 left-0 w-full h-[160px] overflow-hidden pointer-events-none z-0">
+          <span className="absolute inset-0 block"><FluidCanvas /></span>
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:20px_20px] opacity-40 mix-blend-overlay pointer-events-none" />
+        </div>
+      )}
   
       <main className="flex-1 w-full mx-auto relative z-10 flex flex-col">
         <AnimatePresence mode="wait">
