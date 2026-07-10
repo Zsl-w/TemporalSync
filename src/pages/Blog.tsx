@@ -330,7 +330,7 @@ export const Blog = () => {
 
                     {/* Read Link */}
                     <div className="inline-flex items-center gap-1.5 text-xs font-display font-bold uppercase tracking-wider text-ts-ink">
-                      <span>{t.readArticle}</span>
+                      <span className="underline underline-offset-4 decoration-ts-ink/40">{t.readArticle}</span>
                       <ArrowRight size={12} className="transform transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
