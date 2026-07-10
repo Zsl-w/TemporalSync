@@ -305,15 +305,15 @@ export const Blog = () => {
                       )}
                     </div>
 
-                    {/* Metadata (Retro space mono style) */}
-                    <div className="text-[11px] font-mono tracking-widest text-[#86868B] uppercase">
+                    {/* Metadata (Barlow Condensed style) */}
+                    <div className="text-[12px] font-barlow font-bold tracking-widest text-[#86868B] uppercase">
                       <span>{formatDate(post.createdAt)}</span>
-                      <span className="mx-2">|</span>
+                      <span className="mx-2 font-mono text-[9px] opacity-30">|</span>
                       <span>{getReadTime(post.content, language === 'zh')}</span>
                       {post.tags.length > 0 && (
                         <>
-                          <span className="mx-2">|</span>
-                          <span className="text-[#F9B9A6]">{post.tags[0]}</span>
+                          <span className="mx-2 font-mono text-[9px] opacity-30">|</span>
+                          <span className="text-ts-primary">{post.tags[0]}</span>
                         </>
                       )}
                     </div>
