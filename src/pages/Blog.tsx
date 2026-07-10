@@ -235,34 +235,32 @@ export const Blog = () => {
   }
 
   return (
-    <div className="space-y-12 pb-24 immersive-section text-left">
-      {!id ? (
-        /* LIST VIEW */
-        <div className="space-y-12">
-          {/* Immersive Header Section (matching WORK & HOT page style) */}
-          <section className="relative pt-12 pb-8 overflow-hidden">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="w-12 h-[1px] bg-ts-primary" />
-                  <span className="text-[12px] font-black text-ts-primary uppercase tracking-[0.3em]">
-                    {language === 'zh' ? '想法流' : 'DEV WRITING'}
-                  </span>
-                </div>
-                <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-4">
-                  <span className="text-ts-primary block">{language === 'zh' ? '博客' : 'BLOG'}</span>
-                  <span className="text-ts-ink/80 block mt-2">
-                    {language === 'zh' ? '文章与日常思考.' : 'Thoughts & Notes.'}
-                  </span>
-                </h1>
-                <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
-                  {t.subtitle}
-                </p>
-              </div>
+    <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
+      {!id && (
+        <div className="w-full h-[180px] mt-[-4rem] relative bg-gradient-to-r from-[#FF8C66] via-[#FF5E62] to-[#A254F2] dark:from-[#9c4c32] dark:via-[#913234] dark:to-[#5e2b8f] overflow-hidden flex items-end pb-6 select-none z-10">
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:16px_16px] opacity-45" />
+          <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
+            <div className="flex items-center gap-3.5 bg-white/10 dark:bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 dark:border-white/10 shadow-sm">
+              <BookOpen size={16} className="text-white" />
+              <span className="text-[13px] md:text-[14px] font-display font-bold tracking-[0.08em] text-white uppercase">
+                {language === 'zh' ? '想法流 · 记录创造与技术日常' : 'LOGGING COGNITIVE FLUX & DIGITAL CRAFTS'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
-              {/* Search */}
-              {posts.length > 0 && (
-                <div className="relative w-full md:w-80 mb-2">
+      <div className={cn(
+        "pb-24 immersive-section text-left",
+        !id ? "pt-12 space-y-8" : "pt-6 space-y-8"
+      )}>
+        {!id ? (
+          /* LIST VIEW */
+          <div className="space-y-8">
+            {/* Search Row */}
+            {posts.length > 0 && (
+              <div className="flex justify-end mb-4">
+                <div className="relative w-full md:w-80">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#86868B]" size={16} />
                   <input
                     value={searchQuery}
@@ -271,9 +269,8 @@ export const Blog = () => {
                     placeholder={t.searchPlaceholder}
                   />
                 </div>
-              )}
-            </div>
-          </section>
+              </div>
+            )}
 
           {/* Post Grid */}
           {filteredPosts.length === 0 ? (
@@ -401,6 +398,7 @@ export const Blog = () => {
           )}
         </div>
       )}
+      </div>
     </div>
   );
 };

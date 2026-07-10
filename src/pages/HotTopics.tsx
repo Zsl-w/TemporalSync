@@ -156,29 +156,21 @@ export const HotTopics = () => {
   }[language];
 
   return (
-    <div ref={containerRef} className="space-y-8 pb-24 immersive-section">
-      {/* Immersive Header Section */}
-      <section className="relative pt-12 pb-8 overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="w-12 h-[1px] bg-ts-primary" />
-            <span className="text-[12px] font-black text-ts-primary uppercase tracking-[0.3em]">
-              {t.tag}
+    <div className="w-full min-h-screen flex flex-col bg-ts-canvas">
+      {/* Sunset Fluid Header Banner */}
+      <div className="w-full h-[180px] mt-[-4rem] relative bg-gradient-to-r from-[#FF8C66] via-[#FF5E62] to-[#A254F2] dark:from-[#9c4c32] dark:via-[#913234] dark:to-[#5e2b8f] overflow-hidden flex items-end pb-6 select-none z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:16px_16px] opacity-45" />
+        <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center relative z-10">
+          <div className="flex items-center gap-3.5 bg-white/10 dark:bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 dark:border-white/10 shadow-sm">
+            <Zap size={16} className="text-white fill-white" />
+            <span className="text-[13px] md:text-[14px] font-display font-bold tracking-[0.08em] text-white uppercase">
+              {language === 'zh' ? 'AI热点 · 跟踪最前沿的技术情报' : 'TRACKING LATEST AI FRONTIERS & INTELLIGENCE'}
             </span>
           </div>
-          <h1 className="text-[64px] lg:text-[84px] font-display font-black leading-[0.9] tracking-tighter mb-6">
-            <span className="text-ts-primary block">
-              {language === 'zh' ? 'AI热点' : 'AI Hot Topics'}
-            </span>
-            <span className="text-ts-ink/80 block mt-2">
-              {language === 'zh' ? '精选.' : 'Curated.'}
-            </span>
-          </h1>
-          <p className="text-ts-body text-[15px] font-semibold max-w-md leading-relaxed">
-            {t.subtitle}
-          </p>
         </div>
-      </section>
+      </div>
+
+      <div ref={containerRef} className="pb-24 immersive-section text-left pt-12 space-y-8">
 
       {/* Category Tabs & Search Bar Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 relative z-20">
@@ -415,6 +407,7 @@ export const HotTopics = () => {
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
