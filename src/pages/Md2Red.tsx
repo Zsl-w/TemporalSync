@@ -167,7 +167,7 @@ export const Md2Red = () => {
           </div>
           {/* Mobile simulator environment */}
           <div className="flex-1 overflow-y-auto p-6 bg-ts-canvas/40 dark:bg-black/20 flex justify-center items-center select-text scrollbar-thin">
-            <div className="relative w-full max-w-[290px] bg-white dark:bg-[#1E1E1E] text-neutral-800 dark:text-neutral-200 border dark:border-white/5 rounded-[24px] shadow-2xl flex flex-col overflow-hidden aspect-[3/4] h-[380px]">
+            <div className="relative w-full max-w-[290px] bg-ts-surface text-ts-ink border border-ts-hairline rounded-[24px] shadow-2xl flex flex-col overflow-hidden aspect-[3/4] h-[380px]">
               
               {/* Dynamic Header top band */}
               <div className="h-2.5 bg-gradient-to-r from-ts-primary to-orange-500 shrink-0" />
@@ -175,23 +175,23 @@ export const Md2Red = () => {
               {/* Card Content (Xiaohongshu post body) */}
               <div className="flex-1 p-4 overflow-y-auto scrollbar-thin text-left select-none">
                 <div 
-                  className="prose prose-sm text-[11px] text-neutral-700 dark:text-neutral-300 leading-relaxed font-sans space-y-2
-                    [&>h1]:text-[13px] [&>h1]:font-black [&>h1]:text-neutral-900 dark:[&>h1]:text-white [&>h1]:mb-3 [&>h1]:pb-1.5 [&>h1]:border-b [&>h1]:border-neutral-100 dark:[&>h1]:border-neutral-850
+                  className="prose prose-sm text-[11px] text-ts-ink/80 leading-relaxed font-sans space-y-2
+                    [&>h1]:text-[13px] [&>h1]:font-black [&>h1]:text-ts-ink [&>h1]:mb-3 [&>h1]:pb-1.5 [&>h1]:border-b [&>h1]:border-ts-hairline
                     [&>p]:mb-2
                     [&>ul]:list-none [&>ul]:pl-0 [&>ul]:space-y-1.5
                     [&>ol]:list-decimal [&>ol]:pl-4 [&>ol]:space-y-1.5
-                    [&>strong]:text-neutral-900 dark:[&>strong]:text-white [&>strong]:font-bold"
+                    [&>strong]:text-ts-ink [&>strong]:font-bold"
                   dangerouslySetInnerHTML={{ __html: previewHtml }}
                 />
               </div>
 
               {/* Interaction simulation footer */}
-              <div className="bg-white dark:bg-[#1E1E1E] border-t dark:border-white/5 px-4 py-3 flex items-center justify-between text-neutral-400 dark:text-neutral-500 text-[10px] shrink-0">
+              <div className="bg-ts-surface border-t border-ts-hairline px-4 py-3 flex items-center justify-between text-ts-muted text-[10px] shrink-0">
                 <div className="flex items-center gap-1.5">
                   <div className="w-5.5 h-5.5 rounded-full bg-ts-primary/10 flex items-center justify-center text-ts-primary font-bold text-[9px]">
                     时
                   </div>
-                  <span className="font-bold text-neutral-600 dark:text-neutral-400">时间同步.md</span>
+                  <span className="font-bold text-ts-body">时间同步.md</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-0.5 text-rose-500">
