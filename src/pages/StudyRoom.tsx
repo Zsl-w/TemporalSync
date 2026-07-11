@@ -152,15 +152,56 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full flex items-center justify-center bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
-          <div className="absolute inset-0 bg-[radial-gradient(#7f9b75_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
-          <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
-            <div className="w-16 h-16 rounded-[20px] bg-[#7f9b75]/10 flex items-center justify-center text-[#7f9b75] shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
-              <AppWindow size={32} />
+        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-emerald-900 border border-white/10 shadow-xl group flex flex-col justify-end p-6 select-none">
+          {/* Grid Background */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70" />
+          
+          {/* Radial Glow */}
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-400/20 rounded-full blur-[80px]" />
+          
+          {/* macOS window mockup floating */}
+          <div className="relative z-10 w-full bg-white/5 dark:bg-black/25 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-all duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.02] flex flex-col h-[200px]">
+            {/* Window title bar */}
+            <div className="h-8 border-b border-white/10 px-4 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+              </div>
+              <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest font-bold">wechat_formatter.app</span>
+              <div className="w-12" />
             </div>
-            <span className="text-xs font-bold text-[#7f9b75] uppercase tracking-[0.2em] font-mono">WeChat Converter</span>
-            <h4 className="text-base font-bold text-ts-ink leading-tight">shiyun-wechat-md</h4>
-            <p className="text-[11px] text-ts-muted max-w-[280px] leading-relaxed">时韵自习室公众号排版利器，一键转换优雅文章排版</p>
+            
+            {/* Window Content */}
+            <div className="flex-1 flex min-h-0 text-left">
+              {/* Left editor mockup */}
+              <div className="w-[35%] border-r border-white/10 p-3 space-y-2 font-mono text-[9px] text-white/30">
+                <div className="h-2.5 w-12 bg-white/10 rounded" />
+                <div className="space-y-1">
+                  <div className="h-1.5 w-full bg-white/5 rounded" />
+                  <div className="h-1.5 w-[85%] bg-white/5 rounded" />
+                  <div className="h-1.5 w-[90%] bg-white/5 rounded" />
+                </div>
+                <div className="h-2 w-8 bg-teal-500/20 rounded border border-teal-500/30" />
+              </div>
+              {/* Right formatted preview mockup */}
+              <div className="flex-1 p-3 space-y-3 bg-white/5 dark:bg-black/10">
+                {/* WeChat Post Heading styled block */}
+                <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                  <div className="w-4 h-4 rounded-full bg-teal-500/20 flex items-center justify-center text-[8px] font-bold text-teal-400">1</div>
+                  <div className="h-3 w-32 bg-teal-400/20 rounded" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-2 w-full bg-white/10 rounded" />
+                  <div className="h-2 w-[90%] bg-white/10 rounded" />
+                  <div className="h-2 w-[70%] bg-white/10 rounded" />
+                </div>
+                {/* Styled Quote Box block */}
+                <div className="border-l-2 border-teal-500 bg-white/5 p-2 rounded">
+                  <div className="h-1.5 w-full bg-white/10 rounded" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ),
@@ -188,16 +229,43 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full flex items-center justify-center bg-ts-surface-elevated rounded-[16px] aspect-[4/3] relative overflow-hidden group shadow-lg">
-          {/* Animated Matrix/Code effect to represent background daemon */}
-          <div className="absolute inset-0 bg-[radial-gradient(var(--color-ts-primary)_1px,transparent_1px)] [background-size:16px_16px] opacity-15" />
-          <div className="relative z-10 flex flex-col items-center gap-3 p-8 text-center">
-            <div className="w-16 h-16 rounded-[20px] bg-ts-primary/10 flex items-center justify-center text-ts-primary shadow-sm mb-2 group-hover:scale-110 transition-transform duration-300">
-              <Code size={32} />
+        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border border-white/10 shadow-xl group flex flex-col justify-end p-6 select-none">
+          {/* Grid Background */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70" />
+          
+          {/* Radial Glow */}
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-[80px]" />
+          
+          {/* macOS Terminal window mockup floating */}
+          <div className="relative z-10 w-full bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-all duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.02] flex flex-col h-[200px]">
+            {/* Window title bar */}
+            <div className="h-8 border-b border-white/10 px-4 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+              </div>
+              <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest font-bold">timesync_agent.sh</span>
+              <div className="w-12" />
             </div>
-            <span className="text-xs font-bold text-ts-primary uppercase tracking-[0.2em] font-mono">Daemon Active</span>
-            <h4 className="text-base font-bold text-ts-ink leading-tight">TimeSync background_agent.ts</h4>
-            <p className="text-[11px] text-ts-muted max-w-[280px] leading-relaxed">定时资讯聚合与大模型智能处理守护进程，全时段监听数据链</p>
+            
+            {/* Terminal CLI Content */}
+            <div className="flex-1 p-3 font-mono text-[9px] text-indigo-200/80 leading-normal space-y-2 text-left overflow-hidden">
+              <div className="flex items-center gap-2 text-indigo-400">
+                <span>$</span>
+                <span>node dist/server.cjs --daemon</span>
+              </div>
+              <div className="space-y-1">
+                <div className="text-white/45">[21:02:07] [SyncAgent] Initializing synaptics daemon...</div>
+                <div className="text-emerald-400 flex items-center gap-1.5">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span>[21:02:08] [SyncAgent] MIMO LLM Integration active.</span>
+                </div>
+                <div className="text-white/40">[21:02:09] [Database] Cache loaded: 142 records.</div>
+                <div className="text-indigo-400">[21:02:10] [Scraper] Fetching Arxiv AI papers... 200 OK</div>
+                <div className="text-white/30">[21:02:11] [MIMO] Translating & summarising 3 papers... done.</div>
+              </div>
+            </div>
           </div>
         </div>
       )
