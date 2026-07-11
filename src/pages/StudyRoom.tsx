@@ -1,105 +1,11 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { motion } from 'motion/react';
-import { ExternalLink, Sparkles, Code, AppWindow, ArrowRight, Heart, MessageCircle, Star, Send } from 'lucide-react';
+import { Sparkles, Code, AppWindow, ArrowRight, Heart, Star } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { cn } from '../lib/utils';
-import { marked } from 'marked';
 import { Link } from 'react-router-dom';
 
-// Simple sanitizer to keep the HTML safe in mockup
-const parseMarkdownToHtml = (markdown: string): string => {
-  try {
-    // Simple custom parsing or using marked
-    const rawHtml = marked.parse(markdown) as string;
-    return rawHtml;
-  } catch (e) {
-    return markdown.replace(/\n/g, '<br/>');
-  }
-};
 
-const Md2RedMockup = () => {
-  const [markdown, setMarkdown] = useState<string>(
-`# 🎯 3个步骤，彻底戒掉拖延症！
-
-拖延症不可怕，主要是你没找到科学的大脑对策。试试这三个神经同步步骤：
-
-📌 **1. 5分钟法则**：只要开始做5分钟，你的大脑就会自动建立专注习惯。
-🚀 **2. 极简拆解**：把大任务拆成比芝麻还小的微型步骤，消灭畏难情绪。
-💡 **3. 即时反馈**：每完成一步，就给大脑发送一次成就感奖励！
-
-#时间同步 #自律成长 #干货分享 #自我提升`);
-
-  const previewHtml = useMemo(() => {
-    return parseMarkdownToHtml(markdown);
-  }, [markdown]);
-
-  return (
-    <div className="card w-full flex flex-col xl:flex-row gap-6 bg-ts-surface rounded-[16px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] h-[500px]">
-      {/* Editor Panel (Left/Top) */}
-      <div className="flex-1 flex flex-col h-1/2 xl:h-full min-h-0">
-        <div className="bg-ts-surface-elevated px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-ts-primary/80" />
-            <span className="text-[10px] font-bold text-ts-muted uppercase tracking-wider font-mono">markdown_editor.md</span>
-          </div>
-          <span className="text-[9px] font-bold text-ts-primary uppercase bg-ts-primary/10 px-2 py-0.5 rounded-md">Live Input</span>
-        </div>
-        <textarea
-          value={markdown}
-          onChange={(e) => setMarkdown(e.target.value)}
-          className="flex-1 w-full p-6 text-xs font-mono bg-transparent text-ts-ink resize-none outline-none leading-relaxed border-none focus:ring-0"
-          placeholder="在此输入 Markdown..."
-        />
-      </div>
-
-      {/* Xiaohongshu Preview Card (Right/Bottom) */}
-      <div className="w-full xl:w-[360px] bg-ts-canvas p-6 flex flex-col justify-center items-center h-1/2 xl:h-full overflow-y-auto">
-        <div className="relative w-full max-w-[280px] bg-white text-neutral-800 rounded-[12px] shadow-md flex flex-col overflow-hidden aspect-[3/4] h-[340px]">
-          {/* Card Header (Red accent / mock image top) */}
-          <div className="h-2 bg-gradient-to-r from-ts-primary to-orange-500" />
-          
-          {/* Card Content Area */}
-          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin text-left select-none">
-            <div 
-              className="prose prose-sm text-[11px] text-neutral-700 leading-relaxed font-sans space-y-2
-                [&>h1]:text-[13px] [&>h1]:font-black [&>h1]:text-neutral-900 [&>h1]:mb-3 [&>h1]:pb-1.5
-                [&>p]:mb-2
-                [&>ul]:list-none [&>ul]:pl-0 [&>ul]:space-y-1.5
-                [&>ol]:list-decimal [&>ol]:pl-4 [&>ol]:space-y-1.5
-                [&>strong]:text-neutral-900 [&>strong]:font-bold"
-              dangerouslySetInnerHTML={{ __html: previewHtml }}
-            />
-          </div>
-
-          {/* Card Footer (Xiaohongshu style interaction bar) */}
-          <div className="bg-white px-4 py-2.5 flex items-center justify-between text-neutral-400 text-[10px]">
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 rounded-full bg-ts-primary/10 flex items-center justify-center text-ts-primary font-bold text-[9px]">
-                时
-              </div>
-              <span className="font-bold text-neutral-600">时间同步.md</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-0.5 text-rose-500">
-                <Heart size={12} fill="currentColor" />
-                <span className="font-bold">99+</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <Star size={12} />
-                <span className="font-bold">88</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <MessageCircle size={12} />
-                <span className="font-bold">12</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p className="text-[10px] font-bold text-ts-muted mt-3 uppercase tracking-wider font-mono">📱 Mobile Card Preview</p>
-      </div>
-    </div>
-  );
-};
 
 export const StudyRoom = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,7 +17,7 @@ export const StudyRoom = () => {
       title: 'md2red',
       subtitle: language === 'zh' ? '小红书排版卡片生成器' : 'Markdown to Xiaohongshu Card',
       desc: language === 'zh' 
-        ? '一键将 Markdown 格式的笔记、文章转化为符合小红书（Red）社交风格、精美排版、带表情符号和智能标签的移动端分享卡片，极大提升内容分发速度。'
+        ? '一键将 Markdown 格式 of 笔记、文章转化为符合小红书（Red）社交风格、精美排版、带表情符号和智能标签的移动端分享卡片，极大提升内容分发速度。'
         : 'Convert your Markdown files instantly into beautiful, mobile-friendly social sharing cards styled for Xiaohongshu (Red), with automatic emoji insertion and tag layout.',
       features: language === 'zh'
         ? [
@@ -126,8 +32,64 @@ export const StudyRoom = () => {
             '📌 Social media tag layout generator',
             '🎨 Export-ready mobile design templates'
           ],
-      isInteractive: true,
-      component: <Md2RedMockup />,
+      isInteractive: false,
+      imageContent: (
+        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-rose-950 via-pink-900 to-neutral-950 border border-white/10 shadow-[0_24px_50px_rgba(0,0,0,0.3)] group flex items-center justify-center p-8 select-none">
+          {/* Subtle Ambient Mesh Grid */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(244,63,94,0.15),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px]" />
+          
+          {/* Glassmorphic Mobile Card Mockup */}
+          <div className="relative z-10 w-[55%] aspect-[3/4.2] bg-white/[0.03] dark:bg-black/25 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-700 ease-out group-hover:-translate-y-3 group-hover:scale-[1.03] group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
+            {/* Mock Image Top Banner */}
+            <div className="h-16 bg-gradient-to-tr from-rose-500 via-pink-500 to-orange-400 relative flex items-center justify-center">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-white/50 uppercase">COVER CARD</span>
+            </div>
+            
+            {/* Card Content */}
+            <div className="flex-1 p-3.5 space-y-3 text-left">
+              <div className="space-y-1">
+                <div className="h-3 w-[90%] bg-white/10 rounded-md" />
+                <div className="h-3 w-[70%] bg-white/10 rounded-md" />
+              </div>
+              
+              {/* Bullets with tiny emoji mockup lines */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px]">📌</span>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px]">🚀</span>
+                  <div className="h-1.5 w-[85%] bg-white/5 rounded-full" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px]">💡</span>
+                  <div className="h-1.5 w-[90%] bg-white/5 rounded-full" />
+                </div>
+              </div>
+
+              {/* Tags at bottom */}
+              <div className="flex gap-1 pt-1.5">
+                <div className="h-3.5 px-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded text-[7px] font-mono">#时间同步</div>
+                <div className="h-3.5 px-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded text-[7px] font-mono">#自律</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Floating Heart / Like badge */}
+          <div className="absolute top-10 right-10 z-20 bg-rose-500 text-white font-bold text-[9px] font-mono rounded-full px-2.5 py-1 flex items-center gap-1 shadow-lg shadow-rose-500/20 transform -translate-y-2 translate-x-2 transition-transform duration-700 group-hover:translate-y-0 group-hover:translate-x-0">
+            <Heart size={10} fill="currentColor" />
+            <span>99+</span>
+          </div>
+
+          {/* Floating Sparkles badge */}
+          <div className="absolute bottom-10 left-10 z-20 bg-white/5 dark:bg-black/30 backdrop-blur-xl border border-white/10 text-white/70 text-[9px] font-mono rounded-full px-2.5 py-1 flex items-center gap-1 shadow-lg transform translate-y-2 -translate-x-2 transition-transform duration-700 group-hover:translate-y-0 group-hover:translate-x-0">
+            <Sparkles size={10} className="text-orange-400" />
+            <span>Card generated</span>
+          </div>
+        </div>
+      ),
       link: '/md2red'
     },
     {
@@ -312,7 +274,7 @@ export const StudyRoom = () => {
             >
               {/* Media Display Area (Interactive Component or Image) */}
               <div className="w-full lg:w-1/2">
-                {app.isInteractive ? app.component : app.imageContent}
+                {app.imageContent}
               </div>
 
               {/* Description Content Area */}
