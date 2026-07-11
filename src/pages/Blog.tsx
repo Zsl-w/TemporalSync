@@ -196,8 +196,13 @@ export const Blog = () => {
   }, [posts, searchQuery]);
 
   const renderMarkdown = (md: string) => {
+    if (!md) return { __html: '' };
     try {
-      const html = marked.parse(md);
+      // Strip the first image (markdown or HTML) since it's already rendered as the page header cover image
+      let cleanMd = md.replace(/!\[.*?\]\((.*?)\)/, '');
+      cleanMd = cleanMd.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/, '');
+      
+      const html = marked.parse(cleanMd);
       return { __html: html };
     } catch (_) {
       return { __html: md };
