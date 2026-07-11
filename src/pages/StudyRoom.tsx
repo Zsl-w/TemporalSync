@@ -152,56 +152,55 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-900 to-emerald-900 border border-white/10 shadow-xl group flex flex-col justify-end p-6 select-none">
-          {/* Grid Background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70" />
+        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-teal-950 via-emerald-900 to-neutral-950 border border-white/10 shadow-[0_24px_50px_rgba(0,0,0,0.3)] group flex items-center justify-center p-8 select-none">
+          {/* Subtle Ambient Mesh Grid */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(45,212,191,0.15),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px]" />
           
-          {/* Radial Glow */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-400/20 rounded-full blur-[80px]" />
-          
-          {/* macOS window mockup floating */}
-          <div className="relative z-10 w-full bg-white/5 dark:bg-black/25 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-all duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.02] flex flex-col h-[200px]">
-            {/* Window title bar */}
-            <div className="h-8 border-b border-white/10 px-4 flex items-center justify-between">
+          {/* Glassmorphic Document Board */}
+          <div className="relative z-10 w-[75%] aspect-[1.4/1] bg-white/[0.03] dark:bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-5 flex flex-col justify-between transition-all duration-700 ease-out group-hover:-translate-y-3 group-hover:scale-[1.03] group-hover:shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
+            {/* Top Bar / Header of Mock Document */}
+            <div className="flex justify-between items-center pb-3 border-b border-white/5">
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              </div>
+              <div className="h-3 w-20 bg-white/10 rounded-full" />
+              <div className="w-4 h-4 rounded-full bg-teal-500/20 flex items-center justify-center text-[7px] text-teal-400 font-bold font-mono">EN</div>
+            </div>
+
+            {/* Content Abstract Lines with Green Highlight Elements */}
+            <div className="flex-1 py-4 space-y-3 flex flex-col justify-center">
+              <div className="space-y-1.5">
+                <div className="h-3.5 w-[85%] bg-gradient-to-r from-teal-400/30 to-emerald-400/10 rounded-md" />
+                <div className="h-2 w-full bg-white/5 rounded-full" />
+                <div className="h-2 w-[90%] bg-white/5 rounded-full" />
+              </div>
+
+              {/* Blockquote Mockup with distinct Teal sidebar */}
+              <div className="border-l-[3px] border-teal-400 pl-3 py-1 space-y-1 bg-teal-500/[0.03] rounded-r">
+                <div className="h-1.5 w-[70%] bg-white/10 rounded-full" />
+                <div className="h-1.5 w-[60%] bg-white/10 rounded-full" />
+              </div>
+            </div>
+
+            {/* Bottom floating format pill */}
+            <div className="flex justify-between items-center pt-2 border-t border-white/5 text-[9px] font-mono text-white/40">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-teal-500/30 border border-teal-500/50" />
+                <span>Format: WeChat Style</span>
               </div>
-              <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest font-bold">wechat_formatter.app</span>
-              <div className="w-12" />
-            </div>
-            
-            {/* Window Content */}
-            <div className="flex-1 flex min-h-0 text-left">
-              {/* Left editor mockup */}
-              <div className="w-[35%] border-r border-white/10 p-3 space-y-2 font-mono text-[9px] text-white/30">
-                <div className="h-2.5 w-12 bg-white/10 rounded" />
-                <div className="space-y-1">
-                  <div className="h-1.5 w-full bg-white/5 rounded" />
-                  <div className="h-1.5 w-[85%] bg-white/5 rounded" />
-                  <div className="h-1.5 w-[90%] bg-white/5 rounded" />
-                </div>
-                <div className="h-2 w-8 bg-teal-500/20 rounded border border-teal-500/30" />
-              </div>
-              {/* Right formatted preview mockup */}
-              <div className="flex-1 p-3 space-y-3 bg-white/5 dark:bg-black/10">
-                {/* WeChat Post Heading styled block */}
-                <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-                  <div className="w-4 h-4 rounded-full bg-teal-500/20 flex items-center justify-center text-[8px] font-bold text-teal-400">1</div>
-                  <div className="h-3 w-32 bg-teal-400/20 rounded" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-2 w-full bg-white/10 rounded" />
-                  <div className="h-2 w-[90%] bg-white/10 rounded" />
-                  <div className="h-2 w-[70%] bg-white/10 rounded" />
-                </div>
-                {/* Styled Quote Box block */}
-                <div className="border-l-2 border-teal-500 bg-white/5 p-2 rounded">
-                  <div className="h-1.5 w-full bg-white/10 rounded" />
-                </div>
+              <div className="h-5 px-3 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 font-bold flex items-center gap-1">
+                <span>Copy Rich Text</span>
               </div>
             </div>
+          </div>
+          
+          {/* Secondary floating element */}
+          <div className="absolute bottom-6 right-8 z-20 bg-white/5 dark:bg-black/30 backdrop-blur-xl border border-white/10 rounded-full px-3 py-1.5 shadow-lg text-[9px] font-mono text-white/60 flex items-center gap-1.5 transform translate-y-2 translate-x-2 transition-transform duration-700 group-hover:translate-y-0 group-hover:translate-x-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Ready for copy</span>
           </div>
         </div>
       ),
@@ -229,44 +228,43 @@ export const StudyRoom = () => {
           ],
       isInteractive: false,
       imageContent: (
-        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border border-white/10 shadow-xl group flex flex-col justify-end p-6 select-none">
-          {/* Grid Background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-70" />
+        <div className="card w-full aspect-[4/3] relative rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-950 to-purple-950 border border-white/10 shadow-[0_24px_50px_rgba(0,0,0,0.3)] group flex items-center justify-center p-8 select-none">
+          {/* Subtle Ambient Mesh Grid */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(99,102,241,0.15),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px]" />
           
-          {/* Radial Glow */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-[80px]" />
+          {/* Glowing orbital lines / Abstract AI core */}
+          <div className="absolute w-48 h-48 rounded-full border border-dashed border-indigo-500/25 animate-[spin_40s_linear_infinite]" />
+          <div className="absolute w-36 h-36 rounded-full border border-indigo-500/10 animate-[spin_20s_linear_infinite_reverse]" />
           
-          {/* macOS Terminal window mockup floating */}
-          <div className="relative z-10 w-full bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl transition-all duration-500 ease-out group-hover:-translate-y-2 group-hover:scale-[1.02] flex flex-col h-[200px]">
-            {/* Window title bar */}
-            <div className="h-8 border-b border-white/10 px-4 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
-              </div>
-              <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest font-bold">timesync_agent.sh</span>
-              <div className="w-12" />
-            </div>
-            
-            {/* Terminal CLI Content */}
-            <div className="flex-1 p-3 font-mono text-[9px] text-indigo-200/80 leading-normal space-y-2 text-left overflow-hidden">
-              <div className="flex items-center gap-2 text-indigo-400">
-                <span>$</span>
-                <span>node dist/server.cjs --daemon</span>
-              </div>
-              <div className="space-y-1">
-                <div className="text-white/45">[21:02:07] [SyncAgent] Initializing synaptics daemon...</div>
-                <div className="text-emerald-400 flex items-center gap-1.5">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span>[21:02:08] [SyncAgent] MIMO LLM Integration active.</span>
-                </div>
-                <div className="text-white/40">[21:02:09] [Database] Cache loaded: 142 records.</div>
-                <div className="text-indigo-400">[21:02:10] [Scraper] Fetching Arxiv AI papers... 200 OK</div>
-                <div className="text-white/30">[21:02:11] [MIMO] Translating & summarising 3 papers... done.</div>
-              </div>
+          {/* Glowing AI Core Node */}
+          <div className="absolute w-20 h-20 rounded-full bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center backdrop-blur-sm shadow-[0_0_40px_rgba(99,102,241,0.15)] group-hover:scale-105 transition-transform duration-700">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+              <Code size={18} className="animate-pulse" />
             </div>
           </div>
+          
+          {/* Floating Data Node 1 - Scraper */}
+          <div className="absolute top-12 left-12 z-20 bg-white/5 dark:bg-black/30 backdrop-blur-xl border border-white/10 rounded-xl p-2.5 shadow-lg flex flex-col gap-1 transition-all duration-700 ease-out group-hover:translate-x-1 group-hover:translate-y-1">
+            <span className="text-[8px] font-mono text-indigo-400 font-bold uppercase tracking-wider">Scraper</span>
+            <div className="h-1.5 w-12 bg-white/10 rounded-full" />
+            <div className="h-1 w-8 bg-emerald-500/30 rounded-full flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            </div>
+          </div>
+
+          {/* Floating Data Node 2 - MIMO LLM */}
+          <div className="absolute bottom-12 right-12 z-20 bg-white/5 dark:bg-black/30 backdrop-blur-xl border border-white/10 rounded-xl p-2.5 shadow-lg flex flex-col gap-1 transition-all duration-700 ease-out group-hover:-translate-x-1 group-hover:-translate-y-1">
+            <span className="text-[8px] font-mono text-purple-400 font-bold uppercase tracking-wider">MIMO LLM</span>
+            <div className="h-1.5 w-16 bg-white/10 rounded-full" />
+            <span className="text-[8px] text-white/40">Translate & Tag</span>
+          </div>
+
+          {/* Connected Synaptic Lines Mockup */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none stroke-indigo-500/20" strokeWidth="1" fill="none">
+            <line x1="20%" y1="20%" x2="50%" y2="50%" strokeDasharray="3 3" />
+            <line x1="80%" y1="80%" x2="50%" y2="50%" strokeDasharray="3 3" />
+          </svg>
         </div>
       )
     }
