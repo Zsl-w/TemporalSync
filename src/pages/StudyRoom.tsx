@@ -21,16 +21,16 @@ export const StudyRoom = () => {
         : 'Convert your Markdown files instantly into beautiful, mobile-friendly social sharing cards styled for Xiaohongshu (Red), with automatic emoji insertion and tag layout.',
       features: language === 'zh'
         ? [
-            '🚀 智能解析与爆款排版样式匹配',
-            '💡 自动提取核心论点，插入丰富契合的 Emoji 表情包',
-            '📌 智能分类并追加社交平台爆款话题标签（Tag）',
-            '🎨 响应式卡片排布与导出支持'
+            '智能解析与爆款排版样式匹配',
+            '自动提取核心论点，并提供排版美化支持',
+            '智能分类并追加社交平台话题标签（Tag）',
+            '响应式卡片排布与导出支持'
           ]
         : [
-            '🚀 Intelligent Markdown compilation and formatting alignment',
-            '💡 Automated emoji matching to keep readers engaged',
-            '📌 Social media tag layout generator',
-            '🎨 Export-ready mobile design templates'
+            'Intelligent Markdown compilation and formatting alignment',
+            'Automated content matching to keep readers engaged',
+            'Social media tag layout generator',
+            'Export-ready mobile design templates'
           ],
       isInteractive: false,
       imageContent: (
@@ -53,18 +53,18 @@ export const StudyRoom = () => {
                 <div className="h-3 w-[70%] bg-white/10 rounded-md" />
               </div>
               
-              {/* Bullets with tiny emoji mockup lines */}
+              {/* Bullets with tiny mockup lines */}
               <div className="space-y-1.5 pt-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px]">📌</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
                   <div className="h-1.5 w-full bg-white/5 rounded-full" />
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px]">🚀</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
                   <div className="h-1.5 w-[85%] bg-white/5 rounded-full" />
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px]">💡</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
                   <div className="h-1.5 w-[90%] bg-white/5 rounded-full" />
                 </div>
               </div>
@@ -101,16 +101,16 @@ export const StudyRoom = () => {
         : 'A Markdown-to-WeChat post formatter custom-tailored for the Shiyun brand. Parses headers, quotes, lists, and tables into responsive WeChat styles.',
       features: language === 'zh'
         ? [
-            '🎨 极简清新设计，特调「时韵自习室」公众号主题配色',
-            '📈 内置文章结构化解析（大标题、序号标题、引用块）',
-            '📋 支持一键复制富文本至微信公众号后台，格式无缝对接',
-            '⚡ 支持表格与行内代码块的优雅美化排版'
+            '极简清新设计，特调「时韵自习室」公众号主题配色',
+            '内置文章结构化解析（大标题、序号标题、引用块）',
+            '支持一键复制富文本至微信公众号后台，格式无缝对接',
+            '支持表格与行内代码块的优雅美化排版'
           ]
         : [
-            '🎨 Custom color scheme aligned with WeChat official account branding',
-            '📈 Pre-defined WeChat styling structures for headings, tables, and quotes',
-            '📋 One-click clipboard copy as Rich Text for zero-hassle formatting',
-            '⚡ Formats inline code and tables automatically'
+            'Custom color scheme aligned with WeChat official account branding',
+            'Pre-defined WeChat styling structures for headings, tables, and quotes',
+            'One-click clipboard copy as Rich Text for zero-hassle formatting',
+            'Formats inline code and tables automatically'
           ],
       isInteractive: false,
       imageContent: (
@@ -177,16 +177,16 @@ export const StudyRoom = () => {
         : 'The automated intelligence collection server running behind this project. Cooperating with crawlers and LLMs, it scrapes paper releases, social posts, and compiles them in real-time.',
       features: language === 'zh'
         ? [
-            '🧠 基于 MIMO 大模型进行智能分类与高质量翻译',
-            '🛡️ 内置容错抓取机制，多层缓冲防止 304 或服务中断',
-            '⚡ 自动关联作者社交账号头图以提高信息可读性',
-            '📈 生成全时段的科技同步增长与热点板块分布曲线'
+            '基于 MIMO 大模型进行智能分类与高质量翻译',
+            '内置容错抓取机制，多层缓冲防止 304 或服务中断',
+            '自动关联作者社交账号头图以提高信息可读性',
+            '生成全时段的科技同步增长与热点板块分布曲线'
           ]
         : [
-            '🧠 Intelligent translation & enrichment powered by MIMO',
-            '🛡️ Robust fallback scrapers caching local content seamlessly',
-            '⚡ Localized proxy for user profile picture delivery',
-            '📈 Synaptic distribution metadata generated daily'
+            'Intelligent translation & enrichment powered by MIMO',
+            'Robust fallback scrapers caching local content seamlessly',
+            'Localized proxy for user profile picture delivery',
+            'Synaptic distribution metadata generated daily'
           ],
       isInteractive: false,
       imageContent: (
