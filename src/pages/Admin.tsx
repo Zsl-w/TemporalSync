@@ -16,24 +16,19 @@ import {
 import { cn } from '../lib/utils';
 import { useSettings } from '../context/SettingsContext';
 import { 
-  getCollection, 
   addDocument, 
   updateDocument, 
-  deleteDocument 
+  deleteDocument,
+  loginAdmin,
+  logoutAdmin,
+  getCurrentUser
 } from '../lib/supabase';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+import matter from 'gray-matter';
+import { usePosts, BlogPost } from '../hooks/usePosts';
 
-interface BlogPost {
-  id: string;
-  title: string;
-  summary: string;
-  tags: string[];
-  content: string;
-  userId: string;
-  userName: string;
-  createdAt: any;
-  updatedAt: any;
-}
+
 
 // Markdown Front Matter Parser
 const parseMarkdownFile = (fileName: string, rawText: string) => {
@@ -42,41 +37,26 @@ const parseMarkdownFile = (fileName: string, rawText: string) => {
   let tags: string[] = [];
   let content = rawText;
 
-  const frontMatterMatch = rawText.match(/^---\r?\n([\s\S]+?)\r?\n---\r?\n([\s\S]*)$/);
-  if (frontMatterMatch) {
-    const yamlContent = frontMatterMatch[1];
-    content = frontMatterMatch[2];
-
-    const lines = yamlContent.split('\n');
-    lines.forEach(line => {
-      const colonIndex = line.indexOf(':');
-      if (colonIndex !== -1) {
-        const key = line.slice(0, colonIndex).trim().toLowerCase();
-        let value = line.slice(colonIndex + 1).trim();
-        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-          value = value.slice(1, -1);
-        }
-        if (key === 'title') {
-          title = value;
-        } else if (key === 'summary' || key === 'description') {
-          summary = value;
-        } else if (key === 'tags' || key === 'keywords') {
-          if (value.startsWith('[') && value.endsWith(']')) {
-            try {
-              const cleanedValue = value.replace(/'/g, '"');
-              const parsed = JSON.parse(cleanedValue);
-              if (Array.isArray(parsed)) {
-                tags = parsed.map(t => String(t).trim());
-              }
-            } catch (_) {
-              tags = value.slice(1, -1).split(',').map(t => t.trim());
-            }
-          } else {
-            tags = value.split(',').map(t => t.trim());
-          }
-        }
+  try {
+    const { data, content: parsedContent } = matter(rawText);
+    content = parsedContent;
+    
+    if (data.title) {
+      title = String(data.title).trim();
+    }
+    if (data.summary || data.description) {
+      summary = String(data.summary || data.description).trim();
+    }
+    if (data.tags || data.keywords) {
+      const rawTags = data.tags || data.keywords;
+      if (Array.isArray(rawTags)) {
+        tags = rawTags.map(t => String(t).trim());
+      } else if (typeof rawTags === 'string') {
+        tags = rawTags.split(',').map(t => t.trim());
       }
-    });
+    }
+  } catch (err) {
+    console.error('Failed to parse frontmatter with gray-matter:', err);
   }
 
   if (!title) {
@@ -126,12 +106,13 @@ export const AdminPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('ts-admin-logged-in') === 'true';
   });
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
+  const [authChecking, setAuthChecking] = useState(true);
 
-  // Blog states
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(false);
+  // Hook for blogs list
+  const { posts, loading: postsLoading, fetchPosts } = usePosts();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Editing workspace states
@@ -144,61 +125,51 @@ export const AdminPage = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Check initial Auth Session
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          setIsAuthenticated(true);
+          localStorage.setItem('ts-admin-logged-in', 'true');
+        } else {
+          setIsAuthenticated(false);
+          localStorage.removeItem('ts-admin-logged-in');
+        }
+      } catch (_) {
+        setIsAuthenticated(false);
+      } finally {
+        setAuthChecking(false);
+      }
+    };
+    checkSession();
+  }, []);
+
   // Authenticate Admin
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'tsync2026') {
+    setSaving(true);
+    setAuthError('');
+    try {
+      await loginAdmin(email, password);
       setIsAuthenticated(true);
       localStorage.setItem('ts-admin-logged-in', 'true');
       setAuthError('');
-    } else {
-      setAuthError(language === 'zh' ? '密码错误，验证失败' : 'Invalid passcode');
-      setPassword('');
+    } catch (err: any) {
+      setAuthError(err.message || (language === 'zh' ? '登录失败，请检查账号和密码' : 'Login failed'));
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('ts-admin-logged-in');
-  };
-
-  // Fetch blogs
-  const fetchPosts = async () => {
-    setLoading(true);
+  const handleLogout = async () => {
     try {
-      let fetched: BlogPost[] = [];
-      try {
-        const data = await getCollection('blogs');
-        fetched = (data || []).map((doc: any) => ({
-          id: doc._id || doc.id || '',
-          title: doc.title || '',
-          summary: doc.summary || '',
-          tags: Array.isArray(doc.tags) ? doc.tags : [],
-          content: doc.content || '',
-          userId: doc.userId || '',
-          userName: doc.userName || 'Anonymous',
-          createdAt: doc.createdAt || new Date().toISOString(),
-          updatedAt: doc.updatedAt || new Date().toISOString(),
-        } as BlogPost));
-      } catch (e) {
-        console.warn('Cloudbase fetch failed', e);
-      }
-
-      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
-      let localBlogs: BlogPost[] = [];
-      if (localBlogsRaw) {
-        try {
-          localBlogs = JSON.parse(localBlogsRaw);
-        } catch (_) {}
-      }
-
-      const combined = [...localBlogs, ...fetched.filter(fb => !localBlogs.some(lp => lp.id === fb.id))];
-      combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setPosts(combined);
+      await logoutAdmin();
+      setIsAuthenticated(false);
+      localStorage.removeItem('ts-admin-logged-in');
     } catch (err) {
-      console.error('Error fetching blogs:', err);
-    } finally {
-      setLoading(false);
+      console.error('Logout failed:', err);
     }
   };
 
@@ -206,7 +177,7 @@ export const AdminPage = () => {
     if (isAuthenticated) {
       fetchPosts();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchPosts]);
 
   // Select post to edit
   const handleSelectPost = (post: BlogPost) => {
@@ -377,11 +348,21 @@ export const AdminPage = () => {
 
   const renderMarkdown = (md: string) => {
     try {
-      return { __html: marked.parse(md) };
+      const rawHtml = marked.parse(md) as string;
+      const cleanHtml = DOMPurify.sanitize(rawHtml);
+      return { __html: cleanHtml };
     } catch (_) {
       return { __html: md };
     }
   };
+
+  if (authChecking) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] bg-ts-canvas px-6">
+        <Loader2 size={32} className="animate-spin text-ts-primary" />
+      </div>
+    );
+  }
 
   // === LOGIN UI ===
   if (!isAuthenticated) {
@@ -399,30 +380,46 @@ export const AdminPage = () => {
               {language === 'zh' ? '管理员后台' : 'Admin Console'}
             </h1>
             <p className="text-xs text-ts-body">
-              {language === 'zh' ? '请输入验证密码以继续' : 'Enter passkey to write blogs'}
+              {language === 'zh' ? '请输入管理员账号以继续' : 'Enter admin account to write blogs'}
             </p>
           </div>
 
-          <div className="space-y-1">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={language === 'zh' ? '密码' : 'Passkey'}
-              className="w-full h-11 px-4 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-sm text-ts-ink focus:border-ts-primary outline-none transition-all placeholder:text-ts-muted"
-              autoFocus
-            />
-            {authError && (
-              <p className="text-xs text-[#c66058] font-semibold pl-1 pt-1">
-                {authError}
-              </p>
-            )}
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={language === 'zh' ? '邮箱' : 'Email'}
+                className="w-full h-11 px-4 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-sm text-ts-ink focus:border-ts-primary outline-none transition-all placeholder:text-ts-muted"
+                autoFocus
+              />
+            </div>
+            
+            <div className="space-y-1">
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={language === 'zh' ? '密码' : 'Password'}
+                className="w-full h-11 px-4 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-sm text-ts-ink focus:border-ts-primary outline-none transition-all placeholder:text-ts-muted"
+              />
+              {authError && (
+                <p className="text-xs text-[#c66058] font-semibold pl-1 pt-1">
+                  {authError}
+                </p>
+              )}
+            </div>
           </div>
 
           <button
             type="submit"
-            className="w-full h-11 rounded-lg bg-ts-ink text-ts-canvas font-bold text-sm hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2 font-display uppercase tracking-wider"
+            disabled={saving}
+            className="w-full h-11 rounded-lg bg-ts-ink text-ts-canvas font-bold text-sm hover:opacity-90 transition-opacity cursor-pointer flex items-center justify-center gap-2 font-display uppercase tracking-wider disabled:opacity-50"
           >
+            {saving ? <Loader2 size={14} className="animate-spin" /> : null}
             <span>{language === 'zh' ? '解锁控制台' : 'Unlock Dashboard'}</span>
           </button>
         </form>
@@ -451,7 +448,7 @@ export const AdminPage = () => {
             title={language === 'zh' ? '刷新列表' : 'Refresh'}
             className="p-2 hover:bg-ts-surface-elevated rounded-lg text-ts-muted hover:text-ts-ink transition-all cursor-pointer"
           >
-            <RefreshCw size={14} className={cn(loading && "animate-spin")} />
+            <RefreshCw size={14} className={cn(postsLoading && "animate-spin")} />
           </button>
 
           <button
@@ -476,7 +473,7 @@ export const AdminPage = () => {
 
         {/* List items */}
         <div className="flex-1 overflow-y-auto p-3 space-y-2.5 scrollbar-thin">
-          {loading && posts.length === 0 ? (
+          {postsLoading && posts.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center opacity-50">
               <Loader2 className="animate-spin text-ts-muted" size={20} />
             </div>

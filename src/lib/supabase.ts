@@ -93,3 +93,39 @@ export async function deleteDocument(
     throw error;
   }
 }
+
+// Authentication Helpers
+export async function loginAdmin(email: string, password: string): Promise<any> {
+  if (!supabase) {
+    throw new Error('Supabase client is not initialized due to missing environment variables.');
+  }
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (error) {
+    throw error;
+  }
+  return data;
+}
+
+export async function logoutAdmin(): Promise<void> {
+  if (!supabase) {
+    return;
+  }
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    throw error;
+  }
+}
+
+export async function getCurrentUser(): Promise<any> {
+  if (!supabase) {
+    return null;
+  }
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error) {
+    return null;
+  }
+  return user;
+}
