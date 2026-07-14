@@ -285,8 +285,8 @@ export const Blog = () => {
                                 </span>
                               )}
                             </div>
-                            <h2 className="mt-3 line-clamp-2 font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
-                            <p className="mt-3 line-clamp-2 text-sm leading-6 text-ts-ink/62 sm:text-base">{post.summary}</p>
+                            <h2 className="mt-3 line-clamp-1 h-[30px] font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
+                            <p className="mt-3 line-clamp-2 h-12 leading-6 text-sm text-ts-ink/62 sm:text-base">{post.summary}</p>
                             <span className="mt-5 inline-flex min-h-11 items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
                               <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.readArticle}</span>
                               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
