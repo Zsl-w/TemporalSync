@@ -220,9 +220,9 @@ export const Blog = () => {
                     >
                       <Link
                         to={`/blog/${featured.id}`}
-                        className="group grid overflow-hidden rounded-[28px] border border-ts-ink/10 bg-ts-surface-elevated shadow-[0_24px_70px_rgba(15,23,42,0.09)] transition hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.13)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none lg:grid-cols-[1.18fr_0.82fr]"
+                        className="group grid overflow-hidden rounded-[28px] border border-ts-ink/10 bg-ts-surface-elevated shadow-[0_24px_70px_rgba(15,23,42,0.09)] transition hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.13)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none lg:grid-cols-3"
                       >
-                        <div className="relative aspect-[16/10] overflow-hidden bg-ts-canvas lg:aspect-auto lg:min-h-[28rem]">
+                        <div className="relative aspect-[16/10] overflow-hidden bg-ts-canvas lg:col-span-2 lg:aspect-auto lg:min-h-[28rem]">
                           {coverUrl ? (
                             <img src={coverUrl} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025] motion-reduce:transition-none" />
                           ) : (
@@ -230,7 +230,7 @@ export const Blog = () => {
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                         </div>
-                        <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
+                        <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12 lg:col-span-1">
                           <p className="font-barlow text-xs font-bold uppercase tracking-[0.2em] text-ts-primary">{copy.featured}</p>
                           <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
                             {formatDate(featured.createdAt)} · {getReadTime(featured.content, isZh)}
