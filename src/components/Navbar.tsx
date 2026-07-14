@@ -34,9 +34,11 @@ export const Navbar = () => {
   const { language, setLanguage, theme, setTheme } = useSettings();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [workDropdownOpen, setWorkDropdownOpen] = useState(false);
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    setWorkDropdownOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -80,7 +82,17 @@ export const Navbar = () => {
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
             
             {/* WORK Item with hover sub-navigation */}
-            <div className="relative h-full group flex items-center">
+            <div 
+              className="relative h-full flex items-center"
+              onMouseEnter={() => setWorkDropdownOpen(true)}
+              onMouseLeave={() => setWorkDropdownOpen(false)}
+              onFocus={() => setWorkDropdownOpen(true)}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                  setWorkDropdownOpen(false);
+                }
+              }}
+            >
               <NavLink
                 to="/work"
                 className={({ isActive }) =>
@@ -101,7 +113,12 @@ export const Navbar = () => {
               </NavLink>
 
               {/* Sub-navigation Dropdown popup (Replicating user's design reference) */}
-              <div className="absolute top-[calc(100%-12px)] left-4 pt-3.5 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:scale-100 group-focus-within:pointer-events-auto transition-all duration-300 ease-out origin-top-left z-[100] w-60">
+              <div 
+                className={cn(
+                  "absolute top-[calc(100%-12px)] left-4 pt-3.5 transition-all duration-300 ease-out origin-top-left z-[100] w-60",
+                  workDropdownOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
+                )}
+              >
                 <div className="bg-white/40 dark:bg-[#12121a]/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[20px] shadow-2xl p-6 flex flex-col gap-4 select-none">
                   <NavLink
                     to="/shiyun-wechat-md"

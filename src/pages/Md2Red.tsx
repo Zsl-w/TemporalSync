@@ -146,8 +146,8 @@ export const Md2Red = () => {
         <div className="h-[calc(100vh-16rem)] min-h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Left pane: Editor */}
-        <div className="flex flex-col bg-ts-canvas border border-ts-hairline rounded-2xl overflow-hidden h-full min-h-0">
-          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/20 border-b border-ts-hairline">
+        <div className="flex flex-col bg-ts-canvas rounded-2xl overflow-hidden h-full min-h-0">
+          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/20">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.editorTitle}</span>
             <span className="text-[10px] text-ts-body">{t.editorHint}</span>
           </div>
@@ -161,8 +161,8 @@ export const Md2Red = () => {
         </div>
 
         {/* Right pane: Phone simulator preview */}
-        <div className="flex flex-col bg-ts-canvas border border-ts-hairline rounded-2xl overflow-hidden h-full min-h-0">
-          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/20 border-b border-ts-hairline">
+        <div className="flex flex-col bg-ts-canvas rounded-2xl overflow-hidden h-full min-h-0">
+          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/20">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.previewTitle}</span>
             <span className="text-[10px] text-ts-body">{t.previewHint}</span>
           </div>
