@@ -232,12 +232,12 @@ export const Blog = () => {
                         </div>
                         <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                           <p className="font-barlow text-xs font-bold uppercase tracking-[0.2em] text-ts-primary">{copy.featured}</p>
-                          <div className="mt-5 font-barlow text-xs font-bold uppercase tracking-[0.12em] text-ts-ink/45">
+                          <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
                             {formatDate(featured.createdAt)} · {getReadTime(featured.content, isZh)}
                             {featured.tags.length > 0 && (
                               <span className="text-ts-primary">
                                 {' · '}
-                                {featured.tags.map(t => t.toUpperCase()).join(' · ')}
+                                {featured.tags.join(' · ')}
                               </span>
                             )}
                           </div>
@@ -276,12 +276,12 @@ export const Blog = () => {
                                 <CoverPlaceholder />
                               )}
                             </div>
-                            <div className="mt-5 font-barlow text-xs font-bold uppercase tracking-[0.12em] text-ts-ink/45">
+                            <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
                               {formatDate(post.createdAt)} · {getReadTime(post.content, isZh)}
                               {post.tags.length > 0 && (
                                 <span className="text-ts-primary">
                                   {' · '}
-                                  {post.tags.map(t => t.toUpperCase()).join(' · ')}
+                                  {post.tags.join(' · ')}
                                 </span>
                               )}
                             </div>
@@ -322,8 +322,8 @@ export const Blog = () => {
                 className="space-y-10 pb-12"
               >
                 <header className="mx-auto max-w-4xl pt-8 text-center">
-                  <p className="font-barlow text-[11px] font-bold uppercase tracking-[0.2em] text-ts-ink/45">
-                    {selectedPost.tags.length > 0 && `${selectedPost.tags.map((tag) => tag.toUpperCase()).join(' · ')} · `}
+                  <p className="font-barlow text-[11px] font-bold tracking-[0.2em] text-ts-ink/45">
+                    {selectedPost.tags.length > 0 && `${selectedPost.tags.join(' · ')} · `}
                     {formatMetaDate(selectedPost.createdAt, isZh)}
                   </p>
                   <h1 className="mt-5 font-display text-3xl font-bold leading-[1.16] tracking-tight text-ts-ink sm:text-5xl lg:text-[3.5rem]">{selectedPost.title}</h1>
