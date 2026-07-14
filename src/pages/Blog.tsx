@@ -234,6 +234,12 @@ export const Blog = () => {
                           <p className="font-barlow text-xs font-bold uppercase tracking-[0.2em] text-ts-primary">{copy.featured}</p>
                           <div className="mt-5 font-barlow text-xs font-bold uppercase tracking-[0.12em] text-ts-ink/45">
                             {formatDate(featured.createdAt)} · {getReadTime(featured.content, isZh)}
+                            {featured.tags.length > 0 && (
+                              <span className="text-ts-primary">
+                                {' · '}
+                                {featured.tags.map(t => t.toUpperCase()).join(' · ')}
+                              </span>
+                            )}
                           </div>
                           <h2 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-ts-ink sm:text-4xl">{featured.title}</h2>
                           <p className="mt-5 line-clamp-3 text-sm leading-7 text-ts-ink/65 sm:text-base">{featured.summary}</p>
@@ -272,7 +278,12 @@ export const Blog = () => {
                             </div>
                             <div className="mt-5 font-barlow text-xs font-bold uppercase tracking-[0.12em] text-ts-ink/45">
                               {formatDate(post.createdAt)} · {getReadTime(post.content, isZh)}
-                              {post.tags[0] && <span className="text-ts-primary"> · {post.tags[0]}</span>}
+                              {post.tags.length > 0 && (
+                                <span className="text-ts-primary">
+                                  {' · '}
+                                  {post.tags.map(t => t.toUpperCase()).join(' · ')}
+                                </span>
+                              )}
                             </div>
                             <h2 className="mt-3 line-clamp-2 font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
                             <p className="mt-3 line-clamp-2 text-sm leading-6 text-ts-ink/62 sm:text-base">{post.summary}</p>
