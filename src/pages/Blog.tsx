@@ -169,7 +169,7 @@ export const Blog = () => {
                   </p>
                 </div>
                 {posts.length > 0 && (
-                  <div>
+                  <div className="relative">
                     <label htmlFor="blog-search" className="sr-only">{copy.searchPlaceholder}</label>
                     <div className="relative">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-ink/45" size={17} aria-hidden="true" />
@@ -193,7 +193,7 @@ export const Blog = () => {
                       )}
                     </div>
                     {searchQuery && (
-                      <p className="mt-2 pl-4 font-barlow text-xs font-bold tracking-wider text-ts-ink/45" aria-live="polite">
+                      <p className="absolute left-4 top-full mt-2 font-barlow text-xs font-bold tracking-wider text-ts-ink/45" aria-live="polite">
                         {filteredPosts.length} {copy.posts}
                       </p>
                     )}
