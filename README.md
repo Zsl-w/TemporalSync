@@ -29,7 +29,7 @@
 - 用于展示独立应用和实验性原型的个人沙盒。
 - 包含高度自适应的 `md2red` 小红书卡片生成器，支持 Markdown 实时解析预览。
 
-### 4. 博客系统 (`/writing`)
+### 4. 博客系统 (`/blog`)
 - 升级为双列大图网格布局，卡片带平滑圆角，完全复刻 `basicappleguy.com` 列表样式。
 - **定制占位封面**：当文章正文无图时，自动呈现 TSYNC 专属品牌占位图，白天为冷灰渐变，夜晚为深邃紫渐变，并在 hover 时带微幅缩放动效。
 - **极简居中详情**：详情页重构为居中排版，上方为 tags · date 极轻元数据，中间为全大写粗标题，下方大图支持原始宽高显示。
@@ -52,19 +52,21 @@
 - **构建工具**：Vite 6 + Esbuild (服务端打包)
 - **样式**：Tailwind CSS v4 (通过 `@tailwindcss/vite` 深度融合)
 - **动画**：Motion.react + GSAP (ScrollTrigger)
-- **云开发与数据**：腾讯云开发 (CloudBase JS SDK) 双向实时对接
+- **数据与认证**：Supabase（Postgres、Auth、Row Level Security）
 
 ---
 
 ## 🚀 本地运行与配置指南
 
 ### 1. 复制配置环境变量
-在根目录下配置 `.env` 文件，填写云服务和 AI 资讯源密钥：
+在根目录下配置 `.env` 文件，填写 Supabase 公共客户端配置：
 ```env
-MIMO_API_KEY="您的密钥"
-MIMO_BASE_URL="https://api.xiaomimimo.com/v1"
-MIMO_MODEL="mimo-v2"
+VITE_SUPABASE_URL="您的 Supabase 项目 URL"
+VITE_SUPABASE_ANON_KEY="您的 Supabase anon key"
 ```
+
+管理员账号还需在 Supabase Auth 的 `app_metadata.role` 中设置 `admin`，并应用
+`supabase/migrations/202607140001_secure_blog_policies.sql` 后才具备写入权限。
 
 ### 2. 运行与构建
 ```bash
@@ -74,7 +76,12 @@ npm install
 # 启动开发服务器
 npm run dev
 
+# 运行回归测试与严格类型检查
+npm test
+npm run lint
+
 # 编译打包项目
 npm run build
+npm run build:server
 ```
 编译产物输出至 `dist/` 文件夹下。

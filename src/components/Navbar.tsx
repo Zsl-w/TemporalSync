@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Mail, Instagram, Twitter, Globe, Settings, Github } from 'lucide-react';
+import { Mail, Globe, Settings, Menu, X, Moon, Sun } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useSettings } from '../context/SettingsContext';
 
@@ -14,7 +14,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "flex items-center h-full px-4 text-[15.3px] font-bold tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
+        "flex items-center h-full px-4 text-[15.3px] font-bold tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
         isActive && "text-ts-ink"
       )
     }
@@ -23,7 +23,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
       <>
         <span>{label}</span>
         {isActive && (
-          <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
+          <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
         )}
       </>
     )}
@@ -31,15 +31,39 @@ const NavItem = ({ to, label }: NavItemProps) => (
 );
 
 export const Navbar = () => {
-  const { language, setLanguage } = useSettings();
+  const { language, setLanguage, theme, setTheme } = useSettings();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
+  const mobileItems = [
+    { to: '/', label: language === 'zh' ? '关于' : 'About' },
+    { to: '/hot', label: language === 'zh' ? 'AI 热点' : 'AI Hot Topics' },
+    { to: '/work', label: language === 'zh' ? '自习室' : 'Study Room' },
+    { to: '/shiyun-wechat-md', label: language === 'zh' ? '微信排版工具' : 'WeChat Formatter' },
+    { to: '/md2red', label: language === 'zh' ? '小红书卡片生成' : 'Red Formatter' },
+    { to: '/blog', label: language === 'zh' ? '博客' : 'Blog' },
+    { to: '/settings', label: language === 'zh' ? '偏好设置' : 'Settings' },
+  ];
 
   return (
     <header className="w-full h-16 sticky top-0 bg-ts-canvas/15 backdrop-blur-xl flex items-center select-none z-50 transition-all duration-300">
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between h-full">
         {/* Left Section: Logo & Brand */}
         <div className="flex items-center h-full">
-          <NavLink to="/" className="flex items-center gap-3 group mr-8">
+          <NavLink to="/" className="flex items-center gap-3 group md:mr-8" aria-label="TemporalSync home">
             <img
               src="/logo-mark.png"
               alt="Logo"
@@ -77,7 +101,7 @@ export const Navbar = () => {
               </NavLink>
 
               {/* Sub-navigation Dropdown popup (Replicating user's design reference) */}
-              <div className="absolute top-[calc(100%-12px)] left-4 pt-3.5 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-300 ease-out origin-top-left z-[100] w-60">
+              <div className="absolute top-[calc(100%-12px)] left-4 pt-3.5 opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:scale-100 group-focus-within:pointer-events-auto transition-all duration-300 ease-out origin-top-left z-[100] w-60">
                 <div className="bg-white/40 dark:bg-[#12121a]/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[20px] shadow-2xl p-6 flex flex-col gap-4 select-none">
                   <NavLink
                     to="/shiyun-wechat-md"
@@ -113,25 +137,28 @@ export const Navbar = () => {
           </nav>
         </div>
 
-        {/* Right Section: Language, Settings & Social Icons */}
-        <div className="flex items-center gap-4 sm:gap-6 text-ts-ink/70">
-          {/* Mobile Nav Links */}
-          <nav className="flex md:hidden items-center gap-1">
-            <NavItem to="/" label="ABOUT" />
-            <NavItem to="/hot" label="HOT" />
-            <NavItem to="/work" label="WORK" />
-            <NavItem to="/blog" label="BLOG" />
-          </nav>
-
-          {/* Social Icons & Controls */}
-          <div className="flex items-center gap-3 sm:gap-4">
+        {/* Desktop controls */}
+        <div className="hidden md:flex items-center gap-4 text-ts-ink/70">
+          <div className="flex items-center gap-3 lg:gap-4">
             {/* Language Toggle */}
             <button
+              type="button"
               onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
-              className="p-1.5 hover:text-ts-ink transition-colors rounded-md hover:bg-ts-ink/5 cursor-pointer"
+              className="h-11 w-11 inline-flex items-center justify-center hover:text-ts-ink transition-colors rounded-xl hover:bg-ts-ink/5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
               title={language === 'zh' ? 'Switch to English' : '切换到中文'}
+              aria-label={language === 'zh' ? 'Switch to English' : '切换到中文'}
             >
               <Globe size={16} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="h-11 w-11 inline-flex items-center justify-center hover:text-ts-ink transition-colors rounded-xl hover:bg-ts-ink/5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
 
             {/* Settings Link */}
@@ -139,56 +166,90 @@ export const Navbar = () => {
               to="/settings"
               className={({ isActive }) =>
                 cn(
-                  "p-1.5 hover:text-ts-ink transition-colors rounded-md hover:bg-ts-ink/5",
+                  "h-11 w-11 inline-flex items-center justify-center hover:text-ts-ink transition-colors rounded-xl hover:bg-ts-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary",
                   isActive && "text-ts-ink"
                 )
               }
               title="Settings"
+              aria-label="Settings"
             >
               <Settings size={16} />
             </NavLink>
 
-            {/* Social Medias */}
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="p-1.5 hover:text-ts-ink transition-colors rounded-md hover:bg-ts-ink/5"
-              title="GitHub"
-            >
-              <Github size={16} />
-            </a>
-
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noreferrer"
-              className="p-1.5 hover:text-ts-ink transition-colors rounded-md hover:bg-ts-ink/5"
-              title="Twitter/X"
-            >
-              <Twitter size={16} />
-            </a>
-
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              className="p-1.5 hover:text-ts-ink transition-colors rounded-md hover:bg-ts-ink/5"
-              title="Instagram"
-            >
-              <Instagram size={16} />
-            </a>
-
             <a
               href="mailto:contact@temporalsync.online"
-              className="p-1.5 hover:text-ts-ink transition-colors rounded-md hover:bg-ts-ink/5"
+              className="h-11 w-11 inline-flex items-center justify-center hover:text-ts-ink transition-colors rounded-xl hover:bg-ts-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
               title="Email"
+              aria-label="Email"
             >
               <Mail size={16} />
             </a>
           </div>
         </div>
+
+        {/* Mobile controls */}
+        <div className="flex md:hidden items-center gap-2 text-ts-ink/75">
+          <button
+            type="button"
+            onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
+            className="h-11 w-11 inline-flex items-center justify-center rounded-xl hover:bg-ts-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+            aria-label={language === 'zh' ? 'Switch to English' : '切换到中文'}
+          >
+            <Globe size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(open => !open)}
+            className="h-11 w-11 inline-flex items-center justify-center rounded-xl hover:bg-ts-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+            aria-label={mobileMenuOpen ? (language === 'zh' ? '关闭菜单' : 'Close menu') : (language === 'zh' ? '打开菜单' : 'Open menu')}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div
+          id="mobile-navigation"
+          className="absolute inset-x-0 top-16 md:hidden border-t border-ts-hairline bg-ts-canvas/95 backdrop-blur-xl shadow-2xl"
+        >
+          <nav className="px-6 py-5 grid grid-cols-1 gap-1" aria-label="Mobile navigation">
+            {mobileItems.map(item => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => cn(
+                  "min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-bold tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary",
+                  isActive && "bg-ts-surface-elevated text-ts-ink"
+                )}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+            <button
+              type="button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-bold tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+            >
+              <span>{language === 'zh' ? '外观模式' : 'Appearance'}</span>
+              <span className="inline-flex items-center gap-2 text-xs text-ts-muted">
+                {theme === 'dark'
+                  ? (language === 'zh' ? '深色' : 'Dark')
+                  : (language === 'zh' ? '浅色' : 'Light')}
+                {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+              </span>
+            </button>
+          </nav>
+          <div className="px-10 pb-6 flex items-center gap-3 text-sm text-ts-muted">
+            <Mail size={17} />
+            <a href="mailto:contact@temporalsync.online" className="hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary">
+              contact@temporalsync.online
+            </a>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

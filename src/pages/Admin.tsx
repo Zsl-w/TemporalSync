@@ -21,65 +21,13 @@ import {
   deleteDocument,
   loginAdmin,
   logoutAdmin,
-  getCurrentUser
+  getCurrentAdminUser
 } from '../lib/supabase';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import matter from 'gray-matter';
-import { usePosts, BlogPost } from '../hooks/usePosts';
-
-
-
-// Markdown Front Matter Parser
-const parseMarkdownFile = (fileName: string, rawText: string) => {
-  let title = '';
-  let summary = '';
-  let tags: string[] = [];
-  let content = rawText;
-
-  try {
-    const { data, content: parsedContent } = matter(rawText);
-    content = parsedContent;
-    
-    if (data.title) {
-      title = String(data.title).trim();
-    }
-    if (data.summary || data.description) {
-      summary = String(data.summary || data.description).trim();
-    }
-    if (data.tags || data.keywords) {
-      const rawTags = data.tags || data.keywords;
-      if (Array.isArray(rawTags)) {
-        tags = rawTags.map(t => String(t).trim());
-      } else if (typeof rawTags === 'string') {
-        tags = rawTags.split(',').map(t => t.trim());
-      }
-    }
-  } catch (err) {
-    console.error('Failed to parse frontmatter with gray-matter:', err);
-  }
-
-  if (!title) {
-    const h1Match = content.match(/^(?:#\s+)(.+)$/m);
-    if (h1Match) {
-      title = h1Match[1].trim();
-      content = content.replace(/^(?:#\s+)(.+)$/m, '').trim();
-    } else {
-      title = fileName.replace(/\.[^/.]+$/, "");
-    }
-  }
-
-  if (!summary) {
-    const plainText = content
-      .replace(/[#*`_\[\]()\-+]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-    summary = plainText.slice(0, 120);
-    if (plainText.length > 120) summary += '...';
-  }
-
-  return { title, summary, tags: tags.filter(Boolean), content };
-};
+import { usePosts } from '../hooks/usePosts';
+import { parseStoredPosts, type BlogPost } from '../lib/blogPosts';
+import { parseMarkdownFile } from '../lib/frontmatter';
 
 const formatDate = (dateStr: string) => {
   try {
@@ -103,9 +51,7 @@ export const AdminPage = () => {
   const navigate = useNavigate();
 
   // Auth Status
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('ts-admin-logged-in') === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -129,13 +75,11 @@ export const AdminPage = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const user = await getCurrentUser();
+        const user = await getCurrentAdminUser();
         if (user) {
           setIsAuthenticated(true);
-          localStorage.setItem('ts-admin-logged-in', 'true');
         } else {
           setIsAuthenticated(false);
-          localStorage.removeItem('ts-admin-logged-in');
         }
       } catch (_) {
         setIsAuthenticated(false);
@@ -154,10 +98,10 @@ export const AdminPage = () => {
     try {
       await loginAdmin(email, password);
       setIsAuthenticated(true);
-      localStorage.setItem('ts-admin-logged-in', 'true');
       setAuthError('');
-    } catch (err: any) {
-      setAuthError(err.message || (language === 'zh' ? '登录失败，请检查账号和密码' : 'Login failed'));
+    } catch (err: unknown) {
+      const fallback = language === 'zh' ? '登录失败或账号没有管理员权限' : 'Login failed or this account is not an administrator';
+      setAuthError(err instanceof Error ? err.message : fallback);
     } finally {
       setSaving(false);
     }
@@ -167,7 +111,6 @@ export const AdminPage = () => {
     try {
       await logoutAdmin();
       setIsAuthenticated(false);
-      localStorage.removeItem('ts-admin-logged-in');
     } catch (err) {
       console.error('Logout failed:', err);
     }
@@ -258,8 +201,7 @@ export const AdminPage = () => {
             // Delete from localStorage on success
             const localBlogsRaw = localStorage.getItem('ts-local-blogs');
             if (localBlogsRaw) {
-              let localBlogs = JSON.parse(localBlogsRaw);
-              localBlogs = localBlogs.filter((p: any) => p.id !== activePostId);
+              const localBlogs = parseStoredPosts(localBlogsRaw).filter((post) => post.id !== activePostId);
               localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
             }
             setActivePostId(res.id);
@@ -267,11 +209,10 @@ export const AdminPage = () => {
             console.warn('Uploading local post failed, updating local fallback', dbErr);
             const localBlogsRaw = localStorage.getItem('ts-local-blogs');
             if (localBlogsRaw) {
-              let localBlogs = JSON.parse(localBlogsRaw);
-              localBlogs = localBlogs.map((p: any) => p.id === activePostId ? {
-                ...p,
+              const localBlogs = parseStoredPosts(localBlogsRaw).map((post) => post.id === activePostId ? {
+                ...post,
                 ...postData
-              } : p);
+              } : post);
               localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
             }
           }
@@ -289,7 +230,7 @@ export const AdminPage = () => {
         } catch (dbErr) {
           console.warn('Database save failed, writing to localStorage fallback', dbErr);
           const localBlogsRaw = localStorage.getItem('ts-local-blogs');
-          const localBlogs = localBlogsRaw ? JSON.parse(localBlogsRaw) : [];
+          const localBlogs = parseStoredPosts(localBlogsRaw);
           localBlogs.unshift({
             ...newPostData,
             id: `local_${Date.now()}`
@@ -318,8 +259,7 @@ export const AdminPage = () => {
       if (isLocal) {
         const localBlogsRaw = localStorage.getItem('ts-local-blogs');
         if (localBlogsRaw) {
-          let localBlogs = JSON.parse(localBlogsRaw);
-          localBlogs = localBlogs.filter((p: any) => p.id !== id);
+          const localBlogs = parseStoredPosts(localBlogsRaw).filter((post) => post.id !== id);
           localStorage.setItem('ts-local-blogs', JSON.stringify(localBlogs));
         }
       } else {
@@ -352,7 +292,7 @@ export const AdminPage = () => {
       const cleanHtml = DOMPurify.sanitize(rawHtml);
       return { __html: cleanHtml };
     } catch (_) {
-      return { __html: md };
+      return { __html: DOMPurify.sanitize(md) };
     }
   };
 

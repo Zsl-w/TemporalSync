@@ -1,6 +1,7 @@
 import { useRef } from 'react';
-import { Github, Mail, Sparkles } from 'lucide-react';
+import { ArrowRight, Mail } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import { SplitText } from '../components/SplitText';
 
@@ -84,21 +85,26 @@ export const About = () => {
             {heroCopy}
           </motion.p>
 
-          {/* Studio Focus Badges */}
+          {/* Primary product paths */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.45, ease: 'easeOut' }}
-            className="mt-10 flex flex-wrap items-center justify-center gap-3"
+            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3"
           >
-            {['AI WATCH', 'BLOG', 'TOOLS', 'STUDIO ID'].map(item => (
-              <span
-                key={item}
-                className="bg-ts-surface/40 dark:bg-black/10 backdrop-blur-sm px-4.5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.28em] text-ts-body/80 shadow-sm"
-              >
-                {item}
-              </span>
-            ))}
+            <Link
+              to="/hot"
+              className="min-h-11 inline-flex items-center justify-center gap-2 rounded-xl bg-ts-primary px-6 text-sm font-bold text-white shadow-lg shadow-ts-primary/10 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ts-canvas"
+            >
+              {language === 'zh' ? '浏览 AI 情报' : 'Explore AI Signals'}
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              to="/work"
+              className="min-h-11 inline-flex items-center justify-center gap-2 rounded-xl border border-ts-hairline bg-ts-surface/70 px-6 text-sm font-bold text-ts-ink transition-colors hover:bg-ts-surface-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+            >
+              {language === 'zh' ? '打开创作工具' : 'Open Creative Tools'}
+            </Link>
           </motion.div>
         </div>
 
@@ -144,10 +150,7 @@ export const About = () => {
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-ts-muted transition-colors hover:text-ts-ink">
-              <Github size={16} />
-            </a>
-            <a href="mailto:hello@example.com" className="text-ts-muted transition-colors hover:text-ts-ink">
+            <a href="mailto:contact@temporalsync.online" aria-label="Email" className="text-ts-muted transition-colors hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary">
               <Mail size={16} />
             </a>
           </div>

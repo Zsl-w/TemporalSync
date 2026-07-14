@@ -1,11 +1,10 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 import { Loader2 } from 'lucide-react';
-import { prefetchNews } from './services/newsService';
-import { ThemeToggle } from './components/ThemeToggle';
 import { AnimatePresence, motion } from 'motion/react';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
 
 const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
 const HotTopics = lazy(() => import('./pages/HotTopics').then(m => ({ default: m.HotTopics })));
@@ -15,6 +14,7 @@ const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default:
 const AdminPage = lazy(() => import('./pages/Admin').then(m => ({ default: m.AdminPage })));
 const WeChatConverter = lazy(() => import('./pages/WeChatConverter').then(m => ({ default: m.WeChatConverter })));
 const Md2Red = lazy(() => import('./pages/Md2Red').then(m => ({ default: m.Md2Red })));
+const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 const LoadingFallback = () => (
   <div className="flex-1 flex flex-col items-center justify-center p-20 gap-4 opacity-50">
@@ -22,11 +22,6 @@ const LoadingFallback = () => (
     <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-ts-muted">Loading...</span>
   </div>
 );
-
-const NewsPrefetcher = () => {
-  useEffect(() => { prefetchNews(); }, []);
-  return null;
-};
 
 const AnimatedAppContent = () => {
   const location = useLocation();
@@ -62,13 +57,13 @@ const AnimatedAppContent = () => {
       document.title = titles[path];
     } else if (path.startsWith('/blog/')) {
       document.title = language === 'zh' ? '博客文章 · TemporalSync' : 'Blog Article · TemporalSync';
+    } else {
+      document.title = language === 'zh' ? '页面未找到 · TemporalSync' : 'Page Not Found · TemporalSync';
     }
   }, [location.pathname, language]);
 
   return (
     <div className="min-h-screen relative flex flex-col font-sans selection:bg-ts-primary selection:text-white bg-ts-canvas">
-      <NewsPrefetcher />
-      
       <Navbar />
   
       <main className="flex-1 w-full mx-auto relative z-10 flex flex-col">
@@ -92,12 +87,12 @@ const AnimatedAppContent = () => {
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/shiyun-wechat-md" element={<WeChatConverter />} />
                 <Route path="/md2red" element={<Md2Red />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </motion.div>
         </AnimatePresence>
       </main>
-      <ThemeToggle />
     </div>
   );
 };
@@ -106,7 +101,9 @@ export default function App() {
   return (
     <Router>
       <SettingsProvider>
-        <AnimatedAppContent />
+        <AppErrorBoundary>
+          <AnimatedAppContent />
+        </AppErrorBoundary>
       </SettingsProvider>
     </Router>
   );

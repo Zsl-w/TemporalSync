@@ -1,9 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
+import { hasAdminRole } from './auth';
 
-const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-let supabaseClient: any = null;
+let supabaseClient: SupabaseClient | null = null;
 
 if (supabaseUrl && supabaseAnonKey) {
   try {
@@ -17,7 +18,7 @@ if (supabaseUrl && supabaseAnonKey) {
 
 export const supabase = supabaseClient;
 
-export async function getCollection(collectionName: string): Promise<any[]> {
+export async function getCollection(collectionName: string): Promise<Record<string, unknown>[]> {
   if (!supabase) {
     throw new Error('Supabase client is not initialized due to missing environment variables.');
   }
@@ -33,7 +34,7 @@ export async function getCollection(collectionName: string): Promise<any[]> {
 
 export async function addDocument(
   collectionName: string,
-  data: Record<string, any>
+  data: Record<string, unknown>
 ): Promise<{ id: string }> {
   if (!supabase) {
     throw new Error('Supabase client is not initialized due to missing environment variables.');
@@ -58,7 +59,7 @@ export async function addDocument(
 export async function updateDocument(
   collectionName: string,
   docId: string,
-  data: Record<string, any>
+  data: Record<string, unknown>
 ): Promise<void> {
   if (!supabase) {
     throw new Error('Supabase client is not initialized due to missing environment variables.');
@@ -95,7 +96,7 @@ export async function deleteDocument(
 }
 
 // Authentication Helpers
-export async function loginAdmin(email: string, password: string): Promise<any> {
+export async function loginAdmin(email: string, password: string): Promise<User> {
   if (!supabase) {
     throw new Error('Supabase client is not initialized due to missing environment variables.');
   }
@@ -106,7 +107,11 @@ export async function loginAdmin(email: string, password: string): Promise<any> 
   if (error) {
     throw error;
   }
-  return data;
+  if (!hasAdminRole(data.user)) {
+    await supabase.auth.signOut();
+    throw new Error('This account does not have administrator access.');
+  }
+  return data.user;
 }
 
 export async function logoutAdmin(): Promise<void> {
@@ -119,7 +124,7 @@ export async function logoutAdmin(): Promise<void> {
   }
 }
 
-export async function getCurrentUser(): Promise<any> {
+export async function getCurrentAdminUser(): Promise<User | null> {
   if (!supabase) {
     return null;
   }
@@ -127,5 +132,5 @@ export async function getCurrentUser(): Promise<any> {
   if (error) {
     return null;
   }
-  return user;
+  return hasAdminRole(user) ? user : null;
 }

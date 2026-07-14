@@ -1,17 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getCollection } from '../lib/supabase';
+import { normalizePost, parseStoredPosts, type BlogPost } from '../lib/blogPosts';
 
-export interface BlogPost {
-  id: string;
-  title: string;
-  summary: string;
-  tags: string[];
-  content: string;
-  userId: string;
-  userName: string;
-  createdAt: any;
-  updatedAt: any;
-}
+export type { BlogPost } from '../lib/blogPosts';
 
 export function usePosts() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -23,28 +14,12 @@ export function usePosts() {
       let fetched: BlogPost[] = [];
       try {
         const data = await getCollection('blogs');
-        fetched = (data || []).map((doc: any) => ({
-          id: doc._id || doc.id || '',
-          title: doc.title || '',
-          summary: doc.summary || '',
-          tags: Array.isArray(doc.tags) ? doc.tags : [],
-          content: doc.content || '',
-          userId: doc.userId || '',
-          userName: doc.userName || 'Anonymous',
-          createdAt: doc.createdAt || new Date().toISOString(),
-          updatedAt: doc.updatedAt || new Date().toISOString(),
-        } as BlogPost));
+        fetched = data.map(normalizePost).filter((post): post is BlogPost => post !== null);
       } catch (e) {
         console.warn('Supabase fetch failed, checking local', e);
       }
 
-      const localBlogsRaw = localStorage.getItem('ts-local-blogs');
-      let localBlogs: BlogPost[] = [];
-      if (localBlogsRaw) {
-        try {
-          localBlogs = JSON.parse(localBlogsRaw);
-        } catch (_) {}
-      }
+      const localBlogs = parseStoredPosts(localStorage.getItem('ts-local-blogs'));
 
       const combined = [...localBlogs, ...fetched.filter(fb => !localBlogs.some(lp => lp.id === fb.id))];
       combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ExternalLink, Loader2, Zap, Clock, ArrowRight, Share2 } from 'lucide-react';
+import { Search, ExternalLink, Zap, Clock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { cn } from '../lib/utils';
 import { fetchNews, getCachedNews } from '../services/newsService';
@@ -43,6 +43,8 @@ export const HotTopics = () => {
   
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [loadingLong, setLoadingLong] = useState(false); // shows hint after 5s
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('全部');
@@ -68,6 +70,8 @@ export const HotTopics = () => {
 
     const loadNews = async () => {
       hintTimer = setTimeout(() => setLoadingLong(true), 5000);
+      setLoading(true);
+      setLoadError(false);
       try {
         const data = await fetchNews();
         if (Array.isArray(data)) {
@@ -77,6 +81,7 @@ export const HotTopics = () => {
         }
       } catch (error) {
         console.error('Failed to fetch news:', error);
+        setLoadError(true);
       } finally {
         clearTimeout(hintTimer);
         setLoading(false);
@@ -86,7 +91,7 @@ export const HotTopics = () => {
 
     loadNews();
     return () => clearTimeout(hintTimer);
-  }, []);
+  }, [loadAttempt]);
 
   const filteredNews = useMemo(() => {
     return news.filter(item => {
@@ -138,20 +143,24 @@ export const HotTopics = () => {
       title: '精选',
       subtitle: 'AI 自动筛选的高价值内容',
       searchPlaceholder: '搜索标题/摘要...',
-      searchBtn: '搜索',
       emptyTitle: '神经链接中断',
       emptyDesc: '在当前认知流中未找到匹配的热点话题。',
-      resetBtn: '重置资讯流'
+      resetBtn: '重置资讯流',
+      retryBtn: '重新加载',
+      errorTitle: '资讯加载失败',
+      errorDesc: '暂时无法连接资讯源，请稍后重试。'
     },
     en: {
       tag: 'Smart Intel Stream',
       title: 'Curated',
       subtitle: 'AI-curated high-value content',
       searchPlaceholder: 'Search titles/summary...',
-      searchBtn: 'Search',
       emptyTitle: 'Neural Link Broken',
       emptyDesc: 'No matching hot topics found in the current cognitive stream.',
-      resetBtn: 'Reset Stream'
+      resetBtn: 'Reset Stream',
+      retryBtn: 'Try again',
+      errorTitle: 'Unable to load news',
+      errorDesc: 'The news source is temporarily unavailable. Please try again.'
     }
   }[language];
 
@@ -175,7 +184,7 @@ export const HotTopics = () => {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={cn(
-                  "relative px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-colors duration-300 whitespace-nowrap outline-none cursor-pointer",
+                  "relative px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-colors duration-300 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary",
                   isActive ? "text-white shadow-sm" : "text-ts-muted hover:text-ts-ink"
                 )}
               >
@@ -203,23 +212,25 @@ export const HotTopics = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="flex items-center gap-2 w-full md:w-auto">
+        <div className="w-full md:w-auto">
           <div className="relative flex-1 md:flex-none">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-muted-soft" size={16} />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-ts-surface-elevated text-ts-ink pl-10 pr-4 h-10 rounded-[6px] text-xs font-medium focus:bg-ts-surface outline-none transition-all placeholder:text-ts-muted-soft w-full md:w-64"
+              className="bg-ts-surface-elevated text-ts-ink pl-10 pr-4 h-10 rounded-[6px] text-xs font-medium focus:bg-ts-surface transition-all placeholder:text-ts-muted-soft w-full md:w-72 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
               placeholder={t.searchPlaceholder}
+              aria-label={t.searchPlaceholder}
             />
           </div>
-          <button 
-            className="px-5 h-10 bg-ts-navy-800 text-white rounded-[6px] text-xs font-semibold hover:bg-ts-navy-900 transition-all shadow-sm whitespace-nowrap"
-          >
-            {t.searchBtn}
-          </button>
         </div>
       </motion.div>
+
+      {!loading && !loadError && (
+        <p className="-mt-6 text-xs text-ts-muted" aria-live="polite">
+          {language === 'zh' ? `${filteredNews.length} 条结果` : `${filteredNews.length} results`}
+        </p>
+      )}
 
       {/* Content Section */}
       <div className="relative pt-4">
@@ -266,7 +277,8 @@ export const HotTopics = () => {
                 {/* Date Header */}
                 <button
                   onClick={() => toggleGroup(group.dateLabel)}
-                  className="flex items-center gap-2 select-none pl-6 md:pl-20 hover:text-ts-primary transition-colors duration-200 outline-none group cursor-pointer"
+                  className="flex items-center gap-2 select-none pl-6 md:pl-20 hover:text-ts-primary transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+                  aria-expanded={!collapsedGroups[group.dateLabel]}
                 >
                   <span className="text-sm font-bold text-ts-ink tracking-wider group-hover:text-ts-primary transition-colors">
                     {group.dateLabel}
@@ -346,7 +358,7 @@ export const HotTopics = () => {
                                     </h3>
                                     <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-primary transition-opacity shrink-0" />
                                   </a>
-                                  <p className="text-ts-body text-sm leading-relaxed">
+                                  <p className="text-ts-body text-sm leading-relaxed line-clamp-3">
                                     {item.summary}
                                   </p>
                                 </div>
@@ -369,7 +381,7 @@ export const HotTopics = () => {
                                 {/* Tags */}
                                 {item.tags && item.tags.length > 0 && (
                                   <div className="flex flex-wrap gap-1.5">
-                                    {item.tags.map((tag) => (
+                                    {item.tags.slice(0, 2).map((tag) => (
                                       <span
                                         key={tag}
                                         className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary"
@@ -395,13 +407,20 @@ export const HotTopics = () => {
           /* Empty State */
           <div className="py-24 flex flex-col items-center justify-center rounded-2xl bg-ts-surface-elevated/40 shadow-sm">
             <Zap size={48} className="text-ts-muted mb-4" />
-            <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{t.emptyTitle}</p>
-            <p className="text-xs text-ts-muted-soft mt-1">{t.emptyDesc}</p>
+            <p className="text-sm font-bold text-ts-ink uppercase tracking-wider">{loadError ? t.errorTitle : t.emptyTitle}</p>
+            <p className="text-xs text-ts-muted mt-1">{loadError ? t.errorDesc : t.emptyDesc}</p>
             <button 
-              onClick={() => { setSearchQuery(''); setSelectedCategory('全部'); }}
-              className="mt-6 px-6 py-2.5 bg-ts-primary text-white rounded-[6px] text-xs font-semibold hover:bg-ts-primary-hover transition-all shadow-sm"
+              onClick={() => {
+                if (loadError) {
+                  setLoadAttempt(attempt => attempt + 1);
+                } else {
+                  setSearchQuery('');
+                  setSelectedCategory('全部');
+                }
+              }}
+              className="mt-6 px-6 py-2.5 bg-ts-primary text-white rounded-[6px] text-xs font-semibold hover:bg-ts-primary-hover transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
             >
-              {t.resetBtn}
+              {loadError ? t.retryBtn : t.resetBtn}
             </button>
           </div>
         )}
