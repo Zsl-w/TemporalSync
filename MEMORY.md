@@ -24,6 +24,7 @@ Last updated: 2026-07-15
 - Work and Blog use a shared editorial hierarchy introduced on 2026-07-15: page-level heroes, compact Barlow metadata, large display headings, semantic cards, 44px interaction targets, and reduced-motion-aware transitions. Work preview media is captured from the real product routes and stored in `public/assets/work/`; refresh those captures when the underlying interfaces change materially.
 - The theme control belongs in the global navigation on desktop and in the mobile menu. Do not reintroduce a floating page-level theme button because it overlaps route content on narrow screens.
 - Blog list cards are semantic route links, the newest filtered post is the featured story, and route changes reset scroll position so article details always open at the top.
+- About positions October Seven through two complementary themes: pursuing truth in AI medicine and building durable things with code. The canonical Chinese hero lines are `与智能同频，向医学求真。` and `用代码造物，为时间留痕。`; the English pair is `In sync with intelligence.` and `Building what endures.`
 
 ## Known Constraints And Follow-ups
 

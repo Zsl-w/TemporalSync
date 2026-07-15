@@ -158,7 +158,7 @@ export const Blog = () => {
       <div className="immersive-section text-left">
         {!id ? (
           <>
-            <header className="border-b border-ts-ink/10 py-14 sm:py-20">
+            <header className="py-14 sm:py-20">
               <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
                 <div className="max-w-3xl">
                   <p className="font-barlow text-xs font-bold tracking-[0.24em] text-ts-primary">{copy.eyebrow}</p>

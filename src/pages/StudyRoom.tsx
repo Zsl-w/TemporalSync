@@ -99,7 +99,7 @@ export const StudyRoom = () => {
   return (
     <div className="w-full min-h-screen bg-ts-canvas pb-24">
       <div className="immersive-section text-left">
-        <header className="grid gap-8 border-b border-ts-ink/10 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <header className="grid gap-8 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div className="max-w-3xl">
             <p className="font-barlow text-xs font-bold tracking-[0.24em] text-ts-primary">{copy.eyebrow}</p>
             <h1 className="mt-4 font-display text-5xl font-black tracking-[-0.04em] text-ts-ink sm:text-6xl lg:text-7xl">

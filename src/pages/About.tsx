@@ -9,15 +9,17 @@ export const About = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { language } = useSettings();
 
-  const line1 = language === 'zh' ? '白昼，与万象同频。' : 'By day, I sync intelligence.';
-  const line2 = language === 'zh' ? '入夜，为时间塑形。' : 'By night, I shape time.';
+  const line1 = language === 'zh' ? '与智能同频，向医学求真。' : 'In sync with intelligence.';
+  const line2 = language === 'zh' ? '用代码造物，为时间留痕。' : 'Building what endures.';
 
   const heroCopy =
     language === 'zh'
-      ? '一个人的时间工作室：整理智能情报，记录创造过程，把高速流动的信息变成可读、可用、可回看的节奏。'
-      : 'A one-person time studio for intelligence, writing, and tools that turn fast-moving signals into usable rhythm.';
+      ? '我是十月七，一名 AI 医学方向的准研究生，也是一人开发者。这里记录我如何把情报、研究与创作，沉淀为可复用的知识、工具和作品。'
+      : 'I am October Seven, an incoming graduate student in AI medicine and an independent developer. This is where signals, research, and creative work become reusable knowledge, tools, and products.';
 
-  const titleClass = 'max-w-none w-full text-center font-display text-[44px] font-bold leading-none tracking-[0.03em] md:text-[76px] lg:text-[92px] lg:tracking-[0.06em] lg:whitespace-nowrap';
+  const eyebrow = language === 'zh' ? '十月七 · TEMPORALSYNC' : 'OCTOBER SEVEN · TEMPORALSYNC';
+
+  const titleClass = 'max-w-none w-full text-center font-display text-[27px] font-bold leading-none tracking-[0.01em] sm:text-[44px] sm:tracking-[0.03em] md:text-[76px] lg:text-[92px] lg:tracking-[0.06em] lg:whitespace-nowrap';
 
   return (
     <div ref={containerRef} className="w-full min-h-screen flex flex-col bg-ts-canvas">
@@ -39,7 +41,7 @@ export const About = () => {
             className="mb-8 flex items-center justify-center gap-4 text-[11px] font-black uppercase tracking-[0.48em] text-ts-muted"
           >
             <span className="h-px w-12 bg-ts-muted/50" />
-            <span>TemporalSync studio</span>
+            <span>{eyebrow}</span>
             <span className="h-px w-12 bg-ts-muted/50" />
           </motion.div>
 
@@ -47,6 +49,7 @@ export const About = () => {
           <div className="relative w-full">
             <div className="flex flex-col items-center gap-2 md:gap-4 lg:gap-5 w-full">
               <SplitText
+                key={`${language}-hero-line-1`}
                 text={line1}
                 className={`${titleClass} text-ts-ink drop-shadow-[0_4px_12px_rgba(255,255,255,0.01)] pointer-events-none`}
                 delay={32}
@@ -60,6 +63,7 @@ export const About = () => {
                 tag="h1"
               />
               <SplitText
+                key={`${language}-hero-line-2`}
                 text={line2}
                 className={`${titleClass} text-ts-ink drop-shadow-[0_4px_12px_rgba(255,255,255,0.01)] pointer-events-none`}
                 delay={48}
@@ -115,8 +119,8 @@ export const About = () => {
           transition={{ duration: 0.9, delay: 0.5, ease: 'easeOut' }}
           className="absolute right-[5%] top-[10%] hidden max-w-[260px] text-right text-sm font-bold leading-snug text-ts-muted lg:block"
         >
-          <p>AI signal watcher & writer of systems.</p>
-          <p>Studio of one.</p>
+          <p>AI MEDICINE · INDEPENDENT DEV</p>
+          <p>RESEARCH · WRITING · SYSTEMS</p>
         </motion.div>
       </div>
 
