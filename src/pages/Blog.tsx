@@ -338,14 +338,14 @@ export const Blog = () => {
 
                 <div
                   className="blog-content prose mx-auto max-w-3xl text-[15px] leading-8 text-ts-ink/82 dark:prose-invert sm:text-base
-                    [&>h1]:mb-4 [&>h1]:mt-10 [&>h1]:text-3xl [&>h1]:font-bold [&>h1]:text-ts-ink
-                    [&>h2]:mb-4 [&>h2]:mt-10 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-ts-ink
-                    [&>h3]:mb-3 [&>h3]:mt-8 [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-ts-ink
-                    [&>p]:mb-6 [&>ul]:mb-6 [&>ul]:list-disc [&>ul]:space-y-2 [&>ul]:pl-6
-                    [&>ol]:mb-6 [&>ol]:list-decimal [&>ol]:space-y-2 [&>ol]:pl-6
-                    [&>blockquote]:my-7 [&>blockquote]:border-l-4 [&>blockquote]:border-ts-primary/55 [&>blockquote]:pl-5 [&>blockquote]:italic [&>blockquote]:text-ts-ink/60
-                    [&>pre]:my-7 [&>pre]:overflow-x-auto [&>pre]:rounded-xl [&>pre]:bg-neutral-100 [&>pre]:p-5 [&>pre]:font-mono [&>pre]:text-xs [&>pre]:text-neutral-800 dark:[&>pre]:bg-[#1C1C24] dark:[&>pre]:text-[#E3E3E6]
-                    [&>code]:rounded [&>code]:bg-neutral-100 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:font-mono [&>code]:text-[#c13838] dark:[&>code]:bg-[#1C1C24] dark:[&>code]:text-[#F9B6B6]"
+                    [&_h1]:mb-4 [&_h1]:mt-10 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-ts-ink
+                    [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-ts-ink
+                    [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-ts-ink
+                    [&_p]:mb-6 [&_ul]:mb-6 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6
+                    [&_ol]:mb-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6
+                    [&_blockquote]:my-7 [&_blockquote]:border-l-4 [&_blockquote]:border-ts-primary/55 [&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-ts-ink/60
+                    [&_pre]:my-7 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-neutral-100 [&_pre]:p-5 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:text-neutral-800 dark:[&_pre]:bg-[#1C1C24] dark:[&_pre]:text-[#E3E3E6]
+                    [&_code]:rounded [&_code]:bg-neutral-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[#c13838] dark:[&_code]:bg-[#1C1C24] dark:[&_code]:text-[#F9B6B6]"
                   dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
                 />
               </motion.article>

@@ -604,18 +604,17 @@ export const AdminPage = () => {
               )}
             </div>
 
-            {/* Markdown rendered body */}
             <div 
               className="blog-content prose dark:prose-invert max-w-none text-ts-ink/90 leading-relaxed text-xs space-y-4 text-left
-                [&>h1]:text-lg [&>h1]:font-bold [&>h1]:text-ts-ink [&>h1]:mt-6 [&>h1]:mb-2 [&>h1]:border-b [&>h1]:border-ts-hairline [&>h1]:pb-1.5
-                [&>h2]:text-base [&>h2]:font-bold [&>h2]:text-ts-ink [&>h2]:mt-5 [&>h2]:mb-2
-                [&>h3]:text-sm [&>h3]:font-bold [&>h3]:text-ts-ink [&>h3]:mt-3 [&>h3]:mb-1
-                [&>p]:mb-3
-                [&>ul]:list-disc [&>ul]:pl-4 [&>ul]:mb-3 [&>ul]:space-y-1
-                [&>ol]:list-decimal [&>ol]:pl-4 [&>ol]:mb-3 [&>ol]:space-y-1
-                [&>blockquote]:border-l-4 [&>blockquote]:border-ts-primary [&>blockquote]:pl-3 [&>blockquote]:italic [&>blockquote]:text-ts-muted [&>blockquote]:my-3
-                [&>pre]:bg-ts-surface-elevated [&>pre]:p-3 [&>pre]:rounded-lg [&>pre]:overflow-x-auto [&>pre]:my-3 [&>pre]:font-mono [&>pre]:text-[10px] [&>pre]:border [&>pre]:border-ts-hairline
-                [&>code]:font-mono [&>code]:bg-ts-surface-elevated [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-ts-primary"
+                [&_h1]:text-lg [&_h1]:font-bold [&_h1]:text-ts-ink [&_h1]:mt-6 [&_h1]:mb-2 [&_h1]:border-b [&_h1]:border-ts-hairline [&_h1]:pb-1.5
+                [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-ts-ink [&_h2]:mt-5 [&_h2]:mb-2
+                [&_h3]:text-sm [&_h3]:font-bold [&_h3]:text-ts-ink [&_h3]:mt-3 [&_h3]:mb-1
+                [&_p]:mb-3
+                [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:mb-3 [&_ul]:space-y-1
+                [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:mb-3 [&_ol]:space-y-1
+                [&_blockquote]:border-l-4 [&_blockquote]:border-ts-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-ts-muted [&_blockquote]:my-3
+                [&_pre]:bg-ts-surface-elevated [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-3 [&_pre]:font-mono [&_pre]:text-[10px] [&_pre]:border [&_pre]:border-ts-hairline
+                [&_code]:font-mono [&_code]:bg-ts-surface-elevated [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-ts-primary"
               dangerouslySetInnerHTML={renderMarkdown(content)}
             />
           </div>
