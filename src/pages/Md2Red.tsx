@@ -13,7 +13,7 @@ const initialSample = `# 🎯 3个步骤，彻底戒掉拖延症！
 🚀 **2. 极简拆解**：把大任务拆成比芝麻还小的微型步骤，消灭畏难情绪。
 💡 **3. 即时反馈**：每完成一步，就给大脑发送一次成就感奖励！
 
-#时间同步 #自律成长 #干货分享 #自我提升`;
+#时韵 #自律成长 #干货分享 #自我提升`;
 
 export const Md2Red = () => {
   const navigate = useNavigate();
@@ -192,7 +192,7 @@ export const Md2Red = () => {
                   <div className="w-5.5 h-5.5 rounded-full bg-ts-primary/10 flex items-center justify-center text-ts-primary font-bold text-[9px]">
                     时
                   </div>
-                  <span className="font-bold text-ts-body">时间同步.md</span>
+                  <span className="font-bold text-ts-body">时韵.md</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-0.5 text-rose-500">
