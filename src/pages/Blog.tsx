@@ -158,48 +158,41 @@ export const Blog = () => {
       <div className="immersive-section text-left">
         {!id ? (
           <>
-            <header className="py-14 sm:py-20">
-              <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
-                <div className="max-w-3xl">
-                  <p className="font-barlow text-xs font-bold tracking-[0.24em] text-ts-primary">{copy.eyebrow}</p>
-                  <h1 className="mt-4 font-display text-5xl font-black tracking-[-0.04em] text-ts-ink sm:text-6xl lg:text-7xl">{copy.title}</h1>
-                  <p className="mt-5 max-w-2xl text-base leading-7 text-ts-ink/65 sm:text-lg">{copy.subtitle}</p>
-                  <p className="mt-5 font-barlow text-xs font-bold uppercase tracking-[0.14em] text-ts-ink/45">
-                    {posts.length} {copy.posts}
-                  </p>
-                </div>
-                {posts.length > 0 && (
+            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-10 pb-8 border-none">
+              <p className="font-barlow text-xs font-bold uppercase tracking-[0.14em] text-ts-ink/45">
+                {posts.length} {copy.posts}
+              </p>
+              {posts.length > 0 && (
+                <div className="relative w-full sm:w-[22rem]">
+                  <label htmlFor="blog-search" className="sr-only">{copy.searchPlaceholder}</label>
                   <div className="relative">
-                    <label htmlFor="blog-search" className="sr-only">{copy.searchPlaceholder}</label>
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-ink/45" size={17} aria-hidden="true" />
-                      <input
-                        id="blog-search"
-                        type="search"
-                        value={searchQuery}
-                        onChange={(event) => setSearchQuery(event.target.value)}
-                        className="h-12 w-full rounded-full border border-ts-ink/10 bg-ts-surface-elevated pl-11 pr-12 text-sm text-ts-ink shadow-sm outline-none transition focus:border-ts-primary/60 focus:ring-2 focus:ring-ts-primary/20"
-                        placeholder={copy.searchPlaceholder}
-                      />
-                      {searchQuery && (
-                        <button
-                          type="button"
-                          onClick={() => setSearchQuery('')}
-                          className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-ts-ink/45 transition hover:bg-ts-ink/5 hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
-                          aria-label={copy.clear}
-                        >
-                          <X size={16} aria-hidden="true" />
-                        </button>
-                      )}
-                    </div>
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-ink/45" size={17} aria-hidden="true" />
+                    <input
+                      id="blog-search"
+                      type="search"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      className="h-12 w-full rounded-full border border-ts-ink/10 bg-ts-surface-elevated pl-11 pr-12 text-sm text-ts-ink shadow-sm outline-none transition focus:border-ts-primary/60 focus:ring-2 focus:ring-ts-primary/20"
+                      placeholder={copy.searchPlaceholder}
+                    />
                     {searchQuery && (
-                      <p className="absolute left-4 top-full mt-2 font-barlow text-xs font-bold tracking-wider text-ts-ink/45" aria-live="polite">
-                        {filteredPosts.length} {copy.posts}
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-ts-ink/45 transition hover:bg-ts-ink/5 hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+                        aria-label={copy.clear}
+                      >
+                        <X size={16} aria-hidden="true" />
+                      </button>
                     )}
                   </div>
-                )}
-              </div>
+                  {searchQuery && (
+                    <p className="absolute left-4 top-full mt-2 font-barlow text-xs font-bold tracking-wider text-ts-ink/45" aria-live="polite">
+                      {filteredPosts.length} {copy.posts}
+                    </p>
+                  )}
+                </div>
+              )}
             </header>
 
             {filteredPosts.length === 0 ? (

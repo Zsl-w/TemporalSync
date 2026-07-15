@@ -99,14 +99,7 @@ export const StudyRoom = () => {
   return (
     <div className="w-full min-h-screen bg-ts-canvas pb-24">
       <div className="immersive-section text-left">
-        <header className="grid gap-8 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-          <div className="max-w-3xl">
-            <p className="font-barlow text-xs font-bold tracking-[0.24em] text-ts-primary">{copy.eyebrow}</p>
-            <h1 className="mt-4 font-display text-5xl font-black tracking-[-0.04em] text-ts-ink sm:text-6xl lg:text-7xl">
-              {copy.title}
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-ts-ink/65 sm:text-lg">{copy.subtitle}</p>
-          </div>
+        <header className="flex justify-start pt-10 pb-8 border-none">
           <div className="inline-flex min-h-11 items-center gap-2 rounded-full border border-ts-ink/10 bg-ts-surface-elevated px-4 font-barlow text-xs font-bold tracking-wider text-ts-ink/70 shadow-sm">
             <Radio size={15} className="text-emerald-500" aria-hidden="true" />
             {copy.summary}
