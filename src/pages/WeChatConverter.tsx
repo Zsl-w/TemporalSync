@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, Code, Copy, Check, Upload, Sparkles, AppWindow } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
+import DOMPurify from 'dompurify';
 
 const colors = {
   ink: '#24302f',
@@ -305,7 +306,7 @@ export const WeChatConverter = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const previewHtml = useMemo(() => {
-    return convertMarkdownToWechatHtml(markdown);
+    return DOMPurify.sanitize(convertMarkdownToWechatHtml(markdown));
   }, [markdown]);
 
   const showToast = (msg: string) => {

@@ -201,95 +201,49 @@ export const Blog = () => {
                 <p className="font-display text-lg font-bold text-ts-ink">{searchQuery ? copy.noResults : copy.empty}</p>
               </section>
             ) : (
-              <section className="space-y-16 py-16 sm:py-24" aria-label={isZh ? '文章列表' : 'Post list'}>
-                {(() => {
-                  const featured = filteredPosts[0];
-                  const coverUrl = getFirstImageUrl(featured.content);
-                  return (
-                    <motion.article
-                      initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-                      animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                      transition={{ duration: 0.55, ease: 'easeOut' }}
-                    >
-                      <Link
-                        to={`/blog/${featured.id}`}
-                        className="group grid overflow-hidden rounded-[28px] border border-ts-ink/10 bg-ts-surface-elevated shadow-[0_24px_70px_rgba(15,23,42,0.09)] transition hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.13)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none lg:grid-cols-3"
+              <section className="py-16 sm:py-24" aria-label={isZh ? '文章列表' : 'Post list'}>
+                <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
+                  {filteredPosts.map((post, index) => {
+                    const coverUrl = getFirstImageUrl(post.content);
+                    return (
+                      <motion.article
+                        key={post.id}
+                        initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+                        whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.15 }}
+                        transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
                       >
-                        <div className="relative aspect-[16/10] overflow-hidden bg-ts-canvas lg:col-span-2 lg:aspect-auto lg:min-h-[28rem]">
-                          {coverUrl ? (
-                            <img src={coverUrl} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.025] motion-reduce:transition-none" />
-                          ) : (
-                            <CoverPlaceholder />
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                        </div>
-                        <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12 lg:col-span-1">
-                          <p className="font-barlow text-xs font-bold uppercase tracking-[0.2em] text-ts-primary">{copy.featured}</p>
+                        <Link
+                          to={`/blog/${post.id}`}
+                          className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas"
+                        >
+                          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-ts-ink/10 bg-ts-surface-elevated shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl motion-reduce:transition-none">
+                            {coverUrl ? (
+                              <img src={coverUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
+                            ) : (
+                              <CoverPlaceholder />
+                            )}
+                          </div>
                           <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
-                            {formatDate(featured.createdAt)} · {getReadTime(featured.content, isZh)}
-                            {featured.tags.length > 0 && (
+                            {formatDate(post.createdAt)} · {getReadTime(post.content, isZh)}
+                            {post.tags.length > 0 && (
                               <span className="text-ts-primary">
                                 {' · '}
-                                {featured.tags.join(' · ')}
+                                {post.tags.join(' · ')}
                               </span>
                             )}
                           </div>
-                          <h2 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-ts-ink sm:text-4xl">{featured.title}</h2>
-                          <p className="mt-5 line-clamp-3 text-sm leading-7 text-ts-ink/65 sm:text-base">{featured.summary}</p>
-                          <span className="mt-8 inline-flex min-h-11 items-center gap-2 self-start font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
+                          <h2 className="mt-3 line-clamp-1 h-[30px] font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
+                          <p className="mt-3 line-clamp-2 h-12 leading-6 text-sm text-ts-ink/62 sm:text-base">{post.summary}</p>
+                          <span className="mt-5 inline-flex min-h-11 items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
                             <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.readArticle}</span>
-                            <ArrowRight size={15} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
+                            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
                           </span>
-                        </div>
-                      </Link>
-                    </motion.article>
-                  );
-                })()}
-
-                {filteredPosts.length > 1 && (
-                  <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
-                    {filteredPosts.slice(1).map((post, index) => {
-                      const coverUrl = getFirstImageUrl(post.content);
-                      return (
-                        <motion.article
-                          key={post.id}
-                          initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-                          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                          viewport={{ once: true, amount: 0.15 }}
-                          transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-                        >
-                          <Link
-                            to={`/blog/${post.id}`}
-                            className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas"
-                          >
-                            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-ts-ink/10 bg-ts-surface-elevated shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl motion-reduce:transition-none">
-                              {coverUrl ? (
-                                <img src={coverUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
-                              ) : (
-                                <CoverPlaceholder />
-                              )}
-                            </div>
-                            <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
-                              {formatDate(post.createdAt)} · {getReadTime(post.content, isZh)}
-                              {post.tags.length > 0 && (
-                                <span className="text-ts-primary">
-                                  {' · '}
-                                  {post.tags.join(' · ')}
-                                </span>
-                              )}
-                            </div>
-                            <h2 className="mt-3 line-clamp-1 h-[30px] font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
-                            <p className="mt-3 line-clamp-2 h-12 leading-6 text-sm text-ts-ink/62 sm:text-base">{post.summary}</p>
-                            <span className="mt-5 inline-flex min-h-11 items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
-                              <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.readArticle}</span>
-                              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
-                            </span>
-                          </Link>
-                        </motion.article>
-                      );
-                    })}
-                  </div>
-                )}
+                        </Link>
+                      </motion.article>
+                    );
+                  })}
+                </div>
               </section>
             )}
           </>
