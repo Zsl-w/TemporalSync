@@ -97,7 +97,6 @@ export const Navbar = () => {
               )}
             </NavLink>
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
-            <NavItem to="/lexora" label={language === 'zh' ? 'LEXORA' : 'LEXORA'} />
             
             {/* WORK Item with hover sub-navigation */}
             <div 
