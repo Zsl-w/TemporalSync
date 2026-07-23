@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ArrowRight, FileText, MessageSquare, Radio, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, FileText, MessageSquare, Radio, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
@@ -26,7 +26,7 @@ export const StudyRoom = () => {
         eyebrow: 'DEVELOPMENT LAB',
         title: '自习室',
         subtitle: '把内容工作流和信息处理中的真实摩擦，做成可以直接使用的小工具。',
-        summary: '2 个内容工具 · 1 条实时信息流',
+        summary: '3 个内容与概念工具 · 1 条实时信息流',
         explore: '打开项目',
         footerTitle: '持续把高频问题做成可靠工具',
         footerDescription: '每个项目都从一个真实使用场景开始，再用最短路径验证价值。',
@@ -35,7 +35,7 @@ export const StudyRoom = () => {
         eyebrow: 'DEVELOPMENT LAB',
         title: 'WORK',
         subtitle: 'Small, usable tools built around real friction in content and information workflows.',
-        summary: '2 content tools · 1 live information stream',
+        summary: '3 content & concept tools · 1 live information stream',
         explore: 'Open project',
         footerTitle: 'Turning repeated friction into reliable tools',
         footerDescription: 'Every project starts with a real workflow and takes the shortest path to useful.',
@@ -43,6 +43,21 @@ export const StudyRoom = () => {
 
   const projects = useMemo<Project[]>(
     () => [
+      {
+        id: 'lexora',
+        title: 'Lexora',
+        subtitle: isZh ? 'AI 概念智库与导师' : 'AI Concept Hub & Tutor',
+        description: isZh
+          ? '全屏双轨交互的专业概念卡片智库，支持双语名词对比、结构化深度拆解、历史记录删除与 DeepSeek AI Tutor 随身问答。'
+          : 'Full-screen dual-rail AI concept card library with bilingual terminology, structured deep-dives, history deletion, and DeepSeek AI Tutor.',
+        features: isZh
+          ? ['AI 概念深度拆解', 'AI Tutor 随身问答', '双语对照与结构化卡片', '历史记录与精准检索']
+          : ['Deep AI concept breakdown', 'AI Tutor follow-up QA', 'Bilingual terminology cards', 'History & precision search'],
+        icon: BookOpen,
+        href: '/lexora',
+        status: 'AVAILABLE',
+        tag: isZh ? 'AI 概念智库' : 'AI CONCEPT HUB',
+      },
       {
         id: 'md2red',
         title: 'md2red',

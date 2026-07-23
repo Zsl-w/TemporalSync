@@ -53,6 +53,7 @@ export const Navbar = () => {
   const mobileItems = [
     { to: '/', label: language === 'zh' ? '博客' : 'Blog' },
     { to: '/hot', label: language === 'zh' ? 'AI 热点' : 'AI Hot Topics' },
+    { to: '/lexora', label: language === 'zh' ? 'Lexora 概念智库' : 'Lexora Concept Hub' },
     { to: '/work', label: language === 'zh' ? '自习室' : 'Study Room' },
     { to: '/shiyun-wechat-md', label: language === 'zh' ? '微信排版工具' : 'WeChat Formatter' },
     { to: '/md2red', label: language === 'zh' ? '小红书卡片生成' : 'Red Formatter' },
@@ -96,6 +97,7 @@ export const Navbar = () => {
               )}
             </NavLink>
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
+            <NavItem to="/lexora" label={language === 'zh' ? 'LEXORA' : 'LEXORA'} />
             
             {/* WORK Item with hover sub-navigation */}
             <div 
@@ -114,14 +116,14 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   cn(
                     "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
-                    (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red') && "text-ts-ink"
+                    (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname === '/lexora') && "text-ts-ink"
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
                     <span>{language === 'zh' ? '自习室' : 'WORK'}</span>
-                    {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red') && (
+                    {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname === '/lexora') && (
                       <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
                     )}
                   </>
@@ -136,6 +138,19 @@ export const Navbar = () => {
                 )}
               >
                 <div className="bg-white/40 dark:bg-[#12121a]/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[20px] shadow-2xl p-6 flex flex-col gap-4 select-none">
+                  <NavLink
+                    to="/lexora"
+                    className={({ isActive }) =>
+                      cn(
+                        "text-[13.5px] font-medium font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        isActive
+                          ? "text-ts-ink"
+                          : "text-ts-ink/75 hover:text-ts-ink"
+                      )
+                    }
+                  >
+                    {language === 'zh' ? 'Lexora 概念智库' : 'Lexora Concept Hub'}
+                  </NavLink>
                   <NavLink
                     to="/shiyun-wechat-md"
                     className={({ isActive }) =>
