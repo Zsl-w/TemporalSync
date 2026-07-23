@@ -14,7 +14,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "flex items-center h-full px-4 text-[15.3px] font-bold tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
+        "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
         isActive && "text-ts-ink"
       )
     }
@@ -51,17 +51,16 @@ export const Navbar = () => {
   }, [mobileMenuOpen]);
 
   const mobileItems = [
-    { to: '/', label: language === 'zh' ? '关于' : 'About' },
+    { to: '/', label: language === 'zh' ? '博客' : 'Blog' },
     { to: '/hot', label: language === 'zh' ? 'AI 热点' : 'AI Hot Topics' },
     { to: '/work', label: language === 'zh' ? '自习室' : 'Study Room' },
     { to: '/shiyun-wechat-md', label: language === 'zh' ? '微信排版工具' : 'WeChat Formatter' },
     { to: '/md2red', label: language === 'zh' ? '小红书卡片生成' : 'Red Formatter' },
-    { to: '/blog', label: language === 'zh' ? '博客' : 'Blog' },
     { to: '/settings', label: language === 'zh' ? '偏好设置' : 'Settings' },
   ];
 
   return (
-    <header className="w-full h-16 sticky top-0 bg-ts-canvas/15 backdrop-blur-xl flex items-center select-none z-50 transition-all duration-300">
+    <header className="w-full h-16 sticky top-0 bg-ts-canvas/85 dark:bg-[#72758d]/35 backdrop-blur-xl border-b border-transparent dark:border-white/10 shadow-none dark:shadow-[0_4px_30px_rgba(0,0,0,0.25)] flex items-center select-none z-50 transition-all duration-300">
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between h-full">
         {/* Left Section: Logo & Brand */}
         <div className="flex items-center h-full">
@@ -71,14 +70,31 @@ export const Navbar = () => {
               alt="Logo"
               className="h-[28px] w-[28px] object-contain transition-transform duration-300 group-hover:-translate-y-0.5"
             />
-            <span className="font-sans font-bold text-sm tracking-widest text-ts-ink uppercase">
+            <span className="font-sans font-medium text-sm tracking-widest text-ts-ink uppercase">
               {language === 'zh' ? '时韵' : 'TSync'}
             </span>
           </NavLink>
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center h-full gap-1">
-            <NavItem to="/" label={language === 'zh' ? '关于' : 'ABOUT'} />
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
+                  (isActive || location.pathname.startsWith('/blog')) && "text-ts-ink"
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <span>{language === 'zh' ? '博客' : 'BLOG'}</span>
+                  {(isActive || location.pathname.startsWith('/blog')) && (
+                    <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
+                  )}
+                </>
+              )}
+            </NavLink>
             <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
             
             {/* WORK Item with hover sub-navigation */}
@@ -97,7 +113,7 @@ export const Navbar = () => {
                 to="/work"
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center h-full px-4 text-[15.3px] font-bold tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
+                    "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
                     (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red') && "text-ts-ink"
                   )
                 }
@@ -124,7 +140,7 @@ export const Navbar = () => {
                     to="/shiyun-wechat-md"
                     className={({ isActive }) =>
                       cn(
-                        "text-[13.5px] font-bold font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        "text-[13.5px] font-medium font-display uppercase tracking-[0.08em] transition-colors block text-left",
                         isActive
                           ? "text-ts-ink"
                           : "text-ts-ink/75 hover:text-ts-ink"
@@ -137,7 +153,7 @@ export const Navbar = () => {
                     to="/md2red"
                     className={({ isActive }) =>
                       cn(
-                        "text-[13.5px] font-bold font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        "text-[13.5px] font-medium font-display uppercase tracking-[0.08em] transition-colors block text-left",
                         isActive
                           ? "text-ts-ink"
                           : "text-ts-ink/75 hover:text-ts-ink"
@@ -149,8 +165,6 @@ export const Navbar = () => {
                 </div>
               </div>
             </div>
-
-            <NavItem to="/blog" label={language === 'zh' ? '博客' : 'BLOG'} />
           </nav>
         </div>
 
@@ -238,7 +252,7 @@ export const Navbar = () => {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) => cn(
-                  "min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-bold tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary",
+                  "min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-medium tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary",
                   isActive && "bg-ts-surface-elevated text-ts-ink"
                 )}
               >
@@ -248,7 +262,7 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-bold tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+              className="min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-medium tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
             >
               <span>{language === 'zh' ? '外观模式' : 'Appearance'}</span>
               <span className="inline-flex items-center gap-2 text-xs text-ts-muted">

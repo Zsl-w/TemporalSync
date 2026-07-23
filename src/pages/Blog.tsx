@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { ArrowLeft, ArrowRight, BookOpen, Loader2, Search, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Loader2, Mail, Search, X } from 'lucide-react';
 import { marked } from 'marked';
 import { motion, useReducedMotion } from 'motion/react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import { BlogPost, usePosts } from '../hooks/usePosts';
+
+const POSTS_PER_PAGE = 10;
 
 const getPlainText = (markdown: string): string => {
   if (!markdown) return '';
@@ -84,6 +86,11 @@ export const Blog = () => {
   const { posts, loading } = usePosts();
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (loading) return;
@@ -116,6 +123,23 @@ export const Blog = () => {
     );
   }, [posts, searchQuery]);
 
+  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+
+  const displayedPosts = useMemo(() => {
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    return filteredPosts.slice(start, start + POSTS_PER_PAGE);
+  }, [filteredPosts, currentPage]);
+
+  const { prevPost, nextPost } = useMemo(() => {
+    if (!selectedPost) return { prevPost: null, nextPost: null };
+    const index = posts.findIndex((p) => p.id === selectedPost.id);
+    if (index === -1) return { prevPost: null, nextPost: null };
+    return {
+      prevPost: index > 0 ? posts[index - 1] : null,
+      nextPost: index < posts.length - 1 ? posts[index + 1] : null,
+    };
+  }, [posts, selectedPost]);
+
   const copy = isZh
     ? {
         eyebrow: 'NOTES & FIELDWORK',
@@ -129,6 +153,8 @@ export const Blog = () => {
         empty: '暂无博客内容',
         noResults: `没有找到与“${searchQuery.trim()}”相关的文章`,
         clear: '清除搜索',
+        newerPosts: '较新的文章',
+        olderPosts: '较旧的文章',
       }
     : {
         eyebrow: 'NOTES & FIELDWORK',
@@ -142,6 +168,8 @@ export const Blog = () => {
         empty: 'No posts available',
         noResults: `No posts found for “${searchQuery.trim()}”`,
         clear: 'Clear search',
+        newerPosts: 'NEWER POSTS',
+        olderPosts: 'OLDER POSTS',
       };
 
   if (loading && posts.length === 0) {
@@ -201,50 +229,88 @@ export const Blog = () => {
                 <p className="font-display text-lg font-bold text-ts-ink">{searchQuery ? copy.noResults : copy.empty}</p>
               </section>
             ) : (
-              <section className="py-16 sm:py-24" aria-label={isZh ? '文章列表' : 'Post list'}>
-                <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
-                  {filteredPosts.map((post, index) => {
-                    const coverUrl = getFirstImageUrl(post.content);
-                    return (
-                      <motion.article
-                        key={post.id}
-                        initial={reduceMotion ? false : { opacity: 0, y: 22 }}
-                        whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.15 }}
-                        transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
-                      >
-                        <Link
-                          to={`/blog/${post.id}`}
-                          className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas"
+              <>
+                <section className="py-16 sm:py-24" aria-label={isZh ? '文章列表' : 'Post list'}>
+                  <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
+                    {displayedPosts.map((post, index) => {
+                      const coverUrl = getFirstImageUrl(post.content);
+                      return (
+                        <motion.article
+                          key={post.id}
+                          initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+                          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                          viewport={{ once: true, amount: 0.15 }}
+                          transition={{ duration: 0.5, delay: index * 0.06, ease: 'easeOut' }}
                         >
-                          <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-ts-ink/10 bg-ts-surface-elevated shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl motion-reduce:transition-none">
-                            {coverUrl ? (
-                              <img src={coverUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
-                            ) : (
-                              <CoverPlaceholder />
-                            )}
-                          </div>
-                          <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
-                            {formatDate(post.createdAt)} · {getReadTime(post.content, isZh)}
-                            {post.tags.length > 0 && (
-                              <span className="text-ts-primary">
-                                {' · '}
-                                {post.tags.join(' · ')}
-                              </span>
-                            )}
-                          </div>
-                          <h2 className="mt-3 line-clamp-1 h-[30px] font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
-                          <p className="mt-3 line-clamp-2 h-12 leading-6 text-sm text-ts-ink/62 sm:text-base">{post.summary}</p>
-                          <span className="mt-5 inline-flex min-h-11 items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
-                            <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.readArticle}</span>
-                            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
-                          </span>
-                        </Link>
-                      </motion.article>
-                    );
-                  })}
-                </div>
-              </section>
+                          <Link
+                            to={`/blog/${post.id}`}
+                            className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas"
+                          >
+                            <div className="relative aspect-[3/2] overflow-hidden rounded-2xl border border-ts-ink/10 bg-ts-surface-elevated shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl motion-reduce:transition-none">
+                              {coverUrl ? (
+                                <img src={coverUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
+                              ) : (
+                                <CoverPlaceholder />
+                              )}
+                            </div>
+                            <div className="mt-5 font-barlow text-xs font-bold tracking-[0.12em] text-ts-ink/45">
+                              {formatDate(post.createdAt)} · {getReadTime(post.content, isZh)}
+                              {post.tags.length > 0 && (
+                                <span className="text-ts-primary">
+                                  {' · '}
+                                  {post.tags.join(' · ')}
+                                </span>
+                              )}
+                            </div>
+                            <h2 className="mt-3 line-clamp-1 h-[30px] font-display text-2xl font-bold leading-tight tracking-tight text-ts-ink">{post.title}</h2>
+                            <p className="mt-3 line-clamp-2 h-12 leading-6 text-sm text-ts-ink/62 sm:text-base">{post.summary}</p>
+                            <span className="mt-5 inline-flex min-h-11 items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
+                              <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.readArticle}</span>
+                              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
+                            </span>
+                          </Link>
+                        </motion.article>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* PAGINATION BAR */}
+                {totalPages > 1 && (
+                  <nav className="mt-12 flex items-center justify-between border-t border-ts-ink/10 pt-8" aria-label={isZh ? '文章分页' : 'Blog Pagination'}>
+                    <div>
+                      {currentPage > 1 ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage((prev) => Math.max(prev - 1, 1));
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="group inline-flex items-center gap-1.5 font-display text-sm font-medium uppercase tracking-[0.14em] text-ts-ink/75 transition hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary cursor-pointer"
+                        >
+                          <ChevronLeft size={18} className="transition-transform group-hover:-translate-x-1" aria-hidden="true" />
+                          <span>{copy.newerPosts}</span>
+                        </button>
+                      ) : <div />}
+                    </div>
+                    <div>
+                      {currentPage < totalPages ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="group inline-flex items-center gap-1.5 font-display text-sm font-medium uppercase tracking-[0.14em] text-ts-ink/75 transition hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary cursor-pointer"
+                        >
+                          <span>{copy.olderPosts}</span>
+                          <ChevronRight size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                        </button>
+                      ) : <div />}
+                    </div>
+                  </nav>
+                )}
+              </>
             )}
           </>
         ) : (
@@ -295,11 +361,82 @@ export const Blog = () => {
                     [&_code]:rounded [&_code]:bg-neutral-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[#c13838] dark:[&_code]:bg-[#1C1C24] dark:[&_code]:text-[#F9B6B6]"
                   dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
                 />
+
+                {/* PREVIOUS / NEXT ARTICLE NAVIGATION */}
+                {(prevPost || nextPost) && (
+                  <div className="mx-auto max-w-3xl mt-16 border-t border-ts-ink/10 pt-10 flex items-center justify-between gap-6">
+                    <div className="flex-1 text-left">
+                      {prevPost ? (
+                        <Link
+                          to={`/blog/${prevPost.id}`}
+                          className="group inline-flex items-center gap-2 font-display text-sm font-medium uppercase tracking-[0.08em] text-ts-ink/75 transition hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+                          title={prevPost.title}
+                        >
+                          <ChevronLeft size={20} className="shrink-0 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
+                          <span className="line-clamp-1">{prevPost.title}</span>
+                        </Link>
+                      ) : null}
+                    </div>
+                    <div className="flex-1 text-right">
+                      {nextPost ? (
+                        <Link
+                          to={`/blog/${nextPost.id}`}
+                          className="group inline-flex items-center justify-end gap-2 font-display text-sm font-medium uppercase tracking-[0.08em] text-ts-ink/75 transition hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+                          title={nextPost.title}
+                        >
+                          <span className="line-clamp-1">{nextPost.title}</span>
+                          <ChevronRight size={20} className="shrink-0 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                        </Link>
+                      ) : null}
+                    </div>
+                  </div>
+                )}
               </motion.article>
             )}
           </div>
         )}
       </div>
+
+      {/* FOOTER SECTION */}
+      <footer className="relative z-10 px-6 py-6 border-t border-ts-hairline/25 mt-auto">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="flex flex-col items-center gap-2 text-[12px] text-ts-muted sm:flex-row sm:gap-4">
+            <span>&copy; {new Date().getFullYear()} TemporalSync</span>
+            <span className="hidden opacity-30 sm:inline">|</span>
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-ts-ink"
+            >
+              渝ICP备2026010591号-1
+            </a>
+            <span className="hidden opacity-30 sm:inline">|</span>
+            <a
+              href="https://beian.mps.gov.cn/#/query/webSearch?code=50010602505214"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 transition-colors hover:text-ts-ink"
+            >
+              <img
+                src="/assets/备案图标.png"
+                alt="公安备案图标"
+                className="h-4 w-4 object-contain"
+              />
+              <span>渝公网安备50010602505214号</span>
+            </a>
+          </div>
+          <div className="flex items-center gap-4">
+            <a
+              href="mailto:contact@temporalsync.online"
+              aria-label="Email"
+              className="text-ts-muted transition-colors hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+            >
+              <Mail size={16} />
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -6,7 +6,6 @@ import { Loader2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
 
-const About = lazy(() => import('./pages/About').then(m => ({ default: m.About })));
 const HotTopics = lazy(() => import('./pages/HotTopics').then(m => ({ default: m.HotTopics })));
 const StudyRoom = lazy(() => import('./pages/StudyRoom').then(m => ({ default: m.StudyRoom })));
 const Blog = lazy(() => import('./pages/Blog').then(m => ({ default: m.Blog })));
@@ -14,6 +13,7 @@ const SettingsPage = lazy(() => import('./pages/Settings').then(m => ({ default:
 const AdminPage = lazy(() => import('./pages/Admin').then(m => ({ default: m.AdminPage })));
 const WeChatConverter = lazy(() => import('./pages/WeChatConverter').then(m => ({ default: m.WeChatConverter })));
 const Md2Red = lazy(() => import('./pages/Md2Red').then(m => ({ default: m.Md2Red })));
+const Lexora = lazy(() => import('./pages/Lexora').then(m => ({ default: m.Lexora })));
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 const LoadingFallback = () => (
@@ -30,24 +30,26 @@ const AnimatedAppContent = () => {
   useEffect(() => {
     const routeTitles: Record<string, Record<string, string>> = {
       zh: {
-        '/': '关于 · TemporalSync',
+        '/': '博客 · TemporalSync',
         '/hot': 'AI 热点 · TemporalSync',
         '/work': '自习室 · TemporalSync',
         '/blog': '博客 · TemporalSync',
         '/settings': '设置 · TemporalSync',
         '/admin': '控制台 · TemporalSync',
         '/shiyun-wechat-md': '微信排版转换器 · TemporalSync',
-        '/md2red': '小红书卡片生成器 · TemporalSync'
+        '/md2red': '小红书卡片生成器 · TemporalSync',
+        '/lexora': 'Lexora 知识伴侣'
       },
       en: {
-        '/': 'About · TemporalSync',
+        '/': 'Blog · TemporalSync',
         '/hot': 'AI Hot Topics · TemporalSync',
         '/work': 'Study Room · TemporalSync',
         '/blog': 'Blog · TemporalSync',
         '/settings': 'Settings · TemporalSync',
         '/admin': 'Dashboard · TemporalSync',
         '/shiyun-wechat-md': 'WeChat Post Formatter · TemporalSync',
-        '/md2red': 'Xiaohongshu Card Formatter · TemporalSync'
+        '/md2red': 'Xiaohongshu Card Formatter · TemporalSync',
+        '/lexora': 'Lexora AI Knowledge Companion'
       }
     };
 
@@ -78,7 +80,7 @@ const AnimatedAppContent = () => {
           >
             <Suspense fallback={<LoadingFallback />}>
               <Routes location={location}>
-                <Route path="/" element={<About />} />
+                <Route path="/" element={<Blog />} />
                 <Route path="/hot" element={<HotTopics />} />
                 <Route path="/work" element={<StudyRoom />} />
                 <Route path="/blog" element={<Blog />} />
@@ -87,6 +89,7 @@ const AnimatedAppContent = () => {
                 <Route path="/admin" element={<AdminPage />} />
                 <Route path="/shiyun-wechat-md" element={<WeChatConverter />} />
                 <Route path="/md2red" element={<Md2Red />} />
+                <Route path="/lexora" element={<Lexora />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

@@ -95,7 +95,7 @@ function quote(lines: string[]) {
 }
 
 function codeBlock(code: string, lang = '') {
-  const label = lang ? `示例代码 · ${escapeHtml(lang)}` : '示例代码';
+  const label = lang ? escapeHtml(lang) : 'CODE';
   const formattedCode = escapeHtml(code.trimEnd())
     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
     .replace(/ /g, '&nbsp;')

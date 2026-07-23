@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { ArrowRight, Check, Radio, Sparkles } from 'lucide-react';
+import { ArrowRight, FileText, MessageSquare, Radio, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
-import { cn } from '../lib/utils';
 
 type Project = {
   id: string;
@@ -11,11 +10,10 @@ type Project = {
   subtitle: string;
   description: string;
   features: string[];
-  image: string;
-  imageAlt: string;
+  icon: typeof FileText;
   href: string;
   status: string;
-  imagePosition?: string;
+  tag: string;
 };
 
 export const StudyRoom = () => {
@@ -55,10 +53,10 @@ export const StudyRoom = () => {
         features: isZh
           ? ['Markdown 即时预览', '移动端卡片样式', '示例恢复与文件导入', '发布文案一键复制']
           : ['Live Markdown preview', 'Mobile card layout', 'Sample restore and file import', 'One-click post copy'],
-        image: '/assets/work/md2red-workspace.png',
-        imageAlt: isZh ? 'md2red 编辑器与小红书卡片预览' : 'md2red editor and Xiaohongshu card preview',
+        icon: FileText,
         href: '/md2red',
         status: 'AVAILABLE',
+        tag: isZh ? '小红书卡片排版' : 'XIAOHONGSHU FORMATTER',
       },
       {
         id: 'shiyun-wechat-md',
@@ -70,11 +68,10 @@ export const StudyRoom = () => {
         features: isZh
           ? ['品牌化公众号主题', '结构化标题与引用', '表格和代码块排版', '富文本一键复制']
           : ['Branded WeChat theme', 'Structured headings and quotes', 'Table and code styling', 'One-click rich-text copy'],
-        image: '/assets/work/wechat-workspace.png',
-        imageAlt: isZh ? '公众号 Markdown 编辑器与富文本预览' : 'WeChat Markdown editor and rich-text preview',
+        icon: MessageSquare,
         href: '/shiyun-wechat-md',
         status: 'AVAILABLE',
-        imagePosition: 'object-[center_36%]',
+        tag: isZh ? '微信公众号排版' : 'WECHAT FORMATTER',
       },
       {
         id: 'timesync-agent',
@@ -86,11 +83,10 @@ export const StudyRoom = () => {
         features: isZh
           ? ['多来源 RSS 聚合', '确定性分类与标签', '统一数据归一化', '搜索、筛选与刷新']
           : ['Multi-source RSS aggregation', 'Deterministic categories and tags', 'Shared data normalization', 'Search, filters, and refresh'],
-        image: '/assets/work/ai-hot-stream.png',
-        imageAlt: isZh ? 'AI 热点实时信息流页面' : 'Live AI intelligence timeline',
+        icon: Radio,
         href: '/hot',
         status: 'LIVE DATA',
-        imagePosition: 'object-top',
+        tag: isZh ? 'AI 实时热点流' : 'AI INTELLIGENCE STREAM',
       },
     ],
     [isZh],
@@ -106,64 +102,74 @@ export const StudyRoom = () => {
           </div>
         </header>
 
-        <section className="space-y-24 py-16 sm:space-y-32 sm:py-24" aria-label={isZh ? '项目列表' : 'Project list'}>
-          {projects.map((project, index) => {
-            const reverse = index % 2 === 1;
-            return (
-              <motion.article
-                key={project.id}
-                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.18 }}
-                transition={{ duration: 0.55, ease: 'easeOut' }}
-                className={cn(
-                  'grid items-center gap-9 lg:grid-cols-2 lg:gap-16',
-                  reverse && 'lg:[&>*:first-child]:order-2',
-                )}
-              >
-                <div className="group relative overflow-hidden rounded-[28px] border border-ts-ink/10 bg-ts-surface-elevated p-2.5 shadow-[0_24px_70px_rgba(15,23,42,0.10)] dark:shadow-black/30">
-                  <div className="absolute inset-x-16 -top-16 h-40 rounded-full bg-ts-primary/20 blur-3xl" />
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-[20px] bg-[#0d0b1d]">
-                    <img
-                      src={project.image}
-                      alt={project.imageAlt}
-                      className={cn(
-                        'h-full w-full object-cover transition-transform duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.015]',
-                        project.imagePosition ?? 'object-center',
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <div className="max-w-xl">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="font-barlow text-xs font-bold tracking-[0.2em] text-ts-primary">0{index + 1}</span>
-                    <span className="rounded-full border border-ts-ink/10 bg-ts-surface-elevated px-3 py-1 font-barlow text-[10px] font-bold tracking-[0.16em] text-ts-ink/60">
-                      {project.status}
-                    </span>
-                  </div>
-                  <p className="mt-6 font-barlow text-sm font-bold uppercase tracking-[0.16em] text-ts-ink/55">{project.title}</p>
-                  <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-ts-ink sm:text-4xl">{project.subtitle}</h2>
-                  <p className="mt-5 text-[15px] leading-7 text-ts-ink/68 sm:text-base">{project.description}</p>
-                  <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-                    {project.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2.5 text-sm leading-6 text-ts-ink/72">
-                        <Check size={16} className="mt-1 shrink-0 text-ts-primary" aria-hidden="true" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+        <section className="py-12 sm:py-16" aria-label={isZh ? '项目列表' : 'Project list'}>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            {projects.map((project, index) => {
+              const Icon = project.icon;
+              return (
+                <motion.article
+                  key={project.id}
+                  initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+                  whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.5, delay: index * 0.08, ease: 'easeOut' }}
+                >
                   <Link
                     to={project.href}
-                    className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-full bg-ts-ink px-5 py-2.5 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-canvas transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none"
+                    className="group relative flex aspect-[3/2] flex-col justify-between overflow-hidden rounded-2xl border border-ts-ink/10 bg-gradient-to-br from-ts-canvas via-ts-surface-elevated to-ts-canvas p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none select-none"
                   >
-                    {copy.explore}
-                    <ArrowRight size={15} aria-hidden="true" />
+                    {/* Subtle radial dot grid pattern */}
+                    <div className="absolute inset-0 bg-[radial-gradient(rgba(120,119,198,0.10)_1px,transparent_1px)] [background-size:20px_20px]" />
+
+                    {/* Glowing ambient background orbs */}
+                    <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-ts-primary/18 blur-3xl transition-transform duration-700 group-hover:scale-125" />
+                    <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-indigo-500/12 blur-3xl" />
+
+                    {/* Top Row: Icon Badge & Meta Status */}
+                    <div className="relative z-10 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="rounded-xl border border-ts-ink/10 bg-ts-surface/80 p-2.5 shadow-sm backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
+                          <Icon className="h-5 w-5 text-ts-primary" aria-hidden="true" />
+                        </div>
+                        <span className="font-barlow text-xs font-bold tracking-[0.16em] text-ts-primary">0{index + 1}</span>
+                      </div>
+                      <span className="rounded-full border border-ts-ink/10 bg-ts-surface/60 px-3 py-1 font-barlow text-[10px] font-bold tracking-[0.16em] text-ts-ink/60 backdrop-blur-sm">
+                        {project.status}
+                      </span>
+                    </div>
+
+                    {/* Middle: Title & Description */}
+                    <div className="relative z-10 my-auto py-2">
+                      <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-ts-ink transition-colors group-hover:text-ts-primary">
+                        {project.title} <span className="font-normal text-base sm:text-lg text-ts-ink/50">· {project.subtitle}</span>
+                      </h2>
+                      <p className="mt-2.5 line-clamp-3 text-xs sm:text-sm leading-5 sm:leading-6 text-ts-ink/68">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {/* Bottom Row: Feature badges & Action Button */}
+                    <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-ts-ink/10">
+                      <div className="flex flex-wrap items-center gap-1.5 overflow-hidden">
+                        {project.features.slice(0, 3).map((feature) => (
+                          <span
+                            key={feature}
+                            className="rounded-md bg-ts-ink/5 px-2 py-0.5 font-barlow text-[10px] font-medium text-ts-ink/60"
+                          >
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="inline-flex shrink-0 items-center gap-1.5 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
+                        <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.explore}</span>
+                        <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
+                      </span>
+                    </div>
                   </Link>
-                </div>
-              </motion.article>
-            );
-          })}
+                </motion.article>
+              );
+            })}
+          </div>
         </section>
 
         <footer className="rounded-[28px] border border-ts-ink/10 bg-ts-surface-elevated px-6 py-10 text-center shadow-sm sm:px-10 sm:py-14">
