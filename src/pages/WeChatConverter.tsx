@@ -94,9 +94,27 @@ function quote(lines: string[]) {
   return `<section style="margin:0 0 24px;padding:14px 15px;border-left:4px solid ${colors.green};background:${colors.greenSoft};border-radius:0 8px 8px 0;"><p style="margin:0;color:${colors.body};font-size:15px;line-height:1.85;text-align:left;">${content}</p></section>`;
 }
 
+function cleanCodeBlock(code: string): string {
+  let text = code.replace(/\r\n/g, '\n').replace(/\r/g, '').replace(/^[\n]+/, '').replace(/[\n]+$/, '');
+  const lines = text.split('\n');
+  if (lines.length > 0) {
+    const line0Match = lines[0].match(/^[ \t]+/);
+    if (line0Match) {
+      const line0Indent = line0Match[0].length;
+      const line1Indent = lines.length > 1 && lines[1].trim() ? (lines[1].match(/^[ \t]+/)?.[0]?.length || 0) : 0;
+      if (line0Indent > 0 && line1Indent === 0) {
+        lines[0] = lines[0].trimStart();
+        text = lines.join('\n');
+      }
+    }
+  }
+  return text;
+}
+
 function codeBlock(code: string, lang = '') {
   const label = lang ? escapeHtml(lang) : 'CODE';
-  const formattedCode = escapeHtml(code.trimEnd())
+  const cleaned = cleanCodeBlock(code);
+  const formattedCode = escapeHtml(cleaned)
     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
     .replace(/ /g, '&nbsp;')
     .replace(/\n/g, '<br>');
