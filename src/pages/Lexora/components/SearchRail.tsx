@@ -81,10 +81,10 @@ export const SearchRail: React.FC<SearchRailProps> = ({
             <div
               key={concept.id}
               onClick={() => onSelectConcept(concept.id)}
-              className={`flex flex-col items-start px-4 py-3 rounded-none text-left transition-colors cursor-pointer group relative ${
+              className={`flex flex-col items-start px-4 py-3 rounded-2xl text-left transition-all cursor-pointer group relative ${
                 concept.id === activeConceptId 
-                  ? 'bg-lexora-accent-soft border-l-[3px] border-lexora-accent' 
-                  : 'border-l-[3px] border-transparent hover:bg-ts-surface-elevated'
+                  ? 'border border-white/60 dark:border-white/15 bg-white/70 dark:bg-[#1a1a26]/70 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]' 
+                  : 'border border-transparent hover:bg-ts-surface-elevated/60'
               }`}
             >
               <div className="flex items-center justify-between w-full">
