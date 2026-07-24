@@ -23,6 +23,7 @@
 - Never read, print, commit, or document secret values. Environment variable names may be documented.
 - Preserve unrelated user changes in a dirty worktree.
 - For UI changes, verify desktop and mobile rendering before handoff when the runtime is available.
+- MANDATORY GIT WORKFLOW: Never automatically push to GitHub or merge branches. Follow the 3-step user-controlled workflow: (1) Develop on local feature branch -> user inspects locally at http://localhost:3000 -> STOP and wait for user instruction. (2) Push feature branch to GitHub ONLY on explicit user command -> provide PR/preview link -> STOP and wait for user instruction. (3) Merge feature branch to main ONLY on explicit user command.
 
 ## Verification
 
