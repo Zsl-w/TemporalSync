@@ -275,26 +275,28 @@ export const HotTopics = () => {
                 className="flex flex-col"
               >
                 {/* Date Header */}
-                <button
-                  onClick={() => toggleGroup(group.dateLabel)}
-                  className="flex items-center gap-2 select-none pl-6 md:pl-20 hover:text-ts-primary transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
-                  aria-expanded={!collapsedGroups[group.dateLabel]}
-                >
-                  <span className="text-sm font-bold text-ts-ink tracking-wider group-hover:text-ts-primary transition-colors">
-                    {group.dateLabel}
-                  </span>
-                  <svg 
-                    className={cn(
-                      "w-4 h-4 text-ts-muted transition-transform duration-300 ease-out group-hover:text-ts-primary", 
-                      collapsedGroups[group.dateLabel] ? "-rotate-90" : "rotate-0"
-                    )} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
+                <div className="mb-4 pl-[48px] sm:pl-[62px]">
+                  <button
+                    onClick={() => toggleGroup(group.dateLabel)}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ts-surface-elevated border border-ts-hairline select-none hover:text-ts-primary transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+                    aria-expanded={!collapsedGroups[group.dateLabel]}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                    <span className="text-xs font-bold text-ts-ink tracking-wider group-hover:text-ts-primary transition-colors">
+                      {group.dateLabel}
+                    </span>
+                    <svg 
+                      className={cn(
+                        "w-3.5 h-3.5 text-ts-muted transition-transform duration-300 ease-out group-hover:text-ts-primary", 
+                        collapsedGroups[group.dateLabel] ? "-rotate-90" : "rotate-0"
+                      )} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
 
                 {/* Timeline Items */}
                 <AnimatePresence initial={false}>
@@ -307,45 +309,37 @@ export const HotTopics = () => {
                         height: { type: 'spring', stiffness: 200, damping: 25 },
                         opacity: { duration: 0.2, ease: 'easeInOut' }
                       }}
-                      className="relative pl-6 md:pl-20 space-y-8 overflow-hidden pt-6"
+                      className="relative space-y-6 overflow-hidden pt-2"
                     >
                       {/* Vertical line connecting all items inside this date group */}
-                      <div className="absolute left-[34px] md:left-[82px] top-2 bottom-2 w-[4px] bg-ts-ink/5 dark:bg-white/5 rounded-full backdrop-blur-[1px] border-l border-white/20 dark:border-white/10 border-r border-black/5 dark:border-black/20 shadow-sm" />
+                      <div className="absolute left-[54px] sm:left-[70px] top-3 bottom-3 w-[2px] bg-ts-ink/10 dark:bg-white/10 rounded-full" />
 
                       {group.items.map((item) => {
                         const timeStr = formatItemTime(item.time);
                         return (
-                          <div key={item.link} className="relative flex flex-col md:flex-row gap-4 md:gap-12">
-                            {/* Time Column (Left of Timeline) */}
-                            <div className="hidden md:flex md:w-16 items-start justify-end pt-5 text-sm font-bold text-ts-ink font-mono tracking-tight">
+                          <div key={item.link} className="relative flex items-start gap-4 sm:gap-6 group/item">
+                            {/* Time Label (Left of timeline line) */}
+                            <div className="w-[44px] sm:w-[58px] shrink-0 text-right pt-5 text-xs sm:text-sm font-mono font-bold text-ts-muted tracking-tight">
                               {timeStr}
                             </div>
 
-                            {/* Timeline Node/Dot */}
-                            <div className="absolute left-[29px] md:left-[77px] top-6 w-3.5 h-3.5 rounded-full bg-ts-primary border-4 border-ts-canvas dark:border-ts-canvas z-10 shadow-[0_0_10px_rgba(249,185,166,0.3)]" />
+                            {/* Timeline Node Dot (Centered on line) */}
+                            <div className="absolute left-[49px] sm:left-[65px] top-6 w-3 h-3 rounded-full bg-ts-primary ring-4 ring-ts-canvas z-10 transition-transform group-hover/item:scale-125 shadow-sm" />
 
-                            {/* Mobile Time (Show time inline for smaller screens) */}
-                            <div className="md:hidden flex items-center gap-2 pl-8 text-xs font-bold text-ts-muted font-mono">
-                              <Clock size={12} />
-                              {timeStr}
-                            </div>
-
-                            {/* Card container */}
-                            <div className="flex-1 pl-8 md:pl-0">
-                              <div className="bg-ts-surface rounded-2xl p-6 md:p-8 flex flex-col gap-5 transition-all duration-300 relative group overflow-hidden">
-                                {/* Header: Author + Score */}
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
+                            {/* Card container (Right of timeline line) */}
+                            <div className="flex-1 min-w-0">
+                              <div className="bg-ts-surface rounded-2xl p-5 sm:p-7 border border-ts-hairline shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-4">
+                                {/* Header: Author Source */}
+                                <div className="flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2.5">
                                     <AuthorAvatar avatarUrl={item.avatar} source={item.source} />
-                                    <div className="flex flex-col">
-                                      <span className="text-xs font-bold text-ts-ink">
-                                        {item.source}
-                                      </span>
-                                    </div>
+                                    <span className="text-xs font-bold text-ts-ink">
+                                      {item.source}
+                                    </span>
                                   </div>
                                 </div>
 
-                                {/* Title & Link */}
+                                {/* Title & Summary */}
                                 <div className="space-y-2">
                                   <a
                                     href={item.link}
@@ -353,23 +347,23 @@ export const HotTopics = () => {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 group/link"
                                   >
-                                    <h3 className="text-base md:text-lg font-bold text-ts-ink leading-snug group-hover/link:text-ts-primary transition-colors">
+                                    <h3 className="text-base sm:text-lg font-bold text-ts-ink leading-snug group-hover/link:text-ts-primary transition-colors">
                                       {item.title}
                                     </h3>
                                     <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-primary transition-opacity shrink-0" />
                                   </a>
-                                  <p className="text-ts-body text-sm leading-relaxed line-clamp-3">
+                                  <p className="text-ts-body text-xs sm:text-sm leading-relaxed line-clamp-3">
                                     {item.summary}
                                   </p>
                                 </div>
 
                                 {/* Image: Display if exists */}
                                 {item.image && (
-                                  <div className="w-full max-w-[480px] rounded-[12px] overflow-hidden shadow-md">
+                                  <div className="w-full max-w-[480px] rounded-xl overflow-hidden shadow-sm">
                                     <img
                                       src={item.image}
                                       alt={item.title}
-                                      className="w-full max-h-60 md:max-h-80 object-cover object-center group-hover:scale-[1.01] transition-transform duration-500"
+                                      className="w-full max-h-60 sm:max-h-80 object-cover object-center group-hover/item:scale-[1.01] transition-transform duration-500"
                                       loading="lazy"
                                       onError={(e) => {
                                         (e.target as HTMLElement).parentElement!.style.display = 'none';
@@ -380,11 +374,11 @@ export const HotTopics = () => {
 
                                 {/* Tags */}
                                 {item.tags && item.tags.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5">
-                                    {item.tags.slice(0, 2).map((tag) => (
+                                  <div className="flex flex-wrap gap-1.5 pt-1">
+                                    {item.tags.slice(0, 3).map((tag) => (
                                       <span
                                         key={tag}
-                                        className="px-2.5 py-1 rounded-[4px] text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary"
+                                        className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary"
                                       >
                                         {tag}
                                       </span>

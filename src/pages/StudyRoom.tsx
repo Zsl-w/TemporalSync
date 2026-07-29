@@ -131,7 +131,7 @@ export const StudyRoom = () => {
                 >
                   <Link
                     to={project.href}
-                    className="group relative flex aspect-[3/2] flex-col justify-between overflow-hidden rounded-2xl border border-ts-ink/10 bg-gradient-to-br from-ts-canvas via-ts-surface-elevated to-ts-canvas p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none select-none"
+                    className="group relative flex aspect-auto sm:aspect-[3/2] min-h-[280px] sm:min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-ts-ink/10 bg-gradient-to-br from-ts-canvas via-ts-surface-elevated to-ts-canvas p-5 sm:p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none select-none"
                   >
                     {/* Subtle radial dot grid pattern */}
                     <div className="absolute inset-0 bg-[radial-gradient(rgba(120,119,198,0.10)_1px,transparent_1px)] [background-size:20px_20px]" />
@@ -164,7 +164,7 @@ export const StudyRoom = () => {
                     </div>
 
                     {/* Bottom Row: Feature badges & Action Button */}
-                    <div className="relative z-10 flex items-center justify-between gap-3 pt-3 border-t border-ts-ink/10">
+                    <div className="relative z-10 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-3 border-t border-ts-ink/10">
                       <div className="flex flex-wrap items-center gap-1.5 overflow-hidden">
                         {project.features.slice(0, 3).map((feature) => (
                           <span
@@ -175,7 +175,7 @@ export const StudyRoom = () => {
                           </span>
                         ))}
                       </div>
-                      <span className="inline-flex shrink-0 items-center gap-1.5 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink">
+                      <span className="inline-flex shrink-0 items-center gap-1.5 font-display text-xs font-bold uppercase tracking-[0.12em] text-ts-ink ml-auto sm:ml-0">
                         <span className="underline decoration-ts-ink/30 underline-offset-4">{copy.explore}</span>
                         <ArrowRight size={14} className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" aria-hidden="true" />
                       </span>

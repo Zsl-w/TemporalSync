@@ -115,10 +115,10 @@ export const Md2Red = () => {
           </div>
 
           {/* Action button toolbar */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
             <button
               onClick={handleReset}
-              className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow whitespace-nowrap"
             >
               <RefreshCw size={13} />
               <span>{t.reset}</span>
@@ -126,7 +126,7 @@ export const Md2Red = () => {
 
             <button
               onClick={handleImportClick}
-              className="flex items-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1 h-9 px-3 rounded-lg bg-ts-surface-elevated text-ts-body hover:text-ts-ink text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow whitespace-nowrap"
             >
               <Upload size={13} />
               <span>{t.import}</span>
@@ -134,7 +134,7 @@ export const Md2Red = () => {
 
             <button
               onClick={copyText}
-              className="flex items-center gap-1.5 h-9 px-4.5 rounded-lg bg-ts-ink text-ts-canvas text-xs font-bold font-display uppercase tracking-wider cursor-pointer hover:opacity-90 transition-opacity"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 h-9 px-4.5 rounded-lg bg-ts-ink text-ts-canvas text-xs font-bold font-display uppercase tracking-wider cursor-pointer hover:opacity-90 transition-opacity whitespace-nowrap"
             >
               <Copy size={13} />
               <span>{t.copyText}</span>
@@ -143,11 +143,11 @@ export const Md2Red = () => {
         </div>
 
         {/* Editor & Preview Workspace Grid */}
-        <div className="h-[calc(100vh-16rem)] min-h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-auto lg:h-[calc(100vh-16rem)] min-h-[500px] grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Left pane: Editor */}
-        <div className="flex flex-col bg-ts-canvas rounded-2xl overflow-hidden h-full min-h-0">
-          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/20">
+        <div className="flex flex-col bg-ts-canvas rounded-2xl overflow-hidden h-[400px] lg:h-full min-h-0">
+          <div className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1 bg-ts-surface-elevated/20">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.editorTitle}</span>
             <span className="text-[10px] text-ts-body">{t.editorHint}</span>
           </div>
@@ -161,8 +161,8 @@ export const Md2Red = () => {
         </div>
 
         {/* Right pane: Phone simulator preview */}
-        <div className="flex flex-col bg-ts-canvas rounded-2xl overflow-hidden h-full min-h-0">
-          <div className="p-3 flex items-center justify-between bg-ts-surface-elevated/20">
+        <div className="flex flex-col bg-ts-canvas rounded-2xl overflow-hidden h-[460px] lg:h-full min-h-0">
+          <div className="p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1 bg-ts-surface-elevated/20">
             <span className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider">{t.previewTitle}</span>
             <span className="text-[10px] text-ts-body">{t.previewHint}</span>
           </div>

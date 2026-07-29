@@ -71,7 +71,17 @@ const renderMarkdown = (markdown: string) => {
     const withoutCover = markdown
       .replace(/!\[.*?\]\((.*?)\)/, '')
       .replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/, '');
-    return { __html: DOMPurify.sanitize(marked.parse(withoutCover) as string) };
+
+    const cleanedMarkdown = withoutCover.replace(/```([\s\S]*?)```/g, (fullMatch, codeContent) => {
+      const firstNewlineIdx = codeContent.indexOf('\n');
+      if (firstNewlineIdx === -1) return fullMatch;
+      const lang = codeContent.slice(0, firstNewlineIdx);
+      const rest = codeContent.slice(firstNewlineIdx + 1);
+      const cleanRest = rest.replace(/^[\r\n]+/, '');
+      return `\`\`\`${lang}\n${cleanRest}\`\`\``;
+    });
+
+    return { __html: DOMPurify.sanitize(marked.parse(cleanedMarkdown) as string) };
   } catch {
     return { __html: DOMPurify.sanitize(markdown) };
   }
@@ -358,7 +368,8 @@ export const Blog = () => {
                     [&_ol]:mb-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6
                     [&_blockquote]:my-7 [&_blockquote]:border-l-4 [&_blockquote]:border-ts-primary/55 [&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-ts-ink/60
                     [&_pre]:my-7 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-neutral-100 [&_pre]:p-5 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:text-neutral-800 dark:[&_pre]:bg-[#1C1C24] dark:[&_pre]:text-[#E3E3E6]
-                    [&_code]:rounded [&_code]:bg-neutral-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[#c13838] dark:[&_code]:bg-[#1C1C24] dark:[&_code]:text-[#F9B6B6]"
+                    [&_code]:rounded [&_code]:bg-neutral-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[#c13838] dark:[&_code]:bg-[#1C1C24] dark:[&_code]:text-[#F9B6B6]
+                    [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit dark:[&_pre_code]:bg-transparent dark:[&_pre_code]:text-inherit"
                   dangerouslySetInnerHTML={renderMarkdown(selectedPost.content)}
                 />
 

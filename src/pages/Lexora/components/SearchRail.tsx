@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, X, ChevronDown, Loader2, Trash2 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface SearchRailProps {
   recentSearches: { id: string; english: string; chinese: string; time: string }[];
@@ -76,39 +77,47 @@ export const SearchRail: React.FC<SearchRailProps> = ({
       {/* Recent Concepts */}
       <div>
         <h4 className="text-[13px] font-semibold text-ts-muted mb-2 tracking-[0.02em]">最近概念</h4>
-        <div className="flex flex-col gap-1 -mx-4">
-          {recentSearches.map((concept) => (
-            <div
-              key={concept.id}
-              onClick={() => onSelectConcept(concept.id)}
-              className={`flex flex-col items-start px-4 py-3 rounded-2xl text-left transition-all cursor-pointer group relative ${
-                concept.id === activeConceptId 
-                  ? 'border border-white/60 dark:border-white/15 bg-white/70 dark:bg-[#1a1a26]/70 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]' 
-                  : 'border border-transparent hover:bg-ts-surface-elevated/60'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full">
-                <span className="font-display font-medium text-[15px] text-ts-ink">{concept.english}</span>
-                {onDeleteConcept && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteConcept(concept.id);
-                    }}
-                    title="删除概念"
-                    className="opacity-0 group-hover:opacity-100 p-1 hover:text-ts-error text-ts-muted transition-all rounded hover:bg-ts-surface"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+        <div className="flex flex-col gap-1 -mx-4 relative">
+          {recentSearches.map((concept) => {
+            const isActive = concept.id === activeConceptId;
+            return (
+              <div
+                key={concept.id}
+                onClick={() => onSelectConcept(concept.id)}
+                className="relative flex flex-col items-start px-4 py-3 rounded-2xl text-left transition-colors cursor-pointer group select-none"
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="lexora-active-recent-pill"
+                    className="absolute inset-0 rounded-2xl border border-white/60 dark:border-white/15 bg-white/70 dark:bg-[#1a1a26]/70 backdrop-blur-xl shadow-[0_8px_25px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] z-0"
+                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                  />
                 )}
+                <div className="relative z-10 flex items-center justify-between w-full">
+                  <span className={`font-display text-[15px] transition-colors ${isActive ? 'text-ts-ink font-semibold' : 'text-ts-ink/80 group-hover:text-ts-ink'}`}>
+                    {concept.english}
+                  </span>
+                  {onDeleteConcept && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteConcept(concept.id);
+                      }}
+                      title="删除概念"
+                      className="opacity-0 group-hover:opacity-100 p-1 hover:text-ts-error text-ts-muted transition-all rounded hover:bg-ts-surface"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
+                <div className="relative z-10 flex items-center gap-2 mt-1">
+                  <span className={`text-[13px] transition-colors ${isActive ? 'text-ts-ink/85 font-medium' : 'text-ts-body'}`}>{concept.chinese}</span>
+                  <span className="text-[12px] text-ts-muted-soft tracking-wider scale-90 origin-left">•</span>
+                  <span className="text-[12px] text-ts-muted">{concept.time}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[13px] text-ts-body">{concept.chinese}</span>
-                <span className="text-[12px] text-ts-muted-soft tracking-wider scale-90 origin-left">•</span>
-                <span className="text-[12px] text-ts-muted">{concept.time}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

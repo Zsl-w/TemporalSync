@@ -14,6 +14,7 @@ const AdminPage = lazy(() => import('./pages/Admin').then(m => ({ default: m.Adm
 const WeChatConverter = lazy(() => import('./pages/WeChatConverter').then(m => ({ default: m.WeChatConverter })));
 const Md2Red = lazy(() => import('./pages/Md2Red').then(m => ({ default: m.Md2Red })));
 const Lexora = lazy(() => import('./pages/Lexora').then(m => ({ default: m.Lexora })));
+const LexoraExperience = lazy(() => import('./pages/Lexora/AppExperience').then(m => ({ default: m.LexoraExperience })));
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 const LoadingFallback = () => (
@@ -38,7 +39,8 @@ const AnimatedAppContent = () => {
         '/admin': '控制台 · TemporalSync',
         '/shiyun-wechat-md': '微信排版转换器 · TemporalSync',
         '/md2red': '小红书卡片生成器 · TemporalSync',
-        '/lexora': 'Lexora 知识伴侣'
+        '/lexora': 'Lexora · 专业术语解读',
+        '/lexora/app': 'Lexora 概念智库 · TemporalSync'
       },
       en: {
         '/': 'Blog · TemporalSync',
@@ -49,7 +51,8 @@ const AnimatedAppContent = () => {
         '/admin': 'Dashboard · TemporalSync',
         '/shiyun-wechat-md': 'WeChat Post Formatter · TemporalSync',
         '/md2red': 'Xiaohongshu Card Formatter · TemporalSync',
-        '/lexora': 'Lexora AI Knowledge Companion'
+        '/lexora': 'Lexora · Contextual Term Explanations',
+        '/lexora/app': 'Lexora Concept Hub · TemporalSync'
       }
     };
 
@@ -90,6 +93,7 @@ const AnimatedAppContent = () => {
                 <Route path="/shiyun-wechat-md" element={<WeChatConverter />} />
                 <Route path="/md2red" element={<Md2Red />} />
                 <Route path="/lexora" element={<Lexora />} />
+                <Route path="/lexora/app" element={<LexoraExperience />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

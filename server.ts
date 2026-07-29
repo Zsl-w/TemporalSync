@@ -49,6 +49,33 @@ async function startServer() {
     }
   });
 
+  app.get("/api/blogs", async (_request, response) => {
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+    const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return response.status(500).json({ error: "本地未配置 Supabase 环境变量" });
+    }
+
+    try {
+      const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/blogs?select=*`;
+      const res = await axios.get(endpoint, {
+        headers: {
+          "apikey": supabaseAnonKey,
+          "Authorization": `Bearer ${supabaseAnonKey}`,
+          "Accept": "application/json",
+        },
+        timeout: 10_000,
+      });
+
+      response.setHeader("Cache-Control", "public, s-maxage=300, max-age=60");
+      response.json(res.data);
+    } catch (error: unknown) {
+      console.error("Failed to proxy blogs from Supabase:", getErrorMessage(error));
+      response.status(502).json({ error: "Failed to fetch blogs from Supabase" });
+    }
+  });
+
   app.post("/api/lexora/explain", async (request, response) => {
     const apiKey = process.env.DEEPSEEK_API_KEY;
     if (!apiKey) {

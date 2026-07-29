@@ -53,7 +53,7 @@ export const Navbar = () => {
   const mobileItems = [
     { to: '/', label: language === 'zh' ? '博客' : 'Blog' },
     { to: '/hot', label: language === 'zh' ? 'AI 热点' : 'AI Hot Topics' },
-    { to: '/lexora', label: language === 'zh' ? 'Lexora 概念智库' : 'Lexora Concept Hub' },
+    { to: '/lexora', label: language === 'zh' ? 'Lexora 专业术语解读' : 'Lexora Term Explanations' },
     { to: '/work', label: language === 'zh' ? '自习室' : 'Study Room' },
     { to: '/shiyun-wechat-md', label: language === 'zh' ? '微信排版工具' : 'WeChat Formatter' },
     { to: '/md2red', label: language === 'zh' ? '小红书卡片生成' : 'Red Formatter' },
@@ -115,14 +115,14 @@ export const Navbar = () => {
                 className={({ isActive }) =>
                   cn(
                     "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
-                    (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname === '/lexora') && "text-ts-ink"
+                    (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname.startsWith('/lexora')) && "text-ts-ink"
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
                     <span>{language === 'zh' ? '自习室' : 'WORK'}</span>
-                    {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname === '/lexora') && (
+                    {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname.startsWith('/lexora')) && (
                       <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
                     )}
                   </>
@@ -148,7 +148,7 @@ export const Navbar = () => {
                       )
                     }
                   >
-                    {language === 'zh' ? 'Lexora 概念智库' : 'Lexora Concept Hub'}
+                    {language === 'zh' ? 'Lexora 专业术语解读' : 'Lexora Term Explanations'}
                   </NavLink>
                   <NavLink
                     to="/shiyun-wechat-md"

@@ -68,14 +68,14 @@ export const SettingsPage = () => {
       </section>
 
       {/* Visual Tuning */}
-      <section className={cn("p-10 space-y-10 rounded-[12px] border border-ts-hairline bg-ts-surface")}>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 rounded-[20px] bg-ts-primary/10 text-ts-primary flex items-center justify-center shadow-inner">
-              <Palette size={24} />
+      <section className={cn("p-5 sm:p-10 space-y-8 sm:space-y-10 rounded-[16px] sm:rounded-[12px] border border-ts-hairline bg-ts-surface")}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-[16px] sm:rounded-[20px] bg-ts-primary/10 text-ts-primary flex items-center justify-center shadow-inner shrink-0">
+              <Palette size={20} className="sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h3 className="text-[16px] font-bold text-ts-ink uppercase tracking-tight">
+              <h3 className="text-[15px] sm:text-[16px] font-bold text-ts-ink uppercase tracking-tight">
                 {language === 'zh' ? '主题基调' : 'Accent Theme'}
               </h3>
               <p className="text-ts-muted text-[11px] font-bold mt-0.5">
@@ -83,13 +83,13 @@ export const SettingsPage = () => {
               </p>
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-4 flex-wrap">
             {['#B497CF', '#ff9aa5', '#f7d070', '#85e3b2', '#c084fc'].map(color => (
               <button 
                 key={color} 
                 onClick={() => setAccentColor(color)}
                 className={cn(
-                  "w-12 h-12 rounded-[18px] transition-all hover:scale-110 flex items-center justify-center border-4 border-transparent shadow-lg cursor-pointer",
+                  "w-10 h-10 sm:w-12 sm:h-12 rounded-[14px] sm:rounded-[18px] transition-all hover:scale-110 flex items-center justify-center border-2 sm:border-4 border-transparent shadow-md sm:shadow-lg cursor-pointer",
                   color === accentColor ? "border-white ring-2 ring-ts-primary" : "opacity-40 hover:opacity-100"
                 )}
                 style={{ backgroundColor: color }}
@@ -102,13 +102,13 @@ export const SettingsPage = () => {
 
         <div className="h-px bg-ts-hairline" />
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 rounded-[20px] bg-ts-primary/10 text-ts-primary flex items-center justify-center shadow-inner">
-              <Type size={24} />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
+          <div className="flex items-center gap-4 sm:gap-5">
+            <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-[16px] sm:rounded-[20px] bg-ts-primary/10 text-ts-primary flex items-center justify-center shadow-inner shrink-0">
+              <Type size={20} className="sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h3 className="text-[16px] font-bold text-ts-ink uppercase tracking-tight">
+              <h3 className="text-[15px] sm:text-[16px] font-bold text-ts-ink uppercase tracking-tight">
                 {language === 'zh' ? '文字缩放' : 'Text Scaling'}
               </h3>
               <p className="text-ts-muted text-[11px] font-bold mt-0.5">
@@ -116,7 +116,7 @@ export const SettingsPage = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-6 w-full sm:w-72 bg-ts-surface-elevated px-6 py-5 rounded-2xl border border-ts-hairline">
+          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-72 bg-ts-surface-elevated px-4 py-4 sm:px-6 sm:py-5 rounded-2xl border border-ts-hairline">
             <span className="text-[10px] text-ts-muted font-black italic">MIN</span>
             <input 
               type="range" 
@@ -133,20 +133,20 @@ export const SettingsPage = () => {
       </section>
 
       {/* Actions */}
-      <section className="flex flex-col sm:flex-row justify-end gap-4">
+      <section className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
         <button 
           onClick={resetSettings}
-          className="h-16 px-10 rounded-[8px] border border-ts-hairline text-ts-muted hover:text-ts-ink flex items-center justify-center gap-3 bg-transparent cursor-pointer transition-colors"
+          className="h-12 sm:h-16 px-6 sm:px-10 rounded-[8px] border border-ts-hairline text-ts-muted hover:text-ts-ink flex items-center justify-center gap-3 bg-transparent cursor-pointer transition-colors w-full sm:w-auto"
         >
-          <RotateCcw size={20} />
-          <span className="font-black text-[14px] uppercase tracking-widest leading-none">
+          <RotateCcw size={18} className="sm:w-5 sm:h-5" />
+          <span className="font-black text-[13px] sm:text-[14px] uppercase tracking-widest leading-none">
             {language === 'zh' ? '重置为默认' : 'Reset defaults'}
           </span>
         </button>
         <button 
           onClick={handleSave}
           disabled={saved}
-          className="h-16 px-14 rounded-[8px] shadow-2xl relative min-w-[240px] bg-ts-primary text-white hover:bg-ts-primary-hover transition-colors font-bold uppercase tracking-widest cursor-pointer disabled:opacity-80"
+          className="h-12 sm:h-16 px-8 sm:px-14 rounded-[8px] shadow-xl sm:shadow-2xl relative w-full sm:w-auto min-w-0 sm:min-w-[240px] bg-ts-primary text-white hover:bg-ts-primary-hover transition-colors font-bold uppercase tracking-widest cursor-pointer disabled:opacity-80 flex items-center justify-center"
         >
           <AnimatePresence mode="wait">
             {saved ? (
@@ -155,9 +155,9 @@ export const SettingsPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center justify-center gap-3"
+                className="flex items-center justify-center gap-3 text-[13px] sm:text-[14px]"
               >
-                {language === 'zh' ? '已同步全局偏好' : 'Preferences Synced'} <CheckCircle2 size={24} />
+                {language === 'zh' ? '已同步全局偏好' : 'Preferences Synced'} <CheckCircle2 size={20} className="sm:w-6 sm:h-6" />
               </motion.div>
             ) : (
               <motion.span
@@ -165,7 +165,7 @@ export const SettingsPage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="font-black text-[15px] uppercase tracking-[0.2em]"
+                className="font-black text-[13px] sm:text-[15px] uppercase tracking-[0.2em]"
               >
                 {language === 'zh' ? '同步设置' : 'Sync Preferences'}
               </motion.span>

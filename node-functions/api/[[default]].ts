@@ -213,6 +213,48 @@ Answer the user's follow-up question or request in clear, friendly, and structur
   }
 }
 
+async function handleBlogs(env: Record<string, string>): Promise<Response> {
+  const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL || (typeof process !== "undefined" ? (process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL) : "");
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || (typeof process !== "undefined" ? (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY) : "");
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return new Response(JSON.stringify({ error: "Supabase credentials are not configured on server." }), {
+      status: 500,
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    });
+  }
+
+  try {
+    const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/blogs?select=*`;
+    const res = await fetch(endpoint, {
+      headers: {
+        "apikey": supabaseAnonKey,
+        "Authorization": `Bearer ${supabaseAnonKey}`,
+        "Accept": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`Supabase REST error: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "public, s-maxage=300, max-age=60",
+      },
+    });
+  } catch (error: unknown) {
+    console.error("Supabase blogs proxy error:", getErrorMessage(error));
+    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
+      status: 502,
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    });
+  }
+}
+
 export async function onRequest(context: {
   request: Request;
   env: Record<string, string>;
@@ -221,6 +263,7 @@ export async function onRequest(context: {
   const url = new URL(context.request.url);
 
   if (url.pathname === "/api/ai-news") return handleAINews();
+  if (url.pathname === "/api/blogs") return handleBlogs(context.env);
   if (url.pathname === "/api/lexora/explain" && context.request.method === "POST") {
     return handleLexoraExplain(context.request, context.env);
   }

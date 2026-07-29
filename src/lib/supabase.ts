@@ -19,6 +19,33 @@ if (supabaseUrl && supabaseAnonKey) {
 export const supabase = supabaseClient;
 
 export async function getCollection(collectionName: string): Promise<Record<string, unknown>[]> {
+  let isAuth = false;
+  if (supabase) {
+    const { data } = await supabase.auth.getSession();
+    if (data?.session) {
+      isAuth = true;
+    }
+  }
+
+  // Use CDN proxy for blogs only if NOT authenticated.
+  // This prevents the 5-minute CDN cache from hiding newly published posts from the admin.
+  if (collectionName === 'blogs' && !isAuth) {
+    try {
+      const res = await fetch('/api/blogs', {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(4000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          return data;
+        }
+      }
+    } catch (err) {
+      console.warn('[Supabase Proxy] /api/blogs fetch failed or timed out, using direct SDK client fallback:', err);
+    }
+  }
+
   if (!supabase) {
     throw new Error('Supabase client is not initialized due to missing environment variables.');
   }
