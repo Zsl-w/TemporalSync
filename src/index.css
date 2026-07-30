@@ -176,7 +176,6 @@
   html.theme-swapping .bg-ts-surface-elevated,
   html.theme-swapping .bg-ts-canvas {
     transition: background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-                color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
                 border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
   }
 }
