@@ -198,7 +198,7 @@ export const Navbar = () => {
 
             <button
               type="button"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={(e) => setTheme(theme === 'dark' ? 'light' : 'dark', e)}
               className="h-11 w-11 inline-flex items-center justify-center hover:text-ts-ink transition-colors rounded-xl hover:bg-ts-ink/5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -275,7 +275,7 @@ export const Navbar = () => {
             ))}
             <button
               type="button"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={(e) => setTheme(theme === 'dark' ? 'light' : 'dark', e)}
               className="min-h-11 flex items-center justify-between rounded-xl px-4 text-sm font-medium tracking-wide text-ts-ink/75 hover:bg-ts-surface-elevated hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
             >
               <span>{language === 'zh' ? '外观模式' : 'Appearance'}</span>

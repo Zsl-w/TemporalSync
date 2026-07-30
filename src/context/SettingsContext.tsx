@@ -5,7 +5,7 @@ type Language = 'zh' | 'en';
 
 interface SettingsContextType {
   theme: Theme;
-  setTheme: (theme: Theme) => void;
+  setTheme: (theme: Theme, event?: React.MouseEvent | MouseEvent) => void;
   accentColor: string;
   setAccentColor: (color: string) => void;
   fontSize: number;
@@ -57,11 +57,34 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [theme]);
 
-  const setThemeWithTransition = (newTheme: Theme) => {
+  const setThemeWithTransition = (newTheme: Theme, event?: React.MouseEvent | MouseEvent) => {
     if (newTheme === theme) return;
     if (typeof document !== 'undefined' && 'startViewTransition' in document) {
-      (document as any).startViewTransition(() => {
+      const x = event ? (event as MouseEvent).clientX : window.innerWidth / 2;
+      const y = event ? (event as MouseEvent).clientY : 0;
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      const transition = (document as any).startViewTransition(() => {
         setTheme(newTheme);
+      });
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`
+            ]
+          },
+          {
+            duration: 550,
+            easing: 'cubic-bezier(0.3, 1, 0.3, 1)',
+            pseudoElement: '::view-transition-new(root)'
+          }
+        );
       });
     } else {
       setTheme(newTheme);
