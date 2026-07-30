@@ -23,7 +23,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
       <>
         <span>{label}</span>
         {isActive && (
-          <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
+                    <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-ink rounded-full" />
         )}
       </>
     )}
@@ -91,7 +91,7 @@ export const Navbar = () => {
                 <>
                   <span>{language === 'zh' ? '博客' : 'BLOG'}</span>
                   {(isActive || location.pathname.startsWith('/blog')) && (
-                    <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
+                              <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-ink rounded-full" />
                   )}
                 </>
               )}
@@ -123,7 +123,7 @@ export const Navbar = () => {
                   <>
                     <span>{language === 'zh' ? '自习室' : 'WORK'}</span>
                     {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname.startsWith('/lexora')) && (
-                      <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-primary rounded-full" />
+                      <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-ink rounded-full" />
                     )}
                   </>
                 )}

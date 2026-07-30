@@ -184,15 +184,15 @@ export const HotTopics = () => {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={cn(
-                  "relative px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-colors duration-300 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary",
-                  isActive ? "text-white shadow-sm" : "text-ts-muted hover:text-ts-ink"
+                  "relative px-5 py-2 rounded-full text-xs font-semibold tracking-wider transition-colors duration-300 whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink",
+                  isActive ? "text-ts-canvas shadow-sm" : "text-ts-muted hover:text-ts-ink"
                 )}
               >
                 {/* Active Slider Background Pill */}
                 {isActive && (
                   <motion.div
                     layoutId="activeCategoryBg"
-                    className="absolute inset-0 bg-ts-primary rounded-full -z-10"
+                    className="absolute inset-0 bg-ts-ink rounded-full -z-10"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -218,7 +218,7 @@ export const HotTopics = () => {
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-ts-surface-elevated text-ts-ink pl-10 pr-4 h-10 rounded-[6px] text-xs font-medium focus:bg-ts-surface transition-all placeholder:text-ts-muted-soft w-full md:w-72 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+              className="bg-ts-surface-elevated text-ts-ink pl-10 pr-4 h-10 rounded-[6px] text-xs font-medium focus:bg-ts-surface transition-all placeholder:text-ts-muted-soft w-full md:w-72 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink"
               placeholder={t.searchPlaceholder}
               aria-label={t.searchPlaceholder}
             />
@@ -278,15 +278,15 @@ export const HotTopics = () => {
                 <div className="mb-4 pl-[48px] sm:pl-[62px]">
                   <button
                     onClick={() => toggleGroup(group.dateLabel)}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ts-surface-elevated border border-ts-hairline select-none hover:text-ts-primary transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ts-surface-elevated border border-ts-hairline select-none hover:border-ts-ink/30 transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink"
                     aria-expanded={!collapsedGroups[group.dateLabel]}
                   >
-                    <span className="text-xs font-bold text-ts-ink tracking-wider group-hover:text-ts-primary transition-colors">
+                    <span className="text-xs font-bold text-ts-ink tracking-wider transition-colors">
                       {group.dateLabel}
                     </span>
                     <svg 
                       className={cn(
-                        "w-3.5 h-3.5 text-ts-muted transition-transform duration-300 ease-out group-hover:text-ts-primary", 
+                        "w-3.5 h-3.5 text-ts-muted transition-transform duration-300 ease-out group-hover:text-ts-ink", 
                         collapsedGroups[group.dateLabel] ? "-rotate-90" : "rotate-0"
                       )} 
                       fill="none" 
@@ -324,7 +324,7 @@ export const HotTopics = () => {
                             </div>
 
                             {/* Timeline Node Dot (Centered on line) */}
-                            <div className="absolute left-[49px] sm:left-[65px] top-6 w-3 h-3 rounded-full bg-ts-primary ring-4 ring-ts-canvas z-10 transition-transform group-hover/item:scale-125 shadow-sm" />
+                            <div className="absolute left-[49px] sm:left-[65px] top-6 w-3 h-3 rounded-full bg-ts-ink ring-4 ring-ts-canvas z-10 transition-transform group-hover/item:scale-125 shadow-sm" />
 
                             {/* Card container (Right of timeline line) */}
                             <div className="flex-1 min-w-0">
@@ -347,10 +347,10 @@ export const HotTopics = () => {
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 group/link"
                                   >
-                                    <h3 className="text-base sm:text-lg font-bold text-ts-ink leading-snug group-hover/link:text-ts-primary transition-colors">
+                                    <h3 className="text-base sm:text-lg font-bold text-ts-ink leading-snug group-hover/link:underline transition-all">
                                       {item.title}
                                     </h3>
-                                    <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-primary transition-opacity shrink-0" />
+                                    <ExternalLink size={14} className="opacity-0 group-hover/link:opacity-100 text-ts-ink transition-opacity shrink-0" />
                                   </a>
                                   <p className="text-ts-body text-xs sm:text-sm leading-relaxed line-clamp-3">
                                     {item.summary}
@@ -378,7 +378,7 @@ export const HotTopics = () => {
                                     {item.tags.slice(0, 3).map((tag) => (
                                       <span
                                         key={tag}
-                                        className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-ts-surface-elevated text-ts-primary"
+                                        className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-ts-surface-elevated text-ts-ink/80 border border-ts-hairline"
                                       >
                                         {tag}
                                       </span>
@@ -412,7 +412,7 @@ export const HotTopics = () => {
                   setSelectedCategory('全部');
                 }
               }}
-              className="mt-6 px-6 py-2.5 bg-ts-primary text-white rounded-[6px] text-xs font-semibold hover:bg-ts-primary-hover transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
+              className="mt-6 px-6 py-2.5 bg-ts-ink text-ts-canvas rounded-[6px] text-xs font-semibold hover:opacity-90 transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink cursor-pointer"
             >
               {loadError ? t.retryBtn : t.resetBtn}
             </button>
