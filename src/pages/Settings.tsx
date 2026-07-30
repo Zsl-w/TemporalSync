@@ -84,7 +84,7 @@ export const SettingsPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-4 flex-wrap">
-            {['#B497CF', '#ff9aa5', '#f7d070', '#85e3b2', '#c084fc'].map(color => (
+            {['#F9B9A6', '#ff9aa5', '#f7d070', '#85e3b2', '#70a5f7'].map(color => (
               <button 
                 key={color} 
                 onClick={() => setAccentColor(color)}

@@ -87,7 +87,7 @@
   --color-lexora-accent: var(--lexora-accent);
   --color-lexora-accent-hover: var(--lexora-accent-hover);
   --color-lexora-accent-soft: var(--lexora-accent-soft);
-  --color-lexora-accent-border: rgba(180, 151, 207, 0.55);
+  --color-lexora-accent-border: rgba(249, 185, 166, 0.55);
   --color-lexora-body: var(--lexora-body);
 }
 
@@ -104,9 +104,9 @@
   --ts-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 
   /* Lexora */
-  --lexora-accent: #B497CF;
-  --lexora-accent-hover: #A989C7;
-  --lexora-accent-soft: rgba(180, 151, 207, 0.12);
+  --lexora-accent: #F9B9A6;
+  --lexora-accent-hover: #F9B6B6;
+  --lexora-accent-soft: rgba(249, 185, 166, 0.12);
   --lexora-body: #6E6E73;
 }
 
@@ -123,10 +123,10 @@
   --ts-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
 
   /* Lexora */
-  --lexora-accent: #B497CF; /* Same base */
-  --lexora-accent-hover: #C3A9DB;
-  --lexora-accent-soft: rgba(180, 151, 207, 0.14);
-  --lexora-body: #A1A1A6; /* Slightly lighter than ts-body in dark mode */
+  --lexora-accent: #F9B9A6;
+  --lexora-accent-hover: #F9B6B6;
+  --lexora-accent-soft: rgba(249, 185, 166, 0.14);
+  --lexora-body: #A1A1A6;
 }
 
 @layer base {
