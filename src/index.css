@@ -161,17 +161,23 @@
     flex-direction: column;
   }
 
-  /* Circular Ripple Reveal View Transition for Theme Switch (Apple/macOS 120fps style) */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
-  }
-  ::view-transition-old(root) {
-    z-index: 1;
-  }
-  ::view-transition-new(root) {
-    z-index: 9999;
+  /* Smooth Structural Theme Transition (Apple/Vercel style - 120fps) */
+  html.theme-swapping,
+  html.theme-swapping body,
+  html.theme-swapping #root,
+  html.theme-swapping header,
+  html.theme-swapping nav,
+  html.theme-swapping section,
+  html.theme-swapping main,
+  html.theme-swapping footer,
+  html.theme-swapping .card,
+  html.theme-swapping .glass-card,
+  html.theme-swapping .bg-ts-surface,
+  html.theme-swapping .bg-ts-surface-elevated,
+  html.theme-swapping .bg-ts-canvas {
+    transition: background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
   }
 }
 

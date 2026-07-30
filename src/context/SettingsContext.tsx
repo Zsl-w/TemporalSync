@@ -57,49 +57,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [theme]);
 
-  const setThemeWithTransition = (newTheme: Theme, event?: React.MouseEvent | MouseEvent) => {
+  const setThemeWithTransition = (newTheme: Theme) => {
     if (newTheme === theme) return;
-
-    // Synchronously capture click coordinates before any async event pooling
-    const x = event && typeof (event as MouseEvent).clientX === 'number' && (event as MouseEvent).clientX !== 0
-      ? (event as MouseEvent).clientX
-      : window.innerWidth - 80;
-    const y = event && typeof (event as MouseEvent).clientY === 'number' && (event as MouseEvent).clientY !== 0
-      ? (event as MouseEvent).clientY
-      : 32;
-
-    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
-      // 2.5x screen diagonal guarantees 100% coverage of all corners (including bottom-right)
-      const screenDiagonal = Math.hypot(
-        Math.max(window.innerWidth, document.documentElement.clientWidth, 1440),
-        Math.max(window.innerHeight, document.documentElement.clientHeight, 900)
-      );
-      const endRadius = Math.ceil(screenDiagonal * 2.5);
-
-      const transition = (document as any).startViewTransition(() => {
-        setTheme(newTheme);
-      });
-
-      transition.ready.then(() => {
-        document.documentElement.animate(
-          [
-            {
-              clipPath: `circle(0px at ${x}px ${y}px)`
-            },
-            {
-              clipPath: `circle(${endRadius}px at ${x}px ${y}px)`
-            }
-          ],
-          {
-            duration: 650,
-            easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
-            pseudoElement: '::view-transition-new(root)'
-          }
-        );
-      });
-    } else {
-      setTheme(newTheme);
-    }
+    const root = window.document.documentElement;
+    root.classList.add('theme-swapping');
+    setTheme(newTheme);
+    setTimeout(() => {
+      root.classList.remove('theme-swapping');
+    }, 400);
   };
 
   // Apply Accent Color
