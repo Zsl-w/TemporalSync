@@ -161,15 +161,26 @@
     flex-direction: column;
   }
 
-  /* Silk-smooth theme transition overlay (only active during swap) */
-  html.theme-transition,
-  html.theme-transition * {
-    transition: background-color 0.8s cubic-bezier(0.25, 1, 0.5, 1),
-                color 0.6s cubic-bezier(0.25, 1, 0.5, 1),
-                border-color 0.7s cubic-bezier(0.25, 1, 0.5, 1),
-                box-shadow 0.7s cubic-bezier(0.25, 1, 0.5, 1),
-                backdrop-filter 0.8s cubic-bezier(0.25, 1, 0.5, 1),
-                -webkit-backdrop-filter 0.8s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  /* Hardware-accelerated View Transition for Theme Switch (60/120fps) */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  ::view-transition-old(root) {
+    animation-name: ts-fade-out;
+  }
+  ::view-transition-new(root) {
+    animation-name: ts-fade-in;
+  }
+
+  @keyframes ts-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes ts-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 

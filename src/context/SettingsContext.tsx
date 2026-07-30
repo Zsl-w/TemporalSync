@@ -38,14 +38,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     () => (localStorage.getItem('ts-lang') as Language) || 'en'
   );
 
-  // Apply Theme
+  // Apply Theme DOM mutation
   useEffect(() => {
     localStorage.setItem('ts-theme', theme);
     const root = window.document.documentElement;
     const meta = window.document.getElementById('theme-color-meta');
-
-    // Trigger smooth transition class
-    root.classList.add('theme-transition');
 
     if (theme === 'dark') {
       root.classList.add('dark');
@@ -58,13 +55,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       root.style.backgroundColor = 'rgb(250, 250, 250)';
       if (meta) meta.setAttribute('content', 'rgb(250, 250, 250)');
     }
-
-    const timer = setTimeout(() => {
-      root.classList.remove('theme-transition');
-    }, 900); // slightly longer than CSS transition to ensure completion
-
-    return () => clearTimeout(timer);
   }, [theme]);
+
+  const setThemeWithTransition = (newTheme: Theme) => {
+    if (newTheme === theme) return;
+    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+      (document as any).startViewTransition(() => {
+        setTheme(newTheme);
+      });
+    } else {
+      setTheme(newTheme);
+    }
+  };
 
   // Apply Accent Color
   useEffect(() => {
@@ -94,7 +96,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <SettingsContext.Provider value={{
-      theme, setTheme,
+      theme, setTheme: setThemeWithTransition,
       accentColor, setAccentColor,
       fontSize, setFontSize,
       language, setLanguage,
