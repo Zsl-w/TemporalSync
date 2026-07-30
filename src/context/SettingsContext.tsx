@@ -62,10 +62,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (typeof document !== 'undefined' && 'startViewTransition' in document) {
       const x = event ? (event as MouseEvent).clientX : window.innerWidth / 2;
       const y = event ? (event as MouseEvent).clientY : 0;
+      // 1.25x radius padding guarantees circle edge is completely off-screen before cleanup
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
-      );
+      ) * 1.25;
 
       const transition = (document as any).startViewTransition(() => {
         setTheme(newTheme);
@@ -73,15 +74,17 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
       transition.ready.then(() => {
         document.documentElement.animate(
+          [
+            {
+              clipPath: `circle(0px at ${x}px ${y}px)`
+            },
+            {
+              clipPath: `circle(${endRadius}px at ${x}px ${y}px)`
+            }
+          ],
           {
-            clipPath: [
-              `circle(0px at ${x}px ${y}px)`,
-              `circle(${endRadius}px at ${x}px ${y}px)`
-            ]
-          },
-          {
-            duration: 550,
-            easing: 'cubic-bezier(0.3, 1, 0.3, 1)',
+            duration: 650,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
             pseudoElement: '::view-transition-new(root)'
           }
         );
