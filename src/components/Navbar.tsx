@@ -136,45 +136,45 @@ export const Navbar = () => {
                   workDropdownOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
                 )}
               >
-                <div className="bg-white/40 dark:bg-[#12121a]/40 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[20px] shadow-2xl p-6 flex flex-col gap-4 select-none">
+                <div className="bg-ts-surface/85 backdrop-blur-2xl border border-ts-hairline rounded-[18px] shadow-[0_20px_50px_rgba(0,0,0,0.35)] p-2 flex flex-col gap-1 select-none">
                   <NavLink
                     to="/lexora"
                     className={({ isActive }) =>
                       cn(
-                        "text-[13.5px] font-medium font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        "px-3.5 py-2.5 rounded-xl text-[13px] font-semibold font-display uppercase tracking-[0.06em] transition-all flex items-center justify-between text-left",
                         isActive
-                          ? "text-ts-ink"
-                          : "text-ts-ink/75 hover:text-ts-ink"
+                          ? "bg-ts-surface-elevated text-ts-ink shadow-xs"
+                          : "text-ts-ink/75 hover:text-ts-ink hover:bg-ts-surface-elevated/70"
                       )
                     }
                   >
-                    {language === 'zh' ? 'Lexora 专业术语解读' : 'Lexora Term Explanations'}
+                    <span>{language === 'zh' ? 'Lexora 专业术语解读' : 'Lexora Term Explanations'}</span>
                   </NavLink>
                   <NavLink
                     to="/shiyun-wechat-md"
                     className={({ isActive }) =>
                       cn(
-                        "text-[13.5px] font-medium font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        "px-3.5 py-2.5 rounded-xl text-[13px] font-semibold font-display uppercase tracking-[0.06em] transition-all flex items-center justify-between text-left",
                         isActive
-                          ? "text-ts-ink"
-                          : "text-ts-ink/75 hover:text-ts-ink"
+                          ? "bg-ts-surface-elevated text-ts-ink shadow-xs"
+                          : "text-ts-ink/75 hover:text-ts-ink hover:bg-ts-surface-elevated/70"
                       )
                     }
                   >
-                    {language === 'zh' ? '微信排版工具' : 'WeChat Formatter'}
+                    <span>{language === 'zh' ? '微信排版工具' : 'WeChat Formatter'}</span>
                   </NavLink>
                   <NavLink
                     to="/md2red"
                     className={({ isActive }) =>
                       cn(
-                        "text-[13.5px] font-medium font-display uppercase tracking-[0.08em] transition-colors block text-left",
+                        "px-3.5 py-2.5 rounded-xl text-[13px] font-semibold font-display uppercase tracking-[0.06em] transition-all flex items-center justify-between text-left",
                         isActive
-                          ? "text-ts-ink"
-                          : "text-ts-ink/75 hover:text-ts-ink"
+                          ? "bg-ts-surface-elevated text-ts-ink shadow-xs"
+                          : "text-ts-ink/75 hover:text-ts-ink hover:bg-ts-surface-elevated/70"
                       )
                     }
                   >
-                    {language === 'zh' ? '小红书卡片生成' : 'Red Formatter'}
+                    <span>{language === 'zh' ? '小红书卡片生成' : 'Red Formatter'}</span>
                   </NavLink>
                 </div>
               </div>
