@@ -61,7 +61,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <header className="w-full h-16 sticky top-0 bg-ts-canvas/85 dark:bg-[#72758d]/35 backdrop-blur-xl border-b border-transparent dark:border-white/10 shadow-none dark:shadow-[0_4px_30px_rgba(0,0,0,0.25)] flex items-center select-none z-50 transition-all duration-300">
+    <header className="w-full h-16 sticky top-0 bg-ts-canvas/75 backdrop-blur-2xl border-b border-ts-hairline flex items-center select-none z-50">
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between h-full">
         {/* Left Section: Logo & Brand */}
         <div className="flex items-center h-full">
