@@ -63,18 +63,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // Synchronously capture click coordinates before any async event pooling
     const x = event && typeof (event as MouseEvent).clientX === 'number' && (event as MouseEvent).clientX !== 0
       ? (event as MouseEvent).clientX
-      : window.innerWidth / 2;
+      : window.innerWidth - 80;
     const y = event && typeof (event as MouseEvent).clientY === 'number' && (event as MouseEvent).clientY !== 0
       ? (event as MouseEvent).clientY
-      : 40;
+      : 32;
 
     if (typeof document !== 'undefined' && 'startViewTransition' in document) {
-      // 1.5x corner distance guarantees wave edge exits screen at ~65% progress,
-      // so deceleration phase happens 100% invisibly off-screen!
-      const maxDistX = Math.max(x, window.innerWidth - x);
-      const maxDistY = Math.max(y, window.innerHeight - y);
-      const cornerDistance = Math.hypot(maxDistX, maxDistY);
-      const endRadius = Math.ceil(cornerDistance * 1.5);
+      // 2.5x screen diagonal guarantees 100% coverage of all corners (including bottom-right)
+      const screenDiagonal = Math.hypot(
+        Math.max(window.innerWidth, document.documentElement.clientWidth, 1440),
+        Math.max(window.innerHeight, document.documentElement.clientHeight, 900)
+      );
+      const endRadius = Math.ceil(screenDiagonal * 2.5);
 
       const transition = (document as any).startViewTransition(() => {
         setTheme(newTheme);
@@ -91,8 +91,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             }
           ],
           {
-            duration: 600,
-            easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+            duration: 650,
+            easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
             pseudoElement: '::view-transition-new(root)'
           }
         );
