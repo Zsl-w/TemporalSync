@@ -234,7 +234,7 @@ export const Blog = () => {
             </header>
 
             {filteredPosts.length === 0 ? (
-              <section className="my-16 flex min-h-72 flex-col items-center justify-center rounded-[28px] border border-ts-ink/10 bg-ts-surface-elevated/60 px-6 text-center shadow-sm">
+              <section className="my-16 flex min-h-72 flex-col items-center justify-center rounded-[28px] bg-ts-surface-elevated/60 px-6 text-center shadow-sm">
                 <BookOpen size={42} className="mb-4 text-ts-ink/35" aria-hidden="true" />
                 <p className="font-display text-lg font-bold text-ts-ink">{searchQuery ? copy.noResults : copy.empty}</p>
               </section>

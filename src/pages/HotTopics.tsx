@@ -278,7 +278,7 @@ export const HotTopics = () => {
                 <div className="mb-4 pl-[48px] sm:pl-[62px]">
                   <button
                     onClick={() => toggleGroup(group.dateLabel)}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ts-surface-elevated border border-ts-hairline select-none hover:border-ts-ink/30 transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-ts-surface-elevated shadow-sm select-none hover:bg-ts-surface transition-colors duration-200 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink"
                     aria-expanded={!collapsedGroups[group.dateLabel]}
                   >
                     <span className="text-xs font-bold text-ts-ink tracking-wider transition-colors">
