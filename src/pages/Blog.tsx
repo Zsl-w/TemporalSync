@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import DOMPurify from 'dompurify';
-import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Loader2, Mail, Search, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ChevronLeft, ChevronRight, Loader2, Mail } from 'lucide-react';
 import { marked } from 'marked';
 import { motion, useReducedMotion } from 'motion/react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -8,19 +8,6 @@ import { useSettings } from '../context/SettingsContext';
 import { BlogPost, usePosts } from '../hooks/usePosts';
 
 const POSTS_PER_PAGE = 10;
-
-const getPlainText = (markdown: string): string => {
-  if (!markdown) return '';
-  return markdown
-    .replace(/!\[.*?\]\(.*?\)/g, '')
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-    .replace(/#{1,6}\s+/g, '')
-    .replace(/[*_`~]/g, '')
-    .replace(/>+/g, '')
-    .replace(/-\s+/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-};
 
 const getReadTime = (content: string, isZh: boolean) => {
   if (!content) return isZh ? '1 分钟阅读' : '1 min read';
@@ -95,13 +82,7 @@ export const Blog = () => {
   const isZh = language === 'zh';
   const { posts, loading } = usePosts();
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTag, setSelectedTag] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedTag]);
 
   useEffect(() => {
     if (loading) return;
@@ -122,30 +103,12 @@ export const Blog = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [id]);
 
-  const availableTags = useMemo(
-    () => Array.from(new Set(posts.flatMap((post) => post.tags.map((tag) => tag.trim()).filter(Boolean)))),
-    [posts],
-  );
-
-  const filteredPosts = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
-    return posts.filter(
-      (post) =>
-        (selectedTag === 'all' || post.tags.includes(selectedTag)) &&
-        (!query ||
-          post.title.toLowerCase().includes(query) ||
-          post.summary.toLowerCase().includes(query) ||
-          getPlainText(post.content).toLowerCase().includes(query) ||
-          post.tags.some((tag) => tag.toLowerCase().includes(query))),
-    );
-  }, [posts, searchQuery, selectedTag]);
-
-  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
 
   const displayedPosts = useMemo(() => {
     const start = (currentPage - 1) * POSTS_PER_PAGE;
-    return filteredPosts.slice(start, start + POSTS_PER_PAGE);
-  }, [filteredPosts, currentPage]);
+    return posts.slice(start, start + POSTS_PER_PAGE);
+  }, [posts, currentPage]);
 
   const { prevPost, nextPost } = useMemo(() => {
     if (!selectedPost) return { prevPost: null, nextPost: null };
@@ -162,15 +125,10 @@ export const Blog = () => {
         eyebrow: 'NOTES & FIELDWORK',
         title: '想法流',
         subtitle: '记录 AI、设计、独立开发与个人工作流中的判断和实践。',
-        searchPlaceholder: '搜索标题、内容或标签',
-        results: '条结果',
-        all: '全部',
         featured: '最新文章',
         readArticle: '阅读全文',
         back: '返回文章列表',
         empty: '暂无博客内容',
-        noResults: `没有找到与“${searchQuery.trim()}”相关的文章`,
-        clear: '清除搜索',
         newerPosts: '较新的文章',
         olderPosts: '较旧的文章',
       }
@@ -178,15 +136,10 @@ export const Blog = () => {
         eyebrow: 'NOTES & FIELDWORK',
         title: 'BLOG',
         subtitle: 'Working notes on AI, design, independent development, and personal systems.',
-        searchPlaceholder: 'Search titles, content, or tags',
-        results: 'results',
-        all: 'All',
         featured: 'Latest story',
         readArticle: 'Read article',
         back: 'Back to all posts',
         empty: 'No posts available',
-        noResults: `No posts found for “${searchQuery.trim()}”`,
-        clear: 'Clear search',
         newerPosts: 'NEWER POSTS',
         olderPosts: 'OLDER POSTS',
       };
@@ -205,69 +158,14 @@ export const Blog = () => {
       <div className="immersive-section text-left">
         {!id ? (
           <>
-            <header className="flex flex-col gap-4 pb-2 pt-6 sm:pt-8 md:flex-row md:items-center md:justify-between">
-              <div className="flex flex-wrap items-center gap-2" aria-label={isZh ? '文章分类' : 'Post categories'}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTag('all')}
-                  className={`inline-flex h-10 items-center rounded-full px-4 font-barlow text-xs font-bold tracking-wider transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary ${selectedTag === 'all' ? 'bg-ts-ink text-ts-canvas shadow-sm' : 'bg-ts-surface-elevated text-ts-muted hover:bg-ts-surface hover:text-ts-ink'}`}
-                  aria-pressed={selectedTag === 'all'}
-                >
-                  {copy.all}
-                </button>
-                {availableTags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => setSelectedTag(tag)}
-                    className={`inline-flex h-10 items-center rounded-full px-4 font-barlow text-xs font-bold tracking-wider transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary ${selectedTag === tag ? 'bg-ts-ink text-ts-canvas shadow-sm' : 'bg-ts-surface-elevated text-ts-muted hover:bg-ts-surface hover:text-ts-ink'}`}
-                    aria-pressed={selectedTag === tag}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-              {posts.length > 0 && (
-                <div className="relative w-full md:w-[22rem]">
-                  <label htmlFor="blog-search" className="sr-only">{copy.searchPlaceholder}</label>
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-ink/45" size={17} aria-hidden="true" />
-                    <input
-                      id="blog-search"
-                      type="search"
-                      value={searchQuery}
-                      onChange={(event) => setSearchQuery(event.target.value)}
-                      className="h-10 w-full rounded-full bg-ts-surface-elevated pl-11 pr-12 text-sm text-ts-ink shadow-sm outline-none transition focus:ring-2 focus:ring-ts-primary/30"
-                      placeholder={copy.searchPlaceholder}
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-ts-ink/45 transition hover:bg-ts-ink/5 hover:text-ts-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary"
-                        aria-label={copy.clear}
-                      >
-                        <X size={16} aria-hidden="true" />
-                      </button>
-                    )}
-                  </div>
-                  {(searchQuery || selectedTag !== 'all') && (
-                    <p className="absolute left-4 top-full mt-2 font-barlow text-xs font-bold tracking-wider text-ts-ink/45" aria-live="polite">
-                      {filteredPosts.length} {copy.results}
-                    </p>
-                  )}
-                </div>
-              )}
-            </header>
-
-            {filteredPosts.length === 0 ? (
+            {posts.length === 0 ? (
               <section className="my-16 flex min-h-72 flex-col items-center justify-center rounded-[28px] bg-ts-surface-elevated/60 px-6 text-center shadow-sm">
                 <BookOpen size={42} className="mb-4 text-ts-ink/35" aria-hidden="true" />
-                <p className="font-display text-lg font-bold text-ts-ink">{searchQuery ? copy.noResults : copy.empty}</p>
+                <p className="font-display text-lg font-bold text-ts-ink">{copy.empty}</p>
               </section>
             ) : (
               <>
-                <section className="pb-16 pt-10 sm:pb-24 sm:pt-12" aria-label={isZh ? '文章列表' : 'Post list'}>
+                <section className="pb-16 pt-0 sm:pb-24" aria-label={isZh ? '文章列表' : 'Post list'}>
                   <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
                     {displayedPosts.map((post, index) => {
                       const coverUrl = getFirstImageUrl(post.content);
