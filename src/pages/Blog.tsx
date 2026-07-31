@@ -96,11 +96,12 @@ export const Blog = () => {
   const { posts, loading } = usePosts();
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTag, setSelectedTag] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, selectedTag]);
 
   useEffect(() => {
     if (loading) return;
@@ -121,17 +122,23 @@ export const Blog = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [id]);
 
+  const availableTags = useMemo(
+    () => Array.from(new Set(posts.flatMap((post) => post.tags.map((tag) => tag.trim()).filter(Boolean)))),
+    [posts],
+  );
+
   const filteredPosts = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return posts;
     return posts.filter(
       (post) =>
-        post.title.toLowerCase().includes(query) ||
-        post.summary.toLowerCase().includes(query) ||
-        getPlainText(post.content).toLowerCase().includes(query) ||
-        post.tags.some((tag) => tag.toLowerCase().includes(query)),
+        (selectedTag === 'all' || post.tags.includes(selectedTag)) &&
+        (!query ||
+          post.title.toLowerCase().includes(query) ||
+          post.summary.toLowerCase().includes(query) ||
+          getPlainText(post.content).toLowerCase().includes(query) ||
+          post.tags.some((tag) => tag.toLowerCase().includes(query))),
     );
-  }, [posts, searchQuery]);
+  }, [posts, searchQuery, selectedTag]);
 
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
 
@@ -156,7 +163,8 @@ export const Blog = () => {
         title: '想法流',
         subtitle: '记录 AI、设计、独立开发与个人工作流中的判断和实践。',
         searchPlaceholder: '搜索标题、内容或标签',
-        posts: '篇文章',
+        results: '条结果',
+        all: '全部',
         featured: '最新文章',
         readArticle: '阅读全文',
         back: '返回文章列表',
@@ -171,7 +179,8 @@ export const Blog = () => {
         title: 'BLOG',
         subtitle: 'Working notes on AI, design, independent development, and personal systems.',
         searchPlaceholder: 'Search titles, content, or tags',
-        posts: 'posts',
+        results: 'results',
+        all: 'All',
         featured: 'Latest story',
         readArticle: 'Read article',
         back: 'Back to all posts',
@@ -196,12 +205,30 @@ export const Blog = () => {
       <div className="immersive-section text-left">
         {!id ? (
           <>
-            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-10 pb-8 border-none">
-              <p className="font-barlow text-xs font-bold uppercase tracking-[0.14em] text-ts-ink/45">
-                {posts.length} {copy.posts}
-              </p>
+            <header className="flex flex-col gap-4 pb-2 pt-6 sm:pt-8 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-wrap items-center gap-2" aria-label={isZh ? '文章分类' : 'Post categories'}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTag('all')}
+                  className={`inline-flex h-10 items-center rounded-full px-4 font-barlow text-xs font-bold tracking-wider transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary ${selectedTag === 'all' ? 'bg-ts-ink text-ts-canvas shadow-sm' : 'bg-ts-surface-elevated text-ts-muted hover:bg-ts-surface hover:text-ts-ink'}`}
+                  aria-pressed={selectedTag === 'all'}
+                >
+                  {copy.all}
+                </button>
+                {availableTags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setSelectedTag(tag)}
+                    className={`inline-flex h-10 items-center rounded-full px-4 font-barlow text-xs font-bold tracking-wider transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary ${selectedTag === tag ? 'bg-ts-ink text-ts-canvas shadow-sm' : 'bg-ts-surface-elevated text-ts-muted hover:bg-ts-surface hover:text-ts-ink'}`}
+                    aria-pressed={selectedTag === tag}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
               {posts.length > 0 && (
-                <div className="relative w-full sm:w-[22rem]">
+                <div className="relative w-full md:w-[22rem]">
                   <label htmlFor="blog-search" className="sr-only">{copy.searchPlaceholder}</label>
                   <div className="relative">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-ink/45" size={17} aria-hidden="true" />
@@ -210,7 +237,7 @@ export const Blog = () => {
                       type="search"
                       value={searchQuery}
                       onChange={(event) => setSearchQuery(event.target.value)}
-                      className="h-12 w-full rounded-full border border-ts-ink/10 bg-ts-surface-elevated pl-11 pr-12 text-sm text-ts-ink shadow-sm outline-none transition focus:border-ts-primary/60 focus:ring-2 focus:ring-ts-primary/20"
+                      className="h-10 w-full rounded-full bg-ts-surface-elevated pl-11 pr-12 text-sm text-ts-ink shadow-sm outline-none transition focus:ring-2 focus:ring-ts-primary/30"
                       placeholder={copy.searchPlaceholder}
                     />
                     {searchQuery && (
@@ -224,9 +251,9 @@ export const Blog = () => {
                       </button>
                     )}
                   </div>
-                  {searchQuery && (
+                  {(searchQuery || selectedTag !== 'all') && (
                     <p className="absolute left-4 top-full mt-2 font-barlow text-xs font-bold tracking-wider text-ts-ink/45" aria-live="polite">
-                      {filteredPosts.length} {copy.posts}
+                      {filteredPosts.length} {copy.results}
                     </p>
                   )}
                 </div>
@@ -240,7 +267,7 @@ export const Blog = () => {
               </section>
             ) : (
               <>
-                <section className="py-16 sm:py-24" aria-label={isZh ? '文章列表' : 'Post list'}>
+                <section className="pb-16 pt-10 sm:pb-24 sm:pt-12" aria-label={isZh ? '文章列表' : 'Post list'}>
                   <div className="grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
                     {displayedPosts.map((post, index) => {
                       const coverUrl = getFirstImageUrl(post.content);
