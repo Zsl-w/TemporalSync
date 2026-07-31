@@ -131,7 +131,7 @@ export const StudyRoom = () => {
                 >
                   <Link
                     to={project.href}
-                    className="group relative flex aspect-auto sm:aspect-[3/2] min-h-[280px] sm:min-h-0 flex-col justify-between overflow-hidden rounded-2xl border border-ts-ink/10 bg-gradient-to-br from-ts-canvas via-ts-surface-elevated to-ts-canvas p-5 sm:p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none select-none"
+                    className="group relative flex aspect-auto sm:aspect-[3/2] min-h-[280px] sm:min-h-0 flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-ts-canvas via-ts-surface-elevated to-ts-canvas p-5 sm:p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas motion-reduce:transition-none select-none"
                   >
                     {/* Subtle radial dot grid pattern */}
                     <div className="absolute inset-0 bg-[radial-gradient(rgba(120,119,198,0.10)_1px,transparent_1px)] [background-size:20px_20px]" />

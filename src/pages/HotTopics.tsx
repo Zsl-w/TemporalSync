@@ -328,7 +328,7 @@ export const HotTopics = () => {
 
                             {/* Card container (Right of timeline line) */}
                             <div className="flex-1 min-w-0">
-                              <div className="bg-ts-surface rounded-2xl p-5 sm:p-7 border border-ts-hairline shadow-sm hover:shadow-md transition-all duration-300 flex flex-col gap-4">
+                              <div className="bg-ts-surface rounded-2xl p-5 sm:p-7 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col gap-4">
                                 {/* Header: Author Source */}
                                 <div className="flex items-center justify-between gap-3">
                                   <div className="flex items-center gap-2.5">

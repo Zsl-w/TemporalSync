@@ -188,7 +188,7 @@
 
   .card {
     background-color: var(--color-ts-surface) !important;
-    border: 1px solid var(--color-ts-hairline) !important;
+    border: none !important;
     border-radius: 12px;
     box-shadow: var(--ts-shadow);
     @apply transition-all duration-300;
@@ -196,7 +196,7 @@
 
   .shiyun-card {
     background-color: var(--color-ts-shiyun-green-bg) !important;
-    border: 1px solid rgba(127, 155, 117, 0.15) !important;
+    border: none !important;
     border-left: 4px solid var(--color-ts-shiyun-green) !important;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(127, 155, 117, 0.08);
@@ -209,21 +209,20 @@
 
   .card-hover {
     background-color: var(--color-ts-surface) !important;
-    border: 1px solid var(--color-ts-hairline) !important;
+    border: none !important;
     border-radius: 12px;
     box-shadow: var(--ts-shadow);
     @apply transition-all duration-300;
   }
   .card-hover:hover {
     background-color: var(--color-ts-surface-elevated) !important;
-    border-color: var(--color-ts-primary) !important;
     box-shadow: var(--ts-shadow);
     transform: translateY(-4px);
   }
 
   .glass-card {
     background-color: var(--color-ts-surface) !important;
-    border: 1px solid var(--color-ts-hairline) !important;
+    border: none !important;
     border-radius: 12px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
     @apply transition-all duration-300;

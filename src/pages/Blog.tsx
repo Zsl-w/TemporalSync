@@ -256,7 +256,7 @@ export const Blog = () => {
                             to={`/blog/${post.id}`}
                             className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-primary focus-visible:ring-offset-4 focus-visible:ring-offset-ts-canvas"
                           >
-                            <div className="relative aspect-[3/2] overflow-hidden rounded-2xl border border-ts-ink/10 bg-ts-surface-elevated shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl motion-reduce:transition-none">
+                            <div className="relative aspect-[3/2] overflow-hidden rounded-2xl bg-ts-surface-elevated shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:shadow-xl motion-reduce:transition-none">
                               {coverUrl ? (
                                 <img src={coverUrl} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
                               ) : (
