@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Link } from 'react-router-dom';
@@ -15,12 +15,14 @@ type Project = {
   tag: string;
   image: string;
   imageAlt: string;
+  category: 'reading' | 'formatting' | 'feed';
 };
 
 export const StudyRoom = () => {
   const { language } = useSettings();
   const reduceMotion = useReducedMotion();
   const isZh = language === 'zh';
+  const [selectedCategory, setSelectedCategory] = useState<'all' | Project['category']>('all');
 
   const copy = isZh
     ? {
@@ -28,6 +30,12 @@ export const StudyRoom = () => {
         title: '工具集',
         subtitle: '把内容工作流和信息处理中的真实摩擦，做成可以直接使用的小工具。',
         explore: '打开项目',
+        all: '全部',
+        categories: {
+          reading: '阅读',
+          formatting: '排版',
+          feed: '资讯',
+        },
         footerTitle: '持续把高频问题做成可靠工具',
         footerDescription: '每个项目都从一个真实使用场景开始，再用最短路径验证价值。',
       }
@@ -36,6 +44,12 @@ export const StudyRoom = () => {
         title: 'TOOLS',
         subtitle: 'Small, usable tools built around real friction in content and information workflows.',
         explore: 'Open project',
+        all: 'All',
+        categories: {
+          reading: 'Reading',
+          formatting: 'Formatting',
+          feed: 'Feed',
+        },
         footerTitle: 'Turning repeated friction into reliable tools',
         footerDescription: 'Every project starts with a real workflow and takes the shortest path to useful.',
       };
@@ -57,6 +71,7 @@ export const StudyRoom = () => {
         tag: isZh ? 'AI 概念智库' : 'AI CONCEPT HUB',
         image: '/assets/lexora/ai-result.jpg',
         imageAlt: isZh ? 'Lexora 实际术语解读页面' : 'Lexora contextual term explanation page',
+        category: 'reading',
       },
       {
         id: 'md2red',
@@ -73,6 +88,7 @@ export const StudyRoom = () => {
         tag: isZh ? '小红书卡片排版' : 'XIAOHONGSHU FORMATTER',
         image: '/assets/work/md2red-workspace.png',
         imageAlt: isZh ? 'md2red 实际编辑与手机预览页面' : 'md2red editor and phone preview workspace',
+        category: 'formatting',
       },
       {
         id: 'shiyun-wechat-md',
@@ -89,33 +105,60 @@ export const StudyRoom = () => {
         tag: isZh ? '微信公众号排版' : 'WECHAT FORMATTER',
         image: '/assets/work/wechat-workspace.png',
         imageAlt: isZh ? '公众号排版转换器实际工作区' : 'WeChat post formatter workspace',
+        category: 'formatting',
       },
       {
         id: 'timesync-agent',
         title: 'TimeSync Agent',
         subtitle: isZh ? 'AI 资讯流' : 'AI Intelligence Stream',
         description: isZh
-          ? '聚合上游 AI RSS，在服务边界完成字段归一化、本地分类与来源头像处理，再输出统一、可搜索的时间流。'
-          : 'Aggregates AI news feeds, normalizes fields at the service boundary, classifies items locally, and serves one searchable timeline.',
+          ? '接入 AI HOT REST API，把近 7 天精选资讯与多来源热点事件统一成可搜索、可筛选的 AI 情报流。'
+          : 'Uses the AI HOT REST API to turn curated seven-day news and multi-source events into one searchable intelligence stream.',
         features: isZh
-          ? ['多来源 RSS 聚合', '确定性分类与标签', '统一数据归一化', '搜索、筛选与刷新']
-          : ['Multi-source RSS aggregation', 'Deterministic categories and tags', 'Shared data normalization', 'Search, filters, and refresh'],
+          ? ['REST API 接入', '多来源热点事件', '原生分类与筛选', '搜索、筛选与刷新']
+          : ['REST API integration', 'Multi-source hot topics', 'Native categories and filters', 'Search, filters, and refresh'],
         href: '/hot',
         status: 'LIVE DATA',
         tag: isZh ? 'AI 实时资讯流' : 'AI INTELLIGENCE STREAM',
         image: '/assets/work/ai-hot-stream.png',
         imageAlt: isZh ? 'AI 资讯流实际页面' : 'AI intelligence stream timeline',
+        category: 'feed',
       },
     ],
     [isZh],
   );
 
+  const filteredProjects = selectedCategory === 'all'
+    ? projects
+    : projects.filter((project) => project.category === selectedCategory);
+
   return (
     <div className="w-full min-h-screen bg-ts-canvas pb-24">
       <div className="immersive-section text-left">
         <section className="pb-12 pt-6 sm:pb-16 sm:pt-8" aria-label={isZh ? '项目列表' : 'Project list'}>
+          <div className="mb-8 flex flex-wrap items-center gap-2 sm:mb-10">
+            {(['all', 'reading', 'formatting', 'feed'] as const).map((category) => {
+              const isActive = selectedCategory === category;
+              return (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={[
+                    'inline-flex h-10 items-center rounded-full px-4 font-barlow text-xs font-bold tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink',
+                    isActive
+                      ? 'bg-ts-ink text-ts-canvas shadow-sm'
+                      : 'bg-ts-surface-elevated text-ts-muted hover:bg-ts-surface hover:text-ts-ink',
+                  ].join(' ')}
+                  aria-pressed={isActive}
+                >
+                  {category === 'all' ? copy.all : copy.categories[category]}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="grid auto-rows-fr grid-cols-1 gap-8 md:grid-cols-2">
-            {projects.map((project, index) => {
+            {filteredProjects.map((project, index) => {
               return (
                 <motion.article
                   key={project.id}

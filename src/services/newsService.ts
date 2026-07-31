@@ -1,58 +1,74 @@
-// Module-level cache for AI news data
-// Prefetched on app mount so HotTopics page loads instantly
+import type { HotTopicItem, NewsItem } from "../../shared/ai-news";
 
-interface NewsItem {
-  title: string;
-  source: string;
-  link: string;
-  time: string;
-  category: string;
-  summary: string;
-  image?: string;
-  tags?: string[];
-  recommendedReason?: string;
-  avatar?: string;
-}
+export type { HotTopicItem, NewsItem };
 
 let cachedNews: NewsItem[] | null = null;
-let fetchPromise: Promise<NewsItem[]> | null = null;
+let cachedHotTopics: HotTopicItem[] | null = null;
+let newsPromise: Promise<NewsItem[]> | null = null;
+let hotTopicsPromise: Promise<HotTopicItem[]> | null = null;
+
+async function requestItems<T>(endpoint: string): Promise<T[]> {
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    throw new Error(`News API returned ${response.status}`);
+  }
+
+  const data: unknown = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error("News API returned an invalid response");
+  }
+
+  return data as T[];
+}
+
+function loadNews(): Promise<NewsItem[]> {
+  if (cachedNews) return Promise.resolve(cachedNews);
+  if (!newsPromise) {
+    newsPromise = requestItems<NewsItem>("/api/ai-news")
+      .then((items) => {
+        cachedNews = items;
+        return items;
+      })
+      .finally(() => {
+        newsPromise = null;
+      });
+  }
+  return newsPromise;
+}
+
+function loadHotTopics(): Promise<HotTopicItem[]> {
+  if (cachedHotTopics) return Promise.resolve(cachedHotTopics);
+  if (!hotTopicsPromise) {
+    hotTopicsPromise = requestItems<HotTopicItem>("/api/ai-hot-topics")
+      .then((items) => {
+        cachedHotTopics = items;
+        return items;
+      })
+      .finally(() => {
+        hotTopicsPromise = null;
+      });
+  }
+  return hotTopicsPromise;
+}
 
 export function getCachedNews(): NewsItem[] | null {
-  return cachedNews && cachedNews.length > 0 ? cachedNews : null;
+  return cachedNews;
+}
+
+export function getCachedHotTopics(): HotTopicItem[] | null {
+  return cachedHotTopics;
 }
 
 export function prefetchNews(): void {
-  if (fetchPromise) return; // already fetching
-  fetchPromise = fetch('/api/ai-news')
-    .then(async (r) => {
-      if (!r.ok) {
-        console.warn(`News API returned ${r.status}, skipping prefetch`);
-        return [];
-      }
-      const text = await r.text();
-      try {
-        const data = JSON.parse(text);
-        if (Array.isArray(data) && data.length > 0) {
-          cachedNews = data;
-        }
-        return data;
-      } catch {
-        console.warn('News API returned non-JSON response, skipping prefetch');
-        return [];
-      }
-    })
-    .catch((err) => {
-      console.warn('News prefetch failed:', err.message);
-      return []; // don't cache on error
-    })
-    .finally(() => {
-      fetchPromise = null;
-    });
+  void loadNews().catch((error: unknown) => {
+    console.warn("News prefetch failed:", error);
+  });
 }
 
 export function fetchNews(): Promise<NewsItem[]> {
-  if (cachedNews && cachedNews.length > 0) return Promise.resolve(cachedNews);
-  if (fetchPromise) return fetchPromise;
-  prefetchNews();
-  return fetchPromise!;
+  return loadNews();
+}
+
+export function fetchHotTopics(): Promise<HotTopicItem[]> {
+  return loadHotTopics();
 }

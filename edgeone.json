@@ -20,7 +20,8 @@
   ],
   "caches": [
     { "source": "/assets/*", "cacheTtl": 31536000 },
-    { "source": "/api/ai-news", "cacheTtl": 600 },
+    { "source": "/api/ai-news", "cacheTtl": 60 },
+    { "source": "/api/ai-hot-topics", "cacheTtl": 300 },
     { "source": "/api/blogs", "cacheTtl": 300 }
   ]
 }

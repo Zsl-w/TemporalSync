@@ -1,13 +1,14 @@
-import Parser from "rss-parser";
 import {
-  createEnrichedArticle,
-  sortArticlesNewestFirst,
-  type FeedItem,
+  createHotTopicItem,
+  createNewsItem,
+  sortNewestFirst,
+  type AihotHotTopicsResponse,
+  type AihotItemsResponse,
 } from "../../shared/ai-news";
 
-const parser = new Parser();
-const FEED_URL = "https://aihot.virxact.com/feed.xml";
-const FEED_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36";
+const AIHOT_API_BASE = "https://aihot.virxact.com/api/v1";
+const AI_NEWS_URL = `${AIHOT_API_BASE}/items?mode=selected&window=7d&limit=100&by=timeline`;
+const AI_HOT_TOPICS_URL = `${AIHOT_API_BASE}/hot-topics`;
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -16,20 +17,14 @@ function getErrorMessage(error: unknown): string {
 async function handleAINews(): Promise<Response> {
   const startTime = Date.now();
   try {
-    const feedResponse = await fetch(FEED_URL, {
-      headers: {
-        "Cache-Control": "no-cache",
-        Pragma: "no-cache",
-        "User-Agent": FEED_USER_AGENT,
-      },
-    });
-    if (!feedResponse.ok) {
-      throw new Error(`Feed fetch failed: ${feedResponse.status}`);
+    const apiResponse = await fetch(AI_NEWS_URL);
+    if (!apiResponse.ok) {
+      throw new Error(`AI HOT items fetch failed: ${apiResponse.status}`);
     }
 
-    const feed = await parser.parseString(await feedResponse.text());
-    const articles = sortArticlesNewestFirst(
-      feed.items.map((item) => createEnrichedArticle(item as FeedItem)),
+    const payload = await apiResponse.json() as AihotItemsResponse;
+    const articles = sortNewestFirst(
+      payload.items.map(createNewsItem),
     );
     const elapsed = Date.now() - startTime;
 
@@ -37,13 +32,42 @@ async function handleAINews(): Promise<Response> {
     return new Response(JSON.stringify(articles), {
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": "public, s-maxage=600, max-age=120",
+        "Cache-Control": "public, s-maxage=60, max-age=60",
         "X-Response-Time": String(elapsed),
       },
     });
   } catch (error: unknown) {
     console.error("News fetch error:", getErrorMessage(error));
     return new Response(JSON.stringify({ error: "Failed to fetch news" }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleAIHotTopics(): Promise<Response> {
+  const startTime = Date.now();
+  try {
+    const apiResponse = await fetch(AI_HOT_TOPICS_URL);
+    if (!apiResponse.ok) {
+      throw new Error(`AI HOT hot-topics fetch failed: ${apiResponse.status}`);
+    }
+
+    const payload = await apiResponse.json() as AihotHotTopicsResponse;
+    const topics = sortNewestFirst(payload.items.map(createHotTopicItem));
+    const elapsed = Date.now() - startTime;
+
+    console.log(`AI hot topics completed in ${elapsed}ms, ${topics.length} items`);
+    return new Response(JSON.stringify(topics), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, s-maxage=300, max-age=300",
+        "X-Response-Time": String(elapsed),
+      },
+    });
+  } catch (error: unknown) {
+    console.error("AI hot topics fetch error:", getErrorMessage(error));
+    return new Response(JSON.stringify({ error: "Failed to fetch hot topics" }), {
       status: 502,
       headers: { "Content-Type": "application/json" },
     });
@@ -263,6 +287,7 @@ export async function onRequest(context: {
   const url = new URL(context.request.url);
 
   if (url.pathname === "/api/ai-news") return handleAINews();
+  if (url.pathname === "/api/ai-hot-topics") return handleAIHotTopics();
   if (url.pathname === "/api/blogs") return handleBlogs(context.env);
   if (url.pathname === "/api/lexora/explain" && context.request.method === "POST") {
     return handleLexoraExplain(context.request, context.env);

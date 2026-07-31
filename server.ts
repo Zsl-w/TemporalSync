@@ -2,17 +2,18 @@ import "dotenv/config";
 import axios from "axios";
 import express from "express";
 import path from "path";
-import Parser from "rss-parser";
 import { createServer as createViteServer } from "vite";
 import {
-  createEnrichedArticle,
-  sortArticlesNewestFirst,
-  type FeedItem,
+  createHotTopicItem,
+  createNewsItem,
+  sortNewestFirst,
+  type AihotHotTopicsResponse,
+  type AihotItemsResponse,
 } from "./shared/ai-news";
 
-const parser = new Parser();
-const FEED_URL = "https://aihot.virxact.com/feed.xml";
-const FEED_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36";
+const AIHOT_API_BASE = "https://aihot.virxact.com/api/v1";
+const AI_NEWS_URL = `${AIHOT_API_BASE}/items?mode=selected&window=7d&limit=100&by=timeline`;
+const AI_HOT_TOPICS_URL = `${AIHOT_API_BASE}/hot-topics`;
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -27,25 +28,32 @@ async function startServer() {
   app.get("/api/ai-news", async (_request, response) => {
     const startTime = Date.now();
     try {
-      const feedResponse = await axios.get<string>(FEED_URL, {
-        headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache",
-          Expires: "0",
-          "User-Agent": FEED_USER_AGENT,
-        },
-        timeout: 10_000,
-      });
-      const feed = await parser.parseString(feedResponse.data);
-      const articles = sortArticlesNewestFirst(
-        feed.items.map((item) => createEnrichedArticle(item as FeedItem)),
+      const apiResponse = await axios.get<AihotItemsResponse>(AI_NEWS_URL, { timeout: 10_000 });
+      const articles = sortNewestFirst(
+        apiResponse.data.items.map(createNewsItem),
       );
 
       console.log(`AI news completed in ${Date.now() - startTime}ms, ${articles.length} items`);
+      response.setHeader("Cache-Control", "public, s-maxage=60, max-age=60");
       response.json(articles);
     } catch (error: unknown) {
       console.error("Failed to fetch AI news:", getErrorMessage(error));
       response.status(502).json({ error: "Failed to fetch news" });
+    }
+  });
+
+  app.get("/api/ai-hot-topics", async (_request, response) => {
+    const startTime = Date.now();
+    try {
+      const apiResponse = await axios.get<AihotHotTopicsResponse>(AI_HOT_TOPICS_URL, { timeout: 10_000 });
+      const topics = sortNewestFirst(apiResponse.data.items.map(createHotTopicItem));
+
+      console.log(`AI hot topics completed in ${Date.now() - startTime}ms, ${topics.length} items`);
+      response.setHeader("Cache-Control", "public, s-maxage=300, max-age=300");
+      response.json(topics);
+    } catch (error: unknown) {
+      console.error("Failed to fetch AI hot topics:", getErrorMessage(error));
+      response.status(502).json({ error: "Failed to fetch hot topics" });
     }
   });
 
