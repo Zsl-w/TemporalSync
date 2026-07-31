@@ -64,7 +64,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setTheme(newTheme);
     setTimeout(() => {
       root.classList.remove('theme-swapping');
-    }, 400);
+    }, 700);
   };
 
   // Apply Accent Color
