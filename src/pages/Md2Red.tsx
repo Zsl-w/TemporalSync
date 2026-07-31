@@ -75,7 +75,7 @@ export const Md2Red = () => {
       reset: '恢复示例',
       import: '导入 MD',
       copyText: '复制帖子文本',
-      back: '返回自习室'
+      back: '返回工具集'
     },
     en: {
       title: 'Xiaohongshu Card Formatter',
@@ -154,7 +154,7 @@ export const Md2Red = () => {
           <textarea
             value={markdown}
             onChange={(e) => setMarkdown(e.target.value)}
-            className="flex-1 w-full p-5 bg-transparent text-ts-ink text-xs font-mono resize-none outline-none leading-relaxed border-none focus:ring-0"
+            className="flex-1 w-full p-5 bg-transparent text-ts-ink text-xs font-sans resize-none outline-none leading-relaxed border-none focus:ring-0"
             spellCheck="false"
             placeholder="Type or paste markdown..."
           />

@@ -144,7 +144,7 @@ export const HotTopics = () => {
       subtitle: 'AI 自动筛选的高价值内容',
       searchPlaceholder: '搜索标题/摘要...',
       emptyTitle: '神经链接中断',
-      emptyDesc: '在当前认知流中未找到匹配的热点话题。',
+      emptyDesc: '在当前资讯流中未找到匹配的内容。',
       resetBtn: '重置资讯流',
       retryBtn: '重新加载',
       errorTitle: '资讯加载失败',
@@ -319,7 +319,7 @@ export const HotTopics = () => {
                         return (
                           <div key={item.link} className="relative flex items-start gap-4 sm:gap-6 group/item">
                             {/* Time Label (Left of timeline line) */}
-                            <div className="w-[44px] sm:w-[58px] shrink-0 text-right pt-5 text-xs sm:text-sm font-mono font-bold text-ts-muted tracking-tight">
+                            <div className="w-[44px] sm:w-[58px] shrink-0 text-right pt-5 text-xs sm:text-sm font-barlow font-bold text-ts-muted tracking-tight">
                               {timeStr}
                             </div>
 

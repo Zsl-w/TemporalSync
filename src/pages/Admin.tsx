@@ -418,7 +418,7 @@ export const AdminPage = () => {
               <Loader2 className="animate-spin text-ts-muted" size={20} />
             </div>
           ) : filteredPosts.length === 0 ? (
-            <div className="py-20 text-center text-xs text-ts-muted uppercase tracking-wider font-mono">
+            <div className="py-20 text-center text-xs text-ts-muted uppercase tracking-wider font-barlow">
               {language === 'zh' ? '无博客内容' : 'Empty List'}
             </div>
           ) : (
@@ -439,7 +439,7 @@ export const AdminPage = () => {
                     <h4 className="text-xs font-bold text-ts-ink line-clamp-1 group-hover:text-ts-primary transition-colors leading-tight">
                       {p.title}
                     </h4>
-                    <div className="flex items-center gap-1.5 text-[10px] text-ts-muted font-mono uppercase">
+                    <div className="flex items-center gap-1.5 text-[10px] text-ts-muted font-barlow uppercase">
                       <span>{formatDate(p.createdAt)}</span>
                       {p.tags.length > 0 && (
                         <>
@@ -478,7 +478,7 @@ export const AdminPage = () => {
           <div className="p-4 border-b border-ts-hairline flex justify-between items-center bg-ts-surface-elevated/40">
             <h2 className="text-xs font-bold text-ts-ink font-display uppercase tracking-wider flex items-center gap-2">
               <span>{activePostId ? (language === 'zh' ? '编辑文章' : 'Edit Mode') : (language === 'zh' ? '撰写新文章' : 'New Post Mode')}</span>
-              {activePostId && <span className="text-[10px] font-mono text-ts-muted">ID: {activePostId.slice(0, 8)}</span>}
+              {activePostId && <span className="text-[10px] font-barlow text-ts-muted">ID: {activePostId.slice(0, 8)}</span>}
             </h2>
 
             <div className="flex items-center gap-2">
@@ -553,7 +553,7 @@ export const AdminPage = () => {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="# Header 1\nType your content here..."
-                className="flex-1 w-full p-4 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-xs font-mono text-ts-ink focus:border-ts-primary outline-none transition-all resize-none leading-relaxed"
+                className="flex-1 w-full p-4 rounded-lg bg-ts-surface-elevated border border-ts-hairline text-xs font-sans text-ts-ink focus:border-ts-primary outline-none transition-all resize-none leading-relaxed"
               />
             </div>
           </div>
@@ -576,7 +576,7 @@ export const AdminPage = () => {
             <Eye size={12} />
             <span>{language === 'zh' ? '实时效果预览' : 'Live Preview'}</span>
           </h2>
-          <span className="text-[9px] font-mono text-ts-muted uppercase bg-ts-surface-elevated px-2 py-0.5 rounded">
+          <span className="text-[9px] font-barlow text-ts-muted uppercase bg-ts-surface-elevated px-2 py-0.5 rounded">
             {getReadTime(content, language === 'zh')} {language === 'zh' ? '阅读' : 'read'}
           </span>
         </div>
@@ -595,7 +595,7 @@ export const AdminPage = () => {
                   {tags.split(',').map(tag => tag.trim()).filter(Boolean).map(tag => (
                     <span 
                       key={tag}
-                      className="px-2 py-0.5 rounded text-[8px] font-mono uppercase bg-ts-surface-elevated text-ts-primary border border-ts-hairline"
+                      className="px-2 py-0.5 rounded text-[8px] font-barlow uppercase bg-ts-surface-elevated text-ts-primary border border-ts-hairline"
                     >
                       {tag}
                     </span>
@@ -613,8 +613,8 @@ export const AdminPage = () => {
                 [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:mb-3 [&_ul]:space-y-1
                 [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:mb-3 [&_ol]:space-y-1
                 [&_blockquote]:border-l-4 [&_blockquote]:border-ts-primary [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-ts-muted [&_blockquote]:my-3
-                [&_pre]:bg-ts-surface-elevated [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-3 [&_pre]:font-mono [&_pre]:text-[10px] [&_pre]:border [&_pre]:border-ts-hairline
-                [&_code]:font-mono [&_code]:bg-ts-surface-elevated [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-ts-primary"
+                [&_pre]:bg-ts-surface-elevated [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-3 [&_pre]:font-sans [&_pre]:text-[10px] [&_pre]:border [&_pre]:border-ts-hairline
+                [&_code]:font-sans [&_code]:bg-ts-surface-elevated [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-ts-primary"
               dangerouslySetInnerHTML={renderMarkdown(content)}
             />
           </div>

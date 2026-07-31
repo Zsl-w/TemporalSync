@@ -14,7 +14,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
+        "flex w-20 items-center justify-center h-full px-2 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
         isActive && "text-ts-ink"
       )
     }
@@ -23,7 +23,7 @@ const NavItem = ({ to, label }: NavItemProps) => (
       <>
         <span>{label}</span>
         {isActive && (
-                    <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-ink rounded-full" />
+                    <div aria-hidden="true" className="absolute bottom-0 left-3 right-3 h-[2px] bg-ts-ink rounded-full" />
         )}
       </>
     )}
@@ -52,9 +52,9 @@ export const Navbar = () => {
 
   const mobileItems = [
     { to: '/', label: language === 'zh' ? '博客' : 'Blog' },
-    { to: '/hot', label: language === 'zh' ? 'AI 热点' : 'AI Hot Topics' },
+    { to: '/hot', label: language === 'zh' ? 'AI 速递' : 'AI Feed' },
     { to: '/lexora', label: language === 'zh' ? 'Lexora 专业术语解读' : 'Lexora Term Explanations' },
-    { to: '/work', label: language === 'zh' ? '自习室' : 'Study Room' },
+    { to: '/work', label: language === 'zh' ? '工具集' : 'Tools' },
     { to: '/shiyun-wechat-md', label: language === 'zh' ? '微信排版工具' : 'WeChat Formatter' },
     { to: '/md2red', label: language === 'zh' ? '小红书卡片生成' : 'Red Formatter' },
     { to: '/settings', label: language === 'zh' ? '偏好设置' : 'Settings' },
@@ -65,7 +65,7 @@ export const Navbar = () => {
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between h-full">
         {/* Left Section: Logo & Brand */}
         <div className="flex items-center h-full">
-          <NavLink to="/" className="flex items-center gap-3 group md:mr-8" aria-label="TemporalSync home">
+          <NavLink to="/" className="flex items-center gap-3 group md:mr-8 md:w-24" aria-label="TemporalSync home">
             <img
               src="/logo-mark.png"
               alt="Logo"
@@ -82,7 +82,7 @@ export const Navbar = () => {
               to="/"
               className={({ isActive }) =>
                 cn(
-                  "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
+                  "flex w-20 items-center justify-center h-full px-2 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ts-primary",
                   (isActive || location.pathname.startsWith('/blog')) && "text-ts-ink"
                 )
               }
@@ -91,12 +91,12 @@ export const Navbar = () => {
                 <>
                   <span>{language === 'zh' ? '博客' : 'BLOG'}</span>
                   {(isActive || location.pathname.startsWith('/blog')) && (
-                              <div aria-hidden="true" className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-ink rounded-full" />
+                              <div aria-hidden="true" className="absolute bottom-0 left-3 right-3 h-[2px] bg-ts-ink rounded-full" />
                   )}
                 </>
               )}
             </NavLink>
-            <NavItem to="/hot" label={language === 'zh' ? '热点' : 'HOT'} />
+            <NavItem to="/hot" label={language === 'zh' ? '速递' : 'FEED'} />
             
             {/* WORK Item with hover sub-navigation */}
             <div 
@@ -114,16 +114,16 @@ export const Navbar = () => {
                 to="/work"
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center h-full px-4 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
+                    "flex w-20 items-center justify-center h-full px-2 text-[15.3px] font-medium tracking-[0.08em] transition-all relative text-ts-ink/70 hover:text-ts-ink uppercase",
                     (isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname.startsWith('/lexora')) && "text-ts-ink"
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <span>{language === 'zh' ? '自习室' : 'WORK'}</span>
+                    <span>{language === 'zh' ? '工具集' : 'TOOLS'}</span>
                     {(isActive || location.pathname === '/shiyun-wechat-md' || location.pathname === '/md2red' || location.pathname.startsWith('/lexora')) && (
-                      <div className="absolute bottom-0 left-4 right-4 h-[2px] bg-ts-ink rounded-full" />
+                      <div className="absolute bottom-0 left-3 right-3 h-[2px] bg-ts-ink rounded-full" />
                     )}
                   </>
                 )}

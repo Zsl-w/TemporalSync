@@ -52,7 +52,7 @@ function smartJoinLines(lines: string[]) {
 
 function inlineMarkdown(value: string) {
   let text = escapeHtml(value);
-  text = text.replace(/`([^`]+)`/g, `<code style="padding:2px 5px;border-radius:4px;background:${colors.greenSoft};color:${colors.greenText};font-size:13px;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;">$1</code>`);
+  text = text.replace(/`([^`]+)`/g, `<code style="padding:2px 5px;border-radius:4px;background:${colors.greenSoft};color:${colors.greenText};font-size:13px;font-family:myriad-pro;">$1</code>`);
   text = text.replace(/\*\*([^*]+)\*\*/g, `<strong style="padding:1px 4px;border-radius:4px;background:${colors.greenSoft};color:${colors.greenText};font-weight:800;">$1</strong>`);
   return text;
 }
@@ -62,7 +62,7 @@ function paragraph(text: string) {
 }
 
 function h1(text: string) {
-  return `<h1 style="margin:0 0 12px;color:${colors.title};font-size:26px;line-height:1.35;font-weight:800;letter-spacing:0;">${inlineMarkdown(text)}</h1>`;
+  return `<h1 style="margin:0 0 12px;color:${colors.title};font-size:26px;line-height:1.35;font-weight:800;letter-spacing:0;font-family:'Roboto Condensed';">${inlineMarkdown(text)}</h1>`;
 }
 
 function h2(text: string) {
@@ -70,17 +70,17 @@ function h2(text: string) {
   const no = match ? match[1].padStart(2, '0') : '';
   const title = match ? match[2] : text;
   if (no) {
-    return `<section style="margin:30px 0 14px;"><p style="margin:0;color:${colors.ink};font-size:19px;line-height:1.6;font-weight:800;"><span style="display:inline-block;width:34px;height:34px;margin-right:8px;border-radius:50%;background:${colors.blueSoft};color:${colors.blueText};text-align:center;line-height:34px;font-family:Georgia,serif;font-size:16px;font-weight:800;">${no}</span>${inlineMarkdown(title)}</p></section>`;
+    return `<section style="margin:30px 0 14px;"><p style="margin:0;color:${colors.ink};font-size:19px;line-height:1.6;font-weight:800;font-family:'Roboto Condensed';"><span style="display:inline-block;width:34px;height:34px;margin-right:8px;border-radius:50%;background:${colors.blueSoft};color:${colors.blueText};text-align:center;line-height:34px;font-family:'Roboto Condensed';font-size:16px;font-weight:800;">${no}</span>${inlineMarkdown(title)}</p></section>`;
   }
-  return `<p style="margin:28px 0 12px;color:${colors.blueText};font-size:17px;line-height:1.7;font-weight:800;">${inlineMarkdown(text)}</p>`;
+  return `<p style="margin:28px 0 12px;color:${colors.blueText};font-size:17px;line-height:1.7;font-weight:800;font-family:'Roboto Condensed';">${inlineMarkdown(text)}</p>`;
 }
 
 function h3(text: string) {
-  return `<p style="margin:24px 0 10px;color:${colors.blueText};font-size:16px;line-height:1.7;font-weight:800;">${inlineMarkdown(text)}</p>`;
+  return `<p style="margin:24px 0 10px;color:${colors.blueText};font-size:16px;line-height:1.7;font-weight:800;font-family:'Roboto Condensed';">${inlineMarkdown(text)}</p>`;
 }
 
 function h4(text: string) {
-  return `<p style="margin:20px 0 8px;color:${colors.greenText};font-size:15px;line-height:1.7;font-weight:800;"><span style="display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:${colors.green};vertical-align:middle;"></span>${inlineMarkdown(text)}</p>`;
+  return `<p style="margin:20px 0 8px;color:${colors.greenText};font-size:15px;line-height:1.7;font-weight:800;font-family:'Roboto Condensed';"><span style="display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:${colors.green};vertical-align:middle;"></span>${inlineMarkdown(text)}</p>`;
 }
 
 function image(alt: string, src: string) {
@@ -118,7 +118,7 @@ function codeBlock(code: string, lang = '') {
     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
     .replace(/ /g, '&nbsp;')
     .replace(/\n/g, '<br>');
-  return `<section style="margin:0 0 22px;border:1px solid ${colors.border};background:${colors.greenSoft};border-radius:8px;overflow:hidden;"><section style="padding:8px 12px;background:${colors.greenSoft};border-bottom:1px solid ${colors.border};"><p style="margin:0;color:${colors.greenText};font-size:13px;font-weight:800;line-height:1.6;">${label}</p></section><section style="padding:14px 15px;"><p style="margin:0;color:${colors.ink};font-size:13px;line-height:1.8;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;white-space:pre-wrap;text-align:left;">${formattedCode}</p></section></section>`;
+  return `<section style="margin:0 0 22px;border:1px solid ${colors.border};background:${colors.greenSoft};border-radius:8px;overflow:hidden;"><section style="padding:8px 12px;background:${colors.greenSoft};border-bottom:1px solid ${colors.border};"><p style="margin:0;color:${colors.greenText};font-size:13px;font-weight:800;line-height:1.6;font-family:'Barlow Condensed';">${label}</p></section><section style="padding:14px 15px;"><p style="margin:0;color:${colors.ink};font-size:13px;line-height:1.8;font-family:myriad-pro;white-space:pre-wrap;text-align:left;">${formattedCode}</p></section></section>`;
 }
 
 function list(items: string[]) {
@@ -146,7 +146,7 @@ function hr() {
 }
 
 function wrapDocument(content: string) {
-  return `<section style="max-width:720px;margin:0 auto;padding:28px 24px 56px;background:${colors.paper};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;color:${colors.ink};">${content}</section>`;
+  return `<section style="max-width:720px;margin:0 auto;padding:28px 24px 56px;background:${colors.paper};font-family:myriad-pro;color:${colors.ink};">${content}</section>`;
 }
 
 function convertMarkdownToWechatHtml(markdown: string) {
@@ -284,7 +284,7 @@ function convertMarkdownToWechatHtml(markdown: string) {
 const getExampleMarkdown = () => {
   return `# 用 AI 读医学论文，我会先问这 3 个问题
 
-> 自习室便签：这篇不是教你把论文丢给 AI 直接总结，而是把 AI 当成一个帮你拆结构的同桌。
+> AI 工作台便签：这篇不是教你把论文丢给 AI 直接总结，而是把 AI 当成一个帮你拆结构的同桌。
 
 ## 01 先问问题，不急着要总结
 
@@ -403,7 +403,7 @@ export const WeChatConverter = () => {
   const t = {
     zh: {
       title: '时韵公众号排版转换器',
-      desc: '使用 Markdown 编写推文原文，秒级套用「时韵自习室」公众号美化样式。',
+      desc: '使用 Markdown 编写推文原文，秒级套用「时韵 AI 工作台」公众号美化样式。',
       editorTitle: 'Markdown 原文',
       editorHint: '支持标题、列表、代码、图片、引用与表格排版',
       previewTitle: '公众号实机排版预览',
@@ -439,7 +439,7 @@ export const WeChatConverter = () => {
               className="inline-flex items-center gap-1 text-xs font-display font-bold text-ts-body hover:text-ts-ink transition-colors cursor-pointer"
             >
               <ArrowLeft size={14} />
-              <span>{language === 'zh' ? '返回自习室' : 'Back'}</span>
+              <span>{language === 'zh' ? '返回工具集' : 'Back'}</span>
             </button>
             <h1 className="text-xl md:text-2xl font-display font-bold text-ts-ink flex items-center gap-2">
               <span>{t.title}</span>
@@ -498,7 +498,7 @@ export const WeChatConverter = () => {
           <textarea
             value={markdown}
             onChange={(e) => setMarkdown(e.target.value)}
-            className="flex-1 w-full p-5 bg-transparent text-ts-ink text-xs font-mono resize-none outline-none leading-relaxed border-none focus:ring-0"
+            className="flex-1 w-full p-5 bg-transparent text-ts-ink text-xs font-sans resize-none outline-none leading-relaxed border-none focus:ring-0"
             spellCheck="false"
             placeholder="Type or paste markdown..."
           />

@@ -1,41 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700;900&family=Inter:wght@300;400;500;600;700;900&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:wght@400;600;700&family=Zhi+Mang+Xing&family=Ma+Shan+Zheng&family=Long+Cang&family=Liu+Jian+Mao+Cao&family=Klee+One:wght@400;600&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Slidexiaxing";
-  src: url("/fonts/Slidexiaxing-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-.font-brush-xia {
-  font-family: "Slidexiaxing", cursive, sans-serif;
-}
-.font-brush-zhi {
-  font-family: "Zhi Mang Xing", cursive;
-}
-.font-brush-ma {
-  font-family: "Ma Shan Zheng", cursive;
-}
-.font-brush-long {
-  font-family: "Long Cang", cursive;
-}
-.font-brush-cao {
-  font-family: "Liu Jian Mao Cao", cursive;
-}
-.font-kaiti {
-  font-family: "Klee One", "Ma Shan Zheng", cursive;
-}
 .font-barlow {
-  font-family: "Barlow Condensed", sans-serif;
+  font-family: "Barlow Condensed";
 }
 
 @theme {
-  --font-sans: "myriad-pro", "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-display: "Roboto Condensed", sans-serif;
-  --font-barlow: "Barlow Condensed", sans-serif;
+  --font-sans: "myriad-pro";
+  --font-display: "Roboto Condensed";
+  --font-barlow: "Barlow Condensed";
 
   /* Neutral scale - dark theme base */
   --color-ts-navy-900: #0a0a0c;
@@ -136,14 +109,20 @@
   }
   body {
     @apply antialiased text-ts-ink bg-ts-canvas min-h-screen;
-    font-family: "myriad-pro", "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "myriad-pro";
     overflow-x: hidden;
   }
   input,
   textarea,
   button,
   select {
-    font-family: "myriad-pro", "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "myriad-pro";
+  }
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: "myriad-pro";
   }
   h1, h2, h3, h4, h5, h6,
   .font-display,
@@ -152,7 +131,7 @@
   nav a,
   nav button,
   .nav-link {
-    font-family: "Roboto Condensed", sans-serif !important;
+    font-family: "Roboto Condensed" !important;
   }
   #root {
     background-color: var(--ts-canvas);
@@ -454,7 +433,7 @@
   align-items: center;
   padding: 0 10px;
   font-size: 10px;
-  font-family: monospace;
+  font-family: var(--font-barlow);
   color: var(--color-ts-muted);
   overflow: hidden;
   text-overflow: ellipsis;

@@ -171,7 +171,7 @@ export const ConceptReader: React.FC<ConceptReaderProps> = ({
             >
               <Volume2 size={16} className={isPlayingAudio ? 'scale-110' : ''} />
             </button>
-            <span className="text-[13px] text-ts-muted font-mono tracking-wide">
+            <span className="text-[13px] text-ts-muted font-barlow tracking-wide">
               {concept.pronunciation}
             </span>
           </div>

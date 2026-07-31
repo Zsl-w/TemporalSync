@@ -32,8 +32,8 @@ const AnimatedAppContent = () => {
     const routeTitles: Record<string, Record<string, string>> = {
       zh: {
         '/': '博客 · TemporalSync',
-        '/hot': 'AI 热点 · TemporalSync',
-        '/work': '自习室 · TemporalSync',
+        '/hot': 'AI 速递 · TemporalSync',
+        '/work': '工具集 · TemporalSync',
         '/blog': '博客 · TemporalSync',
         '/settings': '设置 · TemporalSync',
         '/admin': '控制台 · TemporalSync',
@@ -44,8 +44,8 @@ const AnimatedAppContent = () => {
       },
       en: {
         '/': 'Blog · TemporalSync',
-        '/hot': 'AI Hot Topics · TemporalSync',
-        '/work': 'Study Room · TemporalSync',
+        '/hot': 'AI Feed · TemporalSync',
+        '/work': 'Tools · TemporalSync',
         '/blog': 'Blog · TemporalSync',
         '/settings': 'Settings · TemporalSync',
         '/admin': 'Dashboard · TemporalSync',
