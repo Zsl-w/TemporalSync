@@ -378,7 +378,7 @@ export const HotTopics = () => {
                                     {item.tags.slice(0, 3).map((tag) => (
                                       <span
                                         key={tag}
-                                        className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-ts-surface-elevated text-ts-ink/80 border border-ts-hairline"
+                                        className="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-ts-surface-elevated text-ts-ink/80"
                                       >
                                         {tag}
                                       </span>
