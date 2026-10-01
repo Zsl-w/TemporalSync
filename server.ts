@@ -2,14 +2,10 @@ import "dotenv/config";
 import axios from "axios";
 import express from "express";
 import path from "path";
+import { loadNeuroFeed } from "./shared/neuro-feed-server";
 import { createServer as createViteServer } from "vite";
-import {
-  createHotTopicItem,
-  createNewsItem,
-  sortNewestFirst,
-  type AihotHotTopicsResponse,
-  type AihotItemsResponse,
-} from "./shared/ai-news";
+import { parseAINews, parseAIHotTopics } from "./shared/ai-news";
+import { parseExplainInput, parseTutorInput, parseConcept, completionText } from "./shared/lexora-validation";
 
 const AIHOT_API_BASE = "https://aihot.virxact.com/api/v1";
 const AI_NEWS_URL = `${AIHOT_API_BASE}/items?mode=selected&window=7d&limit=100&by=timeline`;
@@ -21,17 +17,26 @@ function getErrorMessage(error: unknown): string {
 
 async function startServer() {
   const app = express();
-  const port = 3000;
+  const port = Number(process.env.PORT || 3000);
 
   app.use(express.json());
+
+  app.get("/api/neuro-feed", async (_request, response) => {
+    try {
+      const feed = await loadNeuroFeed({ NEURO_WECHAT_FEEDS: process.env.NEURO_WECHAT_FEEDS });
+      const healthy = feed.sources.every((source) => source.status === "ready" || source.status === "unconfigured");
+      response.setHeader("Cache-Control", healthy ? "public, s-maxage=300, max-age=60" : "no-store");
+      response.json(feed);
+    } catch {
+      response.status(502).json({ error: "Failed to fetch neuro feed" });
+    }
+  });
 
   app.get("/api/ai-news", async (_request, response) => {
     const startTime = Date.now();
     try {
-      const apiResponse = await axios.get<AihotItemsResponse>(AI_NEWS_URL, { timeout: 10_000 });
-      const articles = sortNewestFirst(
-        apiResponse.data.items.map(createNewsItem),
-      );
+      const apiResponse = await axios.get<unknown>(AI_NEWS_URL, { timeout: 10_000 });
+      const articles = parseAINews(apiResponse.data);
 
       console.log(`AI news completed in ${Date.now() - startTime}ms, ${articles.length} items`);
       response.setHeader("Cache-Control", "public, s-maxage=60, max-age=60");
@@ -45,8 +50,8 @@ async function startServer() {
   app.get("/api/ai-hot-topics", async (_request, response) => {
     const startTime = Date.now();
     try {
-      const apiResponse = await axios.get<AihotHotTopicsResponse>(AI_HOT_TOPICS_URL, { timeout: 10_000 });
-      const topics = sortNewestFirst(apiResponse.data.items.map(createHotTopicItem));
+      const apiResponse = await axios.get<unknown>(AI_HOT_TOPICS_URL, { timeout: 10_000 });
+      const topics = parseAIHotTopics(apiResponse.data);
 
       console.log(`AI hot topics completed in ${Date.now() - startTime}ms, ${topics.length} items`);
       response.setHeader("Cache-Control", "public, s-maxage=300, max-age=300");
@@ -90,10 +95,10 @@ async function startServer() {
       return response.status(500).json({ error: "本地 .env 文件中未配置 DEEPSEEK_API_KEY。" });
     }
 
-    const { query } = request.body || {};
-    if (!query || typeof query !== "string") {
-      return response.status(400).json({ error: "缺少 query 参数" });
-    }
+    let input: ReturnType<typeof parseExplainInput>;
+    try { input = parseExplainInput(request.body); }
+    catch { return response.status(400).json({ error: "Invalid query" }); }
+    const { query } = input;
 
     const systemPrompt = `You are Lexora, an AI professional knowledge companion.
 Your job is to explain unfamiliar specialist concepts (especially in AI/ML, Medicine, Biology, Engineering, etc.) in a structured format.
@@ -136,16 +141,15 @@ Return ONLY valid JSON matching this schema. Do not include markdown code block 
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
-          timeout: 30_000,
+          timeout: 25_000,
         }
       );
 
-      const resultText = res.data?.choices?.[0]?.message?.content;
-      const parsed = typeof resultText === "string" ? JSON.parse(resultText) : resultText;
+      const parsed = parseConcept(JSON.parse(completionText(res.data)));
       response.json(parsed);
     } catch (error: unknown) {
-      console.error("Lexora local explain error:", getErrorMessage(error));
-      response.status(500).json({ error: getErrorMessage(error) });
+      console.error("Lexora local explain request failed");
+      response.status(502).json({ error: "Unable to explain concept. Please try again." });
     }
   });
 
@@ -155,10 +159,10 @@ Return ONLY valid JSON matching this schema. Do not include markdown code block 
       return response.status(500).json({ error: "本地 .env 文件中未配置 DEEPSEEK_API_KEY。" });
     }
 
-    const { conceptEnglish, conceptChinese, conciseDefinition, question } = request.body || {};
-    if (!question || typeof question !== "string") {
-      return response.status(400).json({ error: "缺少 question 参数" });
-    }
+    let input: ReturnType<typeof parseTutorInput>;
+    try { input = parseTutorInput(request.body); }
+    catch { return response.status(400).json({ error: "Invalid question or concept context" }); }
+    const { conceptEnglish, conceptChinese, conciseDefinition, question } = input;
 
     const systemPrompt = `You are Lexora AI Tutor, a patient, clear, and encouraging professional AI tutor.
 The user is currently studying the concept: "${conceptEnglish || ''} (${conceptChinese || ''})".
@@ -183,17 +187,19 @@ Answer the user's follow-up question or request in clear, friendly, and structur
             "Content-Type": "application/json",
             Authorization: `Bearer ${apiKey}`,
           },
-          timeout: 30_000,
+          timeout: 25_000,
         }
       );
 
-      const answer = res.data?.choices?.[0]?.message?.content || "";
+      const answer = completionText(res.data);
       response.json({ answer });
     } catch (error: unknown) {
-      console.error("Lexora local tutor error:", getErrorMessage(error));
-      response.status(500).json({ error: getErrorMessage(error) });
+      console.error("Lexora local tutor request failed");
+      response.status(502).json({ error: "Unable to answer question. Please try again." });
     }
   });
+
+  app.use("/api", (_request, response) => { response.status(404).json({ error: "API route not found" }); });
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
