@@ -1,0 +1,27 @@
+name: Verify production build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.17.1'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm run build:server
+      - name: Bundle Node Functions entry
+        run: npx --no-install esbuild 'node-functions/api/[[default]].ts' --bundle --platform=node --format=esm --packages=external --outfile=/tmp/node-api.mjs

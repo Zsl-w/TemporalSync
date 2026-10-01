@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Clock, ExternalLink, Radio, Search, Sparkles, Zap } from "lucide-react";
+import { Brain, Clock, ExternalLink, Radio, Search, Sparkles, Zap } from "lucide-react";
+import { NeuroFeed } from "../components/NeuroFeed";
 import { useSettings } from "../context/SettingsContext";
 import { cn } from "../lib/utils";
 import {
@@ -13,7 +14,7 @@ import {
 } from "../services/newsService";
 import type { AihotCategory } from "../../shared/ai-news";
 
-type FeedView = "timeline" | "hotspots";
+type FeedView = "timeline" | "hotspots" | "neuro";
 type CategoryFilter = "all" | Exclude<AihotCategory, "other">;
 
 const categoryKeys: Exclude<AihotCategory, "other">[] = ["ai-models", "ai-products", "industry", "paper", "tip"];
@@ -55,6 +56,7 @@ export const HotTopics = () => {
   const t = language === "zh" ? {
     timeline: "资讯流",
     hotspots: "热点",
+    neuro: "神经精神影像 · AI",
     searchNews: "搜索标题、摘要或来源...",
     searchTopics: "搜索热点或来源...",
     results: "条结果",
@@ -74,6 +76,7 @@ export const HotTopics = () => {
   } : {
     timeline: "Timeline",
     hotspots: "Hot topics",
+    neuro: "Neuroimaging · AI",
     searchNews: "Search titles, summaries, or sources...",
     searchTopics: "Search topics or sources...",
     results: "results",
@@ -93,7 +96,10 @@ export const HotTopics = () => {
   };
 
   useEffect(() => {
+    if (view === "neuro") return;
+    let active = true;
     let hintTimer: ReturnType<typeof setTimeout>;
+    setLoadingLong(false);
     const cachedNews = view === "timeline" ? getCachedNews() : null;
     const cachedTopics = view === "hotspots" ? getCachedHotTopics() : null;
 
@@ -112,25 +118,42 @@ export const HotTopics = () => {
     }
 
     const load = async () => {
-      hintTimer = setTimeout(() => setLoadingLong(true), 5000);
+      hintTimer = setTimeout(() => { if (active) setLoadingLong(true); }, 5000);
       setLoading(true);
       setLoadError(false);
       try {
-        if (view === "timeline") setNews(await fetchNews());
-        else setHotTopics(await fetchHotTopics());
+        if (view === "timeline") {
+          const items = await fetchNews();
+          if (active) setNews(items);
+        } else {
+          const items = await fetchHotTopics();
+          if (active) setHotTopics(items);
+        }
       } catch (error) {
         console.error("Failed to fetch AI HOT data:", error);
-        setLoadError(true);
+        if (active) setLoadError(true);
       } finally {
         clearTimeout(hintTimer);
-        setLoading(false);
-        setLoadingLong(false);
+        if (active) {
+          setLoading(false);
+          setLoadingLong(false);
+        }
       }
     };
 
     void load();
-    return () => clearTimeout(hintTimer);
+    return () => { active = false; clearTimeout(hintTimer); };
   }, [loadAttempt, view]);
+
+  useEffect(() => {
+    if (view === 'neuro') return;
+    const refresh = () => {
+      if (document.visibilityState === 'visible') setLoadAttempt((attempt) => attempt + 1);
+    };
+    const timer = window.setInterval(refresh, 15 * 60 * 1000);
+    document.addEventListener('visibilitychange', refresh);
+    return () => { window.clearInterval(timer); document.removeEventListener('visibilitychange', refresh); };
+  }, [view]);
 
   const filteredNews = useMemo(() => news.filter((item) => {
     const query = searchQuery.toLowerCase();
@@ -173,9 +196,9 @@ export const HotTopics = () => {
           className="space-y-4"
         >
           <div className="flex flex-wrap items-center gap-2">
-            {(["timeline", "hotspots"] as FeedView[]).map((candidate) => {
+            {(["timeline", "hotspots", "neuro"] as FeedView[]).map((candidate) => {
               const active = view === candidate;
-              const Icon = candidate === "timeline" ? Clock : Radio;
+              const Icon = candidate === "timeline" ? Clock : candidate === "neuro" ? Brain : Radio;
               return (
                 <button
                   key={candidate}
@@ -187,13 +210,13 @@ export const HotTopics = () => {
                   aria-pressed={active}
                 >
                   <Icon size={14} />
-                  {candidate === "timeline" ? t.timeline : t.hotspots}
+                  {t[candidate]}
                 </button>
               );
             })}
           </div>
 
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          {view !== "neuro" && <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             {view === "timeline" ? (
               <div className="flex items-center gap-2 overflow-x-auto py-1">
                 {(["all", ...categoryKeys] as CategoryFilter[]).map((category) => {
@@ -224,9 +247,10 @@ export const HotTopics = () => {
                 aria-label={view === "timeline" ? t.searchNews : t.searchTopics}
               />
             </div>
-          </div>
+          </div>}
         </motion.div>
 
+        {view === "neuro" ? <NeuroFeed /> : <>
         {!loading && !loadError && <p className="-mt-4 text-xs text-ts-muted" aria-live="polite">{activeResultCount} {t.results}</p>}
 
         <div className="relative pt-2">
@@ -246,13 +270,8 @@ export const HotTopics = () => {
           ) : view === "timeline" ? (
             groupedNews.length > 0 ? (
               <div className="space-y-12">
-                {groupedNews.map((group, groupIndex) => (
-                  <motion.div
-                    key={group.dateLabel}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: groupIndex * 0.08, ease: "easeOut" }}
-                  >
+                {groupedNews.map((group) => (
+                  <div key={group.dateLabel}>
                     <button
                       onClick={() => toggleGroup(group.dateLabel)}
                       className="mb-4 inline-flex items-center gap-2 rounded-full bg-ts-surface-elevated px-3 py-1.5 text-xs font-barlow font-bold tracking-wider text-ts-ink shadow-sm transition-colors hover:bg-ts-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink"
@@ -262,17 +281,23 @@ export const HotTopics = () => {
                       {group.dateLabel}
                     </button>
 
-                    <AnimatePresence initial={false}>
+                    <AnimatePresence>
                       {!collapsedGroups[group.dateLabel] && (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
+                          initial={{ height: 0, opacity: 0, overflow: "hidden" }}
+                          animate={{ height: "auto", opacity: 1, transitionEnd: { overflow: "visible" } }}
+                          exit={{ height: 0, opacity: 0, overflow: "hidden" }}
                           transition={{ height: { duration: 0.25 }, opacity: { duration: 0.2 } }}
-                          className="grid gap-5 overflow-hidden lg:grid-cols-2"
+                          className="grid grid-cols-1 gap-5 lg:grid-cols-2"
                         >
-                          {group.items.map((item) => (
-                            <article key={item.id} className="group flex min-h-56 flex-col rounded-2xl bg-ts-surface p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
+                          {group.items.map((item, index) => (
+                            <motion.article
+                              key={item.id}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.4, delay: index * 0.04, ease: "easeOut" }}
+                              className="group flex min-h-56 flex-col rounded-2xl bg-ts-surface p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+                            >
                               <div className="flex items-center justify-between gap-3">
                                 <div className="flex min-w-0 items-center gap-2.5">
                                   <AuthorAvatar avatarUrl={item.avatar} />
@@ -288,12 +313,12 @@ export const HotTopics = () => {
                                 <p className="line-clamp-3 text-xs leading-relaxed text-ts-body sm:text-sm">{item.summary}</p>
                               </div>
                               <span className="mt-auto inline-flex w-fit rounded-md bg-ts-surface-elevated px-2.5 py-1 text-[10px] font-barlow font-bold tracking-wide text-ts-ink/80">{categoryLabel(item.category)}</span>
-                            </article>
+                            </motion.article>
                           ))}
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             ) : <EmptyState title={t.emptyNewsTitle} description={t.emptyNewsDesc} actionLabel={t.reset} onAction={() => { setSearchQuery(""); setSelectedCategory("all"); }} />
@@ -345,6 +370,7 @@ export const HotTopics = () => {
           </a>
           {language === "zh" ? " 提供；标题链接前往原文。" : "; headlines link to the original source."}
         </p>
+        </>}
       </div>
     </div>
   );

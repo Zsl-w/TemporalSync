@@ -1,4 +1,5 @@
-import { Concept } from '../pages/Lexora/types';
+import { parseConcept, parseTutorAnswer } from '../../shared/lexora-validation';
+import type { Concept } from '../pages/Lexora/types';
 
 export async function fetchConceptExplanation(query: string): Promise<Concept> {
   const response = await fetch('/api/lexora/explain', {
@@ -7,6 +8,7 @@ export async function fetchConceptExplanation(query: string): Promise<Concept> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ query }),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!response.ok) {
@@ -14,8 +16,7 @@ export async function fetchConceptExplanation(query: string): Promise<Concept> {
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
   }
 
-  const data: Concept = await response.json();
-  return data;
+  return parseConcept(await response.json());
 }
 
 export async function askLexoraTutor(
@@ -33,7 +34,7 @@ export async function askLexoraTutor(
       conciseDefinition: concept.conciseDefinition,
       question,
     }),
-    signal: AbortSignal.timeout(25000),
+    signal: AbortSignal.timeout(30_000),
   });
 
   if (!response.ok) {
@@ -41,6 +42,5 @@ export async function askLexoraTutor(
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
   }
 
-  const data: { answer: string } = await response.json();
-  return data.answer;
+  return parseTutorAnswer(await response.json());
 }

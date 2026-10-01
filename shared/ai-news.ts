@@ -1,3 +1,5 @@
+import { isRecord, safeHttpUrl, validDate } from './neuro-feed';
+
 export type AihotCategory = "ai-models" | "ai-products" | "industry" | "paper" | "tip" | "other";
 
 export interface AihotItem {
@@ -138,4 +140,59 @@ export function sortNewestFirst<T extends { time: string }>(items: T[]): T[] {
     const timeB = Number.isNaN(Date.parse(b.time)) ? 0 : Date.parse(b.time);
     return timeB - timeA;
   });
+}
+
+// External JSON is unknown until every field used by the cards is checked.
+function parseItems<T>(payload: unknown, parse: (value: unknown) => T | null): T[] {
+  if (!isRecord(payload) || !Array.isArray(payload.items)) throw new Error('Invalid AI HOT response');
+  const items = payload.items.map(parse).filter((item): item is T => item !== null);
+  if (payload.items.length && !items.length) throw new Error('No valid AI HOT items');
+  return items;
+}
+
+export function parseAINews(payload: unknown): NewsItem[] {
+  return sortNewestFirst(parseItems(payload, (value): NewsItem | null => {
+    if (!isRecord(value) || typeof value.id !== 'string' || !value.id || typeof value.title !== 'string' || !value.title.trim() ||
+      !isRecord(value.links) || !isRecord(value.source)) return null;
+    const link = safeHttpUrl(value.links.original) || safeHttpUrl(value.links.aihot);
+    const time = validDate(value.publishedAt) ? value.publishedAt : value.discoveredAt;
+    if (!link || !validDate(time)) return null;
+    return createNewsItem({ id: value.id, title: value.title, source: { name: typeof value.source.name === 'string' ? value.source.name : 'AI HOT' },
+      links: { original: link, aihot: safeHttpUrl(value.links.aihot) || link }, publishedAt: time, discoveredAt: time,
+      summary: typeof value.summary === 'string' ? value.summary : null, originalTitle: typeof value.originalTitle === 'string' ? value.originalTitle : null,
+      category: typeof value.category === 'string' ? value.category : null, score: null, selected: true });
+  }));
+}
+
+export function parseAIHotTopics(payload: unknown): HotTopicItem[] {
+  return sortNewestFirst(parseItems(payload, (value): HotTopicItem | null => {
+    if (!isRecord(value) || typeof value.id !== 'string' || !value.id || typeof value.title !== 'string' || !value.title.trim() ||
+      !isRecord(value.links) || !isRecord(value.source) || !validDate(value.latestAt) ||
+      !Array.isArray(value.sourceNames) || !value.sourceNames.every((name) => typeof name === 'string') ||
+      !Number.isSafeInteger(value.sourceCount) || Number(value.sourceCount) < 0 ||
+      !Number.isSafeInteger(value.signalCount) || Number(value.signalCount) < 0) return null;
+    const link = safeHttpUrl(value.links.original) || safeHttpUrl(value.links.aihot);
+    const aihot = safeHttpUrl(value.links.aihot);
+    if (!link || !aihot) return null;
+    return createHotTopicItem({ id: value.id, title: value.title, source: { name: typeof value.source.name === 'string' ? value.source.name : 'AI HOT' },
+      links: { original: link, aihot }, latestAt: value.latestAt, sourceNames: value.sourceNames,
+      sourceCount: Number(value.sourceCount), signalCount: Number(value.signalCount) });
+  }));
+}
+
+export function parseNewsCards(value: unknown): NewsItem[] {
+  if (!Array.isArray(value) || !value.every((item) => isRecord(item) && typeof item.id === 'string' && typeof item.title === 'string' &&
+    typeof item.source === 'string' && typeof item.summary === 'string' && safeHttpUrl(item.link) && validDate(item.time) &&
+    ['ai-models', 'ai-products', 'industry', 'paper', 'tip', 'other'].includes(String(item.category)) &&
+    (item.avatar === undefined || safeHttpUrl(item.avatar)))) throw new Error('Invalid news cards');
+  return value as NewsItem[];
+}
+
+export function parseHotTopicCards(value: unknown): HotTopicItem[] {
+  if (!Array.isArray(value) || !value.every((item) => isRecord(item) && typeof item.id === 'string' && typeof item.title === 'string' &&
+    typeof item.source === 'string' && safeHttpUrl(item.link) && safeHttpUrl(item.aihotLink) && validDate(item.time) &&
+    Number.isSafeInteger(item.sourceCount) && Number(item.sourceCount) >= 0 && Number.isSafeInteger(item.signalCount) && Number(item.signalCount) >= 0 &&
+    Array.isArray(item.sourceNames) && item.sourceNames.every((name) => typeof name === 'string') &&
+    (item.avatar === undefined || safeHttpUrl(item.avatar)))) throw new Error('Invalid hot topic cards');
+  return value as HotTopicItem[];
 }

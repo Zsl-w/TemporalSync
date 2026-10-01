@@ -1,10 +1,6 @@
-import {
-  createHotTopicItem,
-  createNewsItem,
-  sortNewestFirst,
-  type AihotHotTopicsResponse,
-  type AihotItemsResponse,
-} from "../../shared/ai-news";
+import { parseAINews, parseAIHotTopics } from "../../shared/ai-news";
+import { parseExplainInput, parseTutorInput, parseConcept, completionText } from "../../shared/lexora-validation";
+import { loadNeuroFeed } from "../../shared/neuro-feed-server";
 
 const AIHOT_API_BASE = "https://aihot.virxact.com/api/v1";
 const AI_NEWS_URL = `${AIHOT_API_BASE}/items?mode=selected&window=7d&limit=100&by=timeline`;
@@ -17,15 +13,13 @@ function getErrorMessage(error: unknown): string {
 async function handleAINews(): Promise<Response> {
   const startTime = Date.now();
   try {
-    const apiResponse = await fetch(AI_NEWS_URL);
+    const apiResponse = await fetch(AI_NEWS_URL, { signal: AbortSignal.timeout(10_000) });
     if (!apiResponse.ok) {
       throw new Error(`AI HOT items fetch failed: ${apiResponse.status}`);
     }
 
-    const payload = await apiResponse.json() as AihotItemsResponse;
-    const articles = sortNewestFirst(
-      payload.items.map(createNewsItem),
-    );
+    const payload: unknown = await apiResponse.json();
+    const articles = parseAINews(payload);
     const elapsed = Date.now() - startTime;
 
     console.log(`AI news completed in ${elapsed}ms, ${articles.length} items`);
@@ -40,7 +34,7 @@ async function handleAINews(): Promise<Response> {
     console.error("News fetch error:", getErrorMessage(error));
     return new Response(JSON.stringify({ error: "Failed to fetch news" }), {
       status: 502,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   }
 }
@@ -48,13 +42,13 @@ async function handleAINews(): Promise<Response> {
 async function handleAIHotTopics(): Promise<Response> {
   const startTime = Date.now();
   try {
-    const apiResponse = await fetch(AI_HOT_TOPICS_URL);
+    const apiResponse = await fetch(AI_HOT_TOPICS_URL, { signal: AbortSignal.timeout(10_000) });
     if (!apiResponse.ok) {
       throw new Error(`AI HOT hot-topics fetch failed: ${apiResponse.status}`);
     }
 
-    const payload = await apiResponse.json() as AihotHotTopicsResponse;
-    const topics = sortNewestFirst(payload.items.map(createHotTopicItem));
+    const payload: unknown = await apiResponse.json();
+    const topics = parseAIHotTopics(payload);
     const elapsed = Date.now() - startTime;
 
     console.log(`AI hot topics completed in ${elapsed}ms, ${topics.length} items`);
@@ -69,7 +63,7 @@ async function handleAIHotTopics(): Promise<Response> {
     console.error("AI hot topics fetch error:", getErrorMessage(error));
     return new Response(JSON.stringify({ error: "Failed to fetch hot topics" }), {
       status: 502,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   }
 }
@@ -79,27 +73,21 @@ async function handleLexoraExplain(request: Request, env: Record<string, string>
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "DEEPSEEK_API_KEY environment variable is not configured on EdgeOne." }), {
       status: 500,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
-  let body: { query?: string } = {};
+  let body: ReturnType<typeof parseExplainInput>;
   try {
-    body = await request.json();
+    body = parseExplainInput(await request.json());
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
-  const query = body.query?.trim();
-  if (!query) {
-    return new Response(JSON.stringify({ error: "Query parameter is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-    });
-  }
+  const { query } = body;
 
   const systemPrompt = `You are Lexora, an AI professional knowledge companion.
 Your job is to explain unfamiliar specialist concepts (especially in AI/ML, Medicine, Biology, Engineering, etc.) in a structured format.
@@ -128,6 +116,7 @@ Return ONLY valid JSON matching this schema. Do not include markdown code block 
   try {
     const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(25_000),
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
@@ -144,23 +133,21 @@ Return ONLY valid JSON matching this schema. Do not include markdown code block 
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`DeepSeek API error: ${response.status} ${errText}`);
+      throw new Error(`Upstream returned ${response.status}`);
     }
 
     const data = await response.json();
-    const resultText = data.choices?.[0]?.message?.content;
-    const parsed = JSON.parse(resultText);
+    const parsed = parseConcept(JSON.parse(completionText(data)));
 
     return new Response(JSON.stringify(parsed), {
       status: 200,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   } catch (error: unknown) {
-    console.error("Lexora explain error:", getErrorMessage(error));
-    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
+    console.error("Lexora explain request failed");
+    return new Response(JSON.stringify({ error: "Upstream request failed. Please try again." }), {
       status: 500,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 }
@@ -170,27 +157,21 @@ async function handleLexoraTutor(request: Request, env: Record<string, string>):
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "DEEPSEEK_API_KEY environment variable is not configured on EdgeOne." }), {
       status: 500,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
-  let body: { conceptEnglish?: string; conceptChinese?: string; conciseDefinition?: string; question?: string } = {};
+  let body: ReturnType<typeof parseTutorInput>;
   try {
-    body = await request.json();
+    body = parseTutorInput(await request.json());
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
   const { conceptEnglish, conceptChinese, conciseDefinition, question } = body;
-  if (!question?.trim()) {
-    return new Response(JSON.stringify({ error: "Question parameter is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
-    });
-  }
 
   const systemPrompt = `You are Lexora AI Tutor, a patient, clear, and encouraging professional AI tutor.
 The user is currently studying the concept: "${conceptEnglish || ''} (${conceptChinese || ''})".
@@ -202,6 +183,7 @@ Answer the user's follow-up question or request in clear, friendly, and structur
   try {
     const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(25_000),
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
@@ -217,22 +199,21 @@ Answer the user's follow-up question or request in clear, friendly, and structur
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`DeepSeek API error: ${response.status} ${errText}`);
+      throw new Error(`Upstream returned ${response.status}`);
     }
 
     const data = await response.json();
-    const answer = data.choices?.[0]?.message?.content || "";
+    const answer = completionText(data);
 
     return new Response(JSON.stringify({ answer }), {
       status: 200,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   } catch (error: unknown) {
-    console.error("Lexora tutor error:", getErrorMessage(error));
-    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
+    console.error("Lexora tutor request failed");
+    return new Response(JSON.stringify({ error: "Upstream request failed. Please try again." }), {
       status: 500,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 }
@@ -244,13 +225,14 @@ async function handleBlogs(env: Record<string, string>): Promise<Response> {
   if (!supabaseUrl || !supabaseAnonKey) {
     return new Response(JSON.stringify({ error: "Supabase credentials are not configured on server." }), {
       status: 500,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
   try {
     const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/blogs?select=*`;
     const res = await fetch(endpoint, {
+      signal: AbortSignal.timeout(10_000),
       headers: {
         "apikey": supabaseAnonKey,
         "Authorization": `Bearer ${supabaseAnonKey}`,
@@ -272,9 +254,9 @@ async function handleBlogs(env: Record<string, string>): Promise<Response> {
     });
   } catch (error: unknown) {
     console.error("Supabase blogs proxy error:", getErrorMessage(error));
-    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
+    return new Response(JSON.stringify({ error: "Upstream request failed. Please try again." }), {
       status: 502,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 }
@@ -285,7 +267,30 @@ export async function onRequest(context: {
   params: Record<string, string>;
 }): Promise<Response> {
   const url = new URL(context.request.url);
+  const methods: Record<string, string> = {
+    '/api/neuro-feed': 'GET', '/api/ai-news': 'GET', '/api/ai-hot-topics': 'GET', '/api/blogs': 'GET',
+    '/api/lexora/explain': 'POST', '/api/lexora/tutor': 'POST', '/api/content-studio/generate': 'POST',
+  };
+  const allowed = methods[url.pathname];
+  if (allowed && context.request.method !== allowed) {
+    if (context.request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { Allow: `${allowed}, OPTIONS`, 'Access-Control-Allow-Methods': `${allowed}, OPTIONS`, 'Access-Control-Allow-Headers': 'Content-Type' } });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { 'Content-Type': 'application/json', Allow: `${allowed}, OPTIONS` } });
+  }
 
+  if (url.pathname === "/api/neuro-feed" && context.request.method === "GET") {
+    try {
+      const feed = await loadNeuroFeed(context.env);
+      const healthy = feed.sources.every((source) => source.status === "ready" || source.status === "unconfigured");
+      return new Response(JSON.stringify(feed), { headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": healthy ? "public, s-maxage=300, max-age=60" : "no-store",
+      } });
+    } catch {
+      return new Response(JSON.stringify({ error: "Failed to fetch neuro feed" }), {
+        status: 502, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+      });
+    }
+  }
   if (url.pathname === "/api/ai-news") return handleAINews();
   if (url.pathname === "/api/ai-hot-topics") return handleAIHotTopics();
   if (url.pathname === "/api/blogs") return handleBlogs(context.env);
@@ -298,12 +303,12 @@ export async function onRequest(context: {
   if (url.pathname === "/api/content-studio/generate" && context.request.method === "POST") {
     return new Response(JSON.stringify({ error: "Content Studio 已迁移至独立服务。" }), {
       status: 410,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
   return new Response(JSON.stringify({ error: `Not found: ${url.pathname}` }), {
     status: 404,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }

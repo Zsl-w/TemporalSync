@@ -24,11 +24,11 @@ zero test-row residue were verified after deployment.
 
 ## Verify
 
-- An anonymous user can read `blog_posts`.
-- An anonymous user cannot insert, update, or delete `blog_posts`.
-- An authenticated non-admin cannot insert, update, or delete `blog_posts`.
+- An anonymous user can read `blogs`.
+- An anonymous user cannot insert, update, or delete `blogs`.
+- An authenticated non-admin cannot insert, update, or delete `blogs`.
 - An authenticated user with `app_metadata.role = admin` can insert, update,
-  and delete `blog_posts`.
+  and delete `blogs`.
 - Removing the role immediately removes write access after the session token is
   refreshed.
 

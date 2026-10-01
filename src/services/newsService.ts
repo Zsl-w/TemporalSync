@@ -1,32 +1,32 @@
-import type { HotTopicItem, NewsItem } from "../../shared/ai-news";
+import { parseNewsCards, parseHotTopicCards, type HotTopicItem, type NewsItem } from "../../shared/ai-news";
 
 export type { HotTopicItem, NewsItem };
 
 let cachedNews: NewsItem[] | null = null;
 let cachedHotTopics: HotTopicItem[] | null = null;
+const CACHE_TTL = 5 * 60 * 1000;
+let newsUpdatedAt = 0;
+let topicsUpdatedAt = 0;
 let newsPromise: Promise<NewsItem[]> | null = null;
 let hotTopicsPromise: Promise<HotTopicItem[]> | null = null;
 
-async function requestItems<T>(endpoint: string): Promise<T[]> {
-  const response = await fetch(endpoint);
+async function requestItems<T>(endpoint: string, parse: (value: unknown) => T[]): Promise<T[]> {
+  const response = await fetch(endpoint, { signal: AbortSignal.timeout(15_000) });
   if (!response.ok) {
     throw new Error(`News API returned ${response.status}`);
   }
 
   const data: unknown = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error("News API returned an invalid response");
-  }
-
-  return data as T[];
+  return parse(data);
 }
 
 function loadNews(): Promise<NewsItem[]> {
-  if (cachedNews) return Promise.resolve(cachedNews);
+  if (getCachedNews()) return Promise.resolve(cachedNews!);
   if (!newsPromise) {
-    newsPromise = requestItems<NewsItem>("/api/ai-news")
+    newsPromise = requestItems("/api/ai-news", parseNewsCards)
       .then((items) => {
         cachedNews = items;
+        newsUpdatedAt = Date.now();
         return items;
       })
       .finally(() => {
@@ -37,11 +37,12 @@ function loadNews(): Promise<NewsItem[]> {
 }
 
 function loadHotTopics(): Promise<HotTopicItem[]> {
-  if (cachedHotTopics) return Promise.resolve(cachedHotTopics);
+  if (getCachedHotTopics()) return Promise.resolve(cachedHotTopics!);
   if (!hotTopicsPromise) {
-    hotTopicsPromise = requestItems<HotTopicItem>("/api/ai-hot-topics")
+    hotTopicsPromise = requestItems("/api/ai-hot-topics", parseHotTopicCards)
       .then((items) => {
         cachedHotTopics = items;
+        topicsUpdatedAt = Date.now();
         return items;
       })
       .finally(() => {
@@ -52,11 +53,11 @@ function loadHotTopics(): Promise<HotTopicItem[]> {
 }
 
 export function getCachedNews(): NewsItem[] | null {
-  return cachedNews;
+  return Date.now() - newsUpdatedAt < CACHE_TTL ? cachedNews : null;
 }
 
 export function getCachedHotTopics(): HotTopicItem[] | null {
-  return cachedHotTopics;
+  return Date.now() - topicsUpdatedAt < CACHE_TTL ? cachedHotTopics : null;
 }
 
 export function prefetchNews(): void {
