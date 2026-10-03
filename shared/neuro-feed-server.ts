@@ -1,11 +1,9 @@
-import Parser from "rss-parser";
 import { sortNewestFirst } from "./ai-news";
-import { isRecord, safeHttpUrl, validDate, WECHAT_SOURCES,
+import { isRecord, validDate,
   type NeuroFeedItem, type NeuroFeedResponse, type NeuroFeedSource } from "./neuro-feed";
 
 const HOUR = 60 * 60 * 1000;
 const WINDOW_DAYS = 90;
-const parser = new Parser<Record<string, unknown>, Record<string, unknown>>();
 
 function shanghaiDay(now: Date): string {
   return new Date(now.getTime() + 8 * HOUR).toISOString().slice(0, 10);
@@ -65,22 +63,6 @@ export function normalizePapers(value: unknown): NeuroFeedItem[] {
   return uniqueItems(items);
 }
 
-export function normalizeWechat(items: unknown[], source: string): NeuroFeedItem[] {
-  return uniqueItems(items.flatMap((item): NeuroFeedItem[] => {
-    if (!isRecord(item)) return [];
-    const title = plainText(item.title, 600);
-    const link = safeHttpUrl(item.link);
-    const time = item.isoDate || item.pubDate;
-    // No discovery-time substitute: only articles with a real publication date are displayed.
-    if (!title || !link || new URL(link).hostname !== "mp.weixin.qq.com" || !validDate(time)) return [];
-    const url = new URL(link);
-    for (const key of ["from", "isappinstalled", "scene", "clicktime", "enterid", "subscene"]) url.searchParams.delete(key);
-    url.hash = "";
-    return [{ id: `wechat:${url.href}`, kind: "wechat", title, source, link: url.href,
-      time: new Date(time).toISOString(), summary: "" }];
-  }));
-}
-
 function uniqueItems(items: NeuroFeedItem[]): NeuroFeedItem[] {
   const seen = new Set<string>();
   return sortNewestFirst(items).filter((item) => {
@@ -90,8 +72,6 @@ function uniqueItems(items: NeuroFeedItem[]): NeuroFeedItem[] {
     return true;
   });
 }
-
-export interface NeuroFeedEnvironment { NEURO_WECHAT_FEEDS?: string }
 
 interface SourceResult { items: NeuroFeedItem[]; source: NeuroFeedSource }
 
@@ -114,7 +94,7 @@ export function createNeuroFeedLoader(fetcher: typeof fetch = fetch, clock: () =
         cache.set(key, { items, updatedAt });
         return { items, source: { ...source, status: "ready", updatedAt } };
       } catch {
-        // Avoid logging feed URLs, which may include private subscription tokens.
+        // Keep upstream failures isolated and return only the source status.
         if (previous && clock().getTime() - Date.parse(previous.updatedAt) < 7 * 24 * HOUR) {
           return { items: previous.items, source: { ...source, status: "stale", updatedAt: previous.updatedAt } };
         }
@@ -126,50 +106,23 @@ export function createNeuroFeedLoader(fetcher: typeof fetch = fetch, clock: () =
   }
 
   async function request(url: string): Promise<Response> {
-    const response = await fetcher(url, { signal: AbortSignal.timeout(12_000), headers: { Accept: "application/json, application/rss+xml, application/atom+xml, application/xml, text/xml" } });
+    const response = await fetcher(url, { signal: AbortSignal.timeout(12_000), headers: { Accept: "application/json" } });
     if (!response.ok) throw new Error("Source unavailable");
     return response;
   }
 
-  return async (env: NeuroFeedEnvironment = {}): Promise<NeuroFeedResponse> => {
+  return async (): Promise<NeuroFeedResponse> => {
     const now = clock();
-    let feeds: Record<string, unknown> = {};
-    let invalidConfig = false;
-    if (env.NEURO_WECHAT_FEEDS) {
-      try {
-        const parsed: unknown = JSON.parse(env.NEURO_WECHAT_FEEDS);
-        if (!isRecord(parsed)) throw new Error("Invalid feed configuration");
-        feeds = parsed;
-      } catch { invalidConfig = true; }
-    }
-    const results = await Promise.all([
-      loadSource("papers", { id: "europe-pmc", name: "Europe PMC", kind: "paper" }, async () => {
-        const response = await request(buildPaperSearchUrl(now));
-        const payload: unknown = await response.json();
-        return normalizePapers(payload);
-      }),
-      ...WECHAT_SOURCES.map(async ({ id, name }): Promise<SourceResult> => {
-        const source = { id, name, kind: "wechat" as const };
-        if (invalidConfig) return { items: [], source: { ...source, status: "error" } };
-        if (feeds[id] === undefined) return { items: [], source: { ...source, status: "unconfigured" } };
-        const url = safeHttpUrl(feeds[id]);
-        if (!url || new URL(url).protocol !== "https:") return { items: [], source: { ...source, status: "error" } };
-        return loadSource(`${id}:${url}`, source, async () => {
-          const response = await request(url);
-          const xml = await response.text();
-          if (xml.length > 2_000_000 || /<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error("Invalid RSS document");
-          const feed = await parser.parseString(xml);
-          const items = normalizeWechat(feed.items, name);
-          if (feed.items.length && !items.length) throw new Error("No valid WeChat articles");
-          return items;
-        });
-      }),
-    ]);
+    const result = await loadSource("papers", { id: "europe-pmc", name: "Europe PMC", kind: "paper" }, async () => {
+      const response = await request(buildPaperSearchUrl(now));
+      const payload: unknown = await response.json();
+      return normalizePapers(payload);
+    });
     const cutoff = Date.parse(`${shanghaiDay(new Date(now.getTime() - WINDOW_DAYS * 24 * HOUR))}T00:00:00+08:00`);
     const endOfDay = Date.parse(`${shanghaiDay(now)}T23:59:59.999+08:00`);
-    return { items: uniqueItems(results.flatMap((result) => result.items))
+    return { items: uniqueItems(result.items)
       .filter((item) => Date.parse(item.time) >= cutoff && Date.parse(item.time) <= endOfDay),
-      sources: results.map((result) => result.source), fetchedAt: clock().toISOString() };
+      sources: [result.source], fetchedAt: clock().toISOString() };
   };
 }
 

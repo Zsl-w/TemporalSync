@@ -23,8 +23,8 @@ async function startServer() {
 
   app.get("/api/neuro-feed", async (_request, response) => {
     try {
-      const feed = await loadNeuroFeed({ NEURO_WECHAT_FEEDS: process.env.NEURO_WECHAT_FEEDS });
-      const healthy = feed.sources.every((source) => source.status === "ready" || source.status === "unconfigured");
+      const feed = await loadNeuroFeed();
+      const healthy = feed.sources.every((source) => source.status === "ready");
       response.setHeader("Cache-Control", healthy ? "public, s-maxage=300, max-age=60" : "no-store");
       response.json(feed);
     } catch {

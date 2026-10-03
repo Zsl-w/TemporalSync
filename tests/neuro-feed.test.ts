@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildPaperSearchUrl, createNeuroFeedLoader, normalizePapers, normalizeWechat, plainText } from "../shared/neuro-feed-server";
+import { buildPaperSearchUrl, createNeuroFeedLoader, normalizePapers, plainText } from "../shared/neuro-feed-server";
 import { parseNeuroFeedResponse } from "../shared/neuro-feed";
 
 const paper = {
@@ -39,18 +39,7 @@ test("normalizes and deduplicates real metadata, distinguishing preprints and re
   assert.throws(() => normalizePapers({ error: "upstream changed" }));
 });
 
-test("WeChat articles require original links and publication dates, and discard tracking duplicates", () => {
-  const valid = { title: "公众号文章", link: "https://mp.weixin.qq.com/s/example?scene=27", isoDate: "2026-09-30T08:00:00Z" };
-  const items = normalizeWechat([valid, { ...valid, link: "https://mp.weixin.qq.com/s/example?scene=23" },
-    { ...valid, link: "javascript:alert(1)" }, { ...valid, link: "https://example.com/post" },
-    { ...valid, isoDate: undefined }, { ...valid, title: "" }, null], "精神影像学");
-  assert.equal(items.length, 1);
-  assert.equal(items[0].link, "https://mp.weixin.qq.com/s/example");
-  assert.equal(items[0].source, "精神影像学");
-  assert.equal(items[0].summary, "");
-});
-
-test("unconfigured WeChat sources stay explicit; concurrent loads share one request and refresh next day", async () => {
+test("concurrent paper loads share one request and refresh next day", async () => {
   let calls = 0;
   let now = new Date("2026-09-30T15:50:00Z");
   const loader = createNeuroFeedLoader(async () => { calls += 1; return paperResponse(); }, () => now);
@@ -58,7 +47,9 @@ test("unconfigured WeChat sources stay explicit; concurrent loads share one requ
   assert.equal(calls, 1);
   assert.equal(first.items.length, 1);
   assert.deepEqual(first, concurrent);
-  assert.equal(first.sources.filter((source) => source.status === "unconfigured").length, 4);
+  assert.equal(first.sources.length, 1);
+  assert.equal(first.sources[0].id, "europe-pmc");
+  assert.equal(first.sources[0].status, "ready");
   assert.deepEqual(parseNeuroFeedResponse(first), first);
   now = new Date("2026-09-30T16:05:00Z");
   await loader();
@@ -70,15 +61,12 @@ test("unconfigured WeChat sources stay explicit; concurrent loads share one requ
   assert.equal(calls, 3, "hourly expiry fetches upstream again");
 });
 
-test("failed paper source does not prevent configured RSS articles from loading", async () => {
-  const rss = '<rss version="2.0"><channel><title>Example</title><item><title>New article</title><link>https://mp.weixin.qq.com/s/example</link><pubDate>Wed, 30 Sep 2026 08:00:00 GMT</pubDate></item></channel></rss>';
-  const loader = createNeuroFeedLoader(async (input) => String(input).startsWith("https://www.ebi.ac.uk")
-    ? new Response("Unavailable", { status: 503 }) : new Response(rss), () => new Date("2026-10-01T02:00:00Z"));
-  const result = await loader({ NEURO_WECHAT_FEEDS: JSON.stringify({ "psycho-imaging": "https://feeds.example.com/psycho.xml" }) });
-  assert.equal(result.items.length, 1);
-  assert.equal(result.items[0].kind, "wechat");
+test("failed paper source returns an error without invented content", async () => {
+  const loader = createNeuroFeedLoader(async () => new Response("Unavailable", { status: 503 }));
+  const result = await loader();
+  assert.equal(result.items.length, 0);
+  assert.equal(result.sources.length, 1);
   assert.equal(result.sources[0].status, "error");
-  assert.equal(result.sources[1].status, "ready");
   assert.deepEqual(parseNeuroFeedResponse(result), result);
 });
 
@@ -99,19 +87,6 @@ test("expired content is marked stale on failure and is dropped after seven days
   assert.equal(expired.items.length, 0);
 });
 
-test("malformed configuration and RSS cannot masquerade as connected sources", async () => {
-  let calls = 0;
-  const loader = createNeuroFeedLoader(async () => { calls += 1; return paperResponse(); }, () => new Date("2026-10-01T02:00:00Z"));
-  const malformed = await loader({ NEURO_WECHAT_FEEDS: "{broken" });
-  assert.equal(malformed.sources.filter((source) => source.kind === "wechat" && source.status === "error").length, 4);
-  const unsafe = await loader({ NEURO_WECHAT_FEEDS: JSON.stringify({ neuroai: "javascript:alert(1)" }) });
-  assert.equal(unsafe.sources.find((source) => source.id === "neuroai")?.status, "error");
-  assert.equal(calls, 1, "invalid feed URLs are never requested");
-  const badRssLoader = createNeuroFeedLoader(async (input) => String(input).includes("ebi.ac.uk") ? paperResponse() : new Response("<!DOCTYPE rss><rss/>"), () => new Date("2026-10-01T02:00:00Z"));
-  const badRss = await badRssLoader({ NEURO_WECHAT_FEEDS: JSON.stringify({ neuroai: "https://feeds.example.com/neuroai.xml" }) });
-  assert.equal(badRss.sources.find((source) => source.id === "neuroai")?.status, "error");
-});
-
 test("recent feed excludes future and out-of-window publication dates and rejects unsafe API payloads", async () => {
   const loader = createNeuroFeedLoader(async () => paperResponse([paper,
     { ...paper, id: "future", doi: "10.1234/future", firstPublicationDate: "2026-10-02" },
@@ -123,10 +98,11 @@ test("recent feed excludes future and out-of-window publication dates and reject
   assert.throws(() => parseNeuroFeedResponse({ ...result, sources: [{ ...result.sources[0], status: "connected" }] }));
 });
 
-test('timestamped articles use Shanghai date boundaries, excluding tomorrow before UTC midnight', async () => {
-  const rss = '<rss version="2.0"><channel><title>Example</title><item><title>Tomorrow</title><link>https://mp.weixin.qq.com/s/tomorrow</link><pubDate>Thu, 01 Oct 2026 17:00:00 GMT</pubDate></item></channel></rss>';
-  const loader = createNeuroFeedLoader(async (input) => String(input).includes('ebi.ac.uk') ? paperResponse() : new Response(rss), () => new Date('2026-10-01T14:00:00Z'));
-  const result = await loader({ NEURO_WECHAT_FEEDS: JSON.stringify({ neuroai: 'https://feeds.example.com/feed.xml' }) });
-  assert.equal(result.sources.at(-1)?.status, 'ready');
-  assert.equal(result.items.some((item) => item.kind === 'wechat'), false);
+test("timestamped papers use Shanghai date boundaries, excluding tomorrow before UTC midnight", async () => {
+  const loader = createNeuroFeedLoader(async () => paperResponse([
+    { ...paper, firstPublicationDate: "2026-10-01T17:00:00Z" },
+  ]), () => new Date("2026-10-01T14:00:00Z"));
+  const result = await loader();
+  assert.equal(result.sources[0].status, "ready");
+  assert.equal(result.items.length, 0);
 });

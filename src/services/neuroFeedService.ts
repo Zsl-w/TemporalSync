@@ -12,7 +12,7 @@ export function fetchNeuroFeed(refresh = false): Promise<NeuroFeedResponse> {
         if (!response.ok) throw new Error("Neuro feed unavailable");
         const payload: unknown = await response.json();
         const data = parseNeuroFeedResponse(payload);
-        const healthy = data.sources.every((source) => source.status === "ready" || source.status === "unconfigured");
+        const healthy = data.sources.every((source) => source.status === "ready");
         cached = healthy ? { data, expiresAt: Date.now() + CACHE_TTL } : null;
         return data;
       }).finally(() => { pending = null; });

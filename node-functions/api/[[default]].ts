@@ -279,8 +279,8 @@ export async function onRequest(context: {
 
   if (url.pathname === "/api/neuro-feed" && context.request.method === "GET") {
     try {
-      const feed = await loadNeuroFeed(context.env);
-      const healthy = feed.sources.every((source) => source.status === "ready" || source.status === "unconfigured");
+      const feed = await loadNeuroFeed();
+      const healthy = feed.sources.every((source) => source.status === "ready");
       return new Response(JSON.stringify(feed), { headers: {
         "Content-Type": "application/json; charset=utf-8",
         "Cache-Control": healthy ? "public, s-maxage=300, max-age=60" : "no-store",
