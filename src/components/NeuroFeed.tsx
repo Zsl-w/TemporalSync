@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
-import { BookOpen, Clock, ExternalLink, MessageCircle, RefreshCw, Search } from "lucide-react";
+import { BookOpen, Clock, ExternalLink, RefreshCw, Search } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
-import { cn } from "../lib/utils";
 import { fetchNeuroFeed } from "../services/neuroFeedService";
-import type { NeuroFeedKind, NeuroFeedResponse } from "../../shared/neuro-feed";
-
-type KindFilter = "all" | NeuroFeedKind;
+import type { NeuroFeedResponse } from "../../shared/neuro-feed";
 
 export function NeuroFeed() {
   const { language } = useSettings();
@@ -15,7 +12,6 @@ export function NeuroFeed() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
-  const [kind, setKind] = useState<KindFilter>("all");
   const [attempt, setAttempt] = useState(0);
 
   const refresh = useCallback(() => setAttempt((value) => value + 1), []);
@@ -51,9 +47,8 @@ export function NeuroFeed() {
   }), [isZh]);
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return (feed?.items ?? []).filter((item) => (kind === "all" || item.kind === kind) &&
-      (!needle || [item.title, item.source, item.summary].some((text) => text.toLowerCase().includes(needle))));
-  }, [feed, kind, query]);
+    return (feed?.items ?? []).filter((item) => !needle || [item.title, item.source, item.summary].some((text) => text.toLowerCase().includes(needle)));
+  }, [feed, query]);
   const groups = useMemo(() => {
     const entries = new Map<string, typeof filtered>();
     for (const item of filtered) {
@@ -62,9 +57,8 @@ export function NeuroFeed() {
     }
     return [...entries];
   }, [filtered, dateFormatter]);
-  const relevantSources = (feed?.sources ?? []).filter((source) => kind === "all" || source.kind === kind);
+  const relevantSources = feed?.sources ?? [];
   const unavailable = relevantSources.filter((source) => source.status === "error" || source.status === "stale");
-  const awaitingWechat = (feed?.sources ?? []).filter((source) => source.kind === "wechat" && source.status === "unconfigured");
   const updatedAt = relevantSources.map((source) => source.updatedAt).filter((value): value is string => !!value).sort().at(-1);
   const syncLabel = updatedAt ? new Intl.DateTimeFormat(isZh ? "zh-CN" : "en-US", {
     timeZone: "Asia/Shanghai", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false,
@@ -75,16 +69,7 @@ export function NeuroFeed() {
       <p className="text-sm leading-6 text-ts-muted">
         {isZh ? "抑郁症 · 阿尔茨海默病 · 帕金森病 · 双相情感障碍，影像模态不限。" : "Depression · Alzheimer's · Parkinson's · Bipolar disorder, across imaging modalities."}
       </p>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          {(["all", "paper", "wechat"] as KindFilter[]).map((candidate) => (
-            <button key={candidate} onClick={() => setKind(candidate)} aria-pressed={kind === candidate}
-              className={cn("rounded-full px-4 py-2 text-xs font-barlow font-bold tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink",
-                kind === candidate ? "bg-ts-ink text-ts-canvas" : "bg-ts-surface-elevated text-ts-muted hover:bg-ts-surface hover:text-ts-ink")}>
-              {candidate === "all" ? (isZh ? "全部" : "All") : candidate === "paper" ? (isZh ? "论文" : "Papers") : (isZh ? "公众号" : "WeChat")}
-            </button>
-          ))}
-        </div>
+      <div className="flex justify-end">
         <div className="flex w-full items-center gap-2 md:w-auto">
           <div className="relative min-w-0 flex-1 md:w-72">
             <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ts-muted-soft" />
@@ -136,15 +121,15 @@ export function NeuroFeed() {
               <div className="flex items-start justify-between gap-3">
                 <span className="min-w-0 break-words text-xs font-barlow font-bold leading-5 text-ts-muted">{item.source}</span>
                 <span className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-ts-surface-elevated px-2.5 py-1 text-[10px] font-bold text-ts-ink/80">
-                  {item.kind === "paper" ? <BookOpen size={12} /> : <MessageCircle size={12} />}
-                  {item.kind === "wechat" ? (isZh ? "公众号" : "WeChat") : item.preprint ? (isZh ? "预印本" : "Preprint") : (isZh ? "论文" : "Paper")}
+                  <BookOpen size={12} />
+                  {item.preprint ? (isZh ? "预印本" : "Preprint") : (isZh ? "论文" : "Paper")}
                 </span>
               </div>
               <a href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ts-ink">
                 <h3 className="min-w-0 break-words text-base font-bold leading-snug text-ts-ink sm:text-lg">{item.title}</h3>
                 <ExternalLink size={14} className="mt-1 shrink-0 text-ts-muted" />
               </a>
-              {item.kind === "paper" && item.summary && <p className="line-clamp-3 text-xs leading-relaxed text-ts-body sm:text-sm">{item.summary}</p>}
+              {item.summary && <p className="line-clamp-3 text-xs leading-relaxed text-ts-body sm:text-sm">{item.summary}</p>}
               <div className="mt-auto flex items-center justify-between gap-3 pt-1 text-xs text-ts-muted">
                 <time dateTime={item.time}>{dateFormatter.format(new Date(item.time))}</time>
                 <a href={item.link} target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center gap-1.5 font-medium hover:text-ts-ink">
@@ -154,19 +139,11 @@ export function NeuroFeed() {
             </motion.article>)}
           </div>
         </div>)}
-      </div> : !loading && !error && unavailable.length === 0 && !(kind === "wechat" && awaitingWechat.length > 0) ?
+      </div> : !loading && !error && unavailable.length === 0 ?
         <div className="rounded-2xl bg-ts-surface-elevated/40 px-6 py-16 text-center text-sm text-ts-muted">
           <p>{isZh ? (query ? "没有匹配的内容。" : "近期暂无新内容。") : (query ? "No matching items." : "No recent items.")}</p>
           {query && <button onClick={() => setQuery("")} className="mt-3 underline underline-offset-4">{isZh ? "清除搜索" : "Clear search"}</button>}
         </div> : null}
-
-      {kind !== "paper" && awaitingWechat.length > 0 && <div className="rounded-2xl bg-ts-surface-elevated/50 p-5 text-xs leading-6 text-ts-muted">
-        <p className="font-medium text-ts-ink">{isZh ? "公众号待接入" : "WeChat sources pending"}</p>
-        <p className="mt-1">{isZh ? "以下公众号接入后，将在这里展示最新文章。" : "Latest articles will appear here once these sources are connected."}</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {awaitingWechat.map((source) => <span key={source.id} className="rounded-md bg-ts-surface px-2.5 py-1">{source.name}</span>)}
-        </div>
-      </div>}
 
       <p className="pt-4 text-center text-[11px] leading-5 text-ts-muted">
         {isZh ? "论文来源：" : "Papers via "}<a href="https://europepmc.org" target="_blank" rel="noopener noreferrer" className="font-bold hover:text-ts-ink">Europe PMC</a>

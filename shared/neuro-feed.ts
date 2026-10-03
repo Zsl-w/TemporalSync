@@ -1,5 +1,5 @@
-export type NeuroFeedKind = "paper" | "wechat";
-export type NeuroSourceStatus = "ready" | "unconfigured" | "error" | "stale";
+export type NeuroFeedKind = "paper";
+export type NeuroSourceStatus = "ready" | "error" | "stale";
 
 export interface NeuroFeedItem {
   id: string;
@@ -27,13 +27,6 @@ export interface NeuroFeedResponse {
   fetchedAt: string;
 }
 
-export const WECHAT_SOURCES = [
-  { id: "psycho-imaging", name: "精神影像学" },
-  { id: "intelligent-medicine", name: "intelligent medicine智慧医学" },
-  { id: "brain-mental-health", name: "脑科学与心理健康" },
-  { id: "neuroai", name: "NeuroAI影响前沿" },
-] as const;
-
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -58,7 +51,7 @@ export function parseNeuroFeedResponse(value: unknown): NeuroFeedResponse {
   }
   const items = value.items.map((item): NeuroFeedItem => {
     if (!isRecord(item) || typeof item.id !== "string" || !item.id ||
-      (item.kind !== "paper" && item.kind !== "wechat") || typeof item.title !== "string" || !item.title.trim() ||
+      item.kind !== "paper" || typeof item.title !== "string" || !item.title.trim() ||
       typeof item.source !== "string" || !item.source.trim() || !safeHttpUrl(item.link) ||
       !validDate(item.time) || typeof item.summary !== "string" ||
       (item.doi !== undefined && typeof item.doi !== "string") ||
@@ -72,8 +65,8 @@ export function parseNeuroFeedResponse(value: unknown): NeuroFeedResponse {
   });
   const sources = value.sources.map((source): NeuroFeedSource => {
     if (!isRecord(source) || typeof source.id !== "string" || typeof source.name !== "string" ||
-      (source.kind !== "paper" && source.kind !== "wechat") ||
-      !["ready", "unconfigured", "error", "stale"].includes(String(source.status)) ||
+      source.kind !== "paper" ||
+      !["ready", "error", "stale"].includes(String(source.status)) ||
       (source.updatedAt !== undefined && !validDate(source.updatedAt))) {
       throw new Error("Invalid neuro feed source");
     }
